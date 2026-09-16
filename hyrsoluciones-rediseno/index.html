@@ -7,7 +7,6 @@
 <meta name="description" content="Aseo industrial, obras menores, transporte, sanitización y jardinería en un solo equipo. Experiencia, personal capacitado y compromiso con la sustentabilidad." />
 <meta name="theme-color" content="#e8654f" />
 
-<!-- Open Graph -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="HyR Soluciones SPA" />
 <meta property="og:title" content="HyR Soluciones SPA — Multiservicios" />
@@ -21,343 +20,26 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" />
-
-<style>
-  :root{
-    --bg:#fbfbfd;
-    --surface:#ffffff;
-    --surface-2:#f4f4f6;
-    --ink:#1d1d1f;
-    --muted:#6e6e73;
-    --border:rgba(29,29,31,.10);
-    --accent:#e0563f;
-    --accent-2:#c8462f;
-    --accent-ink:#ffffff;
-    --accent-soft:#fdeae5;
-    --ever:#2f6f5e;
-    --ever-soft:#e7f2ee;
-    --shadow: 0 30px 70px -30px rgba(20,15,15,.35);
-    --shadow-sm: 0 10px 30px -14px rgba(20,15,15,.25);
-    --radius-xl:32px;
-    --radius-lg:24px;
-    --radius-md:14px;
-    --radius-pill:999px;
-    --wrap:1180px;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --bg:#000000;
-      --surface:#161617;
-      --surface-2:#1f1f21;
-      --ink:#f5f5f7;
-      --muted:#a6a6ac;
-      --border:rgba(245,245,247,.12);
-      --accent:#ff7a5c;
-      --accent-2:#ff947a;
-      --accent-ink:#1a1a1a;
-      --accent-soft:#3a2620;
-      --ever:#63c2a4;
-      --ever-soft:#12302a;
-      --shadow: 0 30px 70px -30px rgba(0,0,0,.7);
-      --shadow-sm: 0 10px 30px -14px rgba(0,0,0,.6);
-      color-scheme: dark;
-    }
-  }
-  :root[data-theme="dark"]{
-    --bg:#000000;
-    --surface:#161617;
-    --surface-2:#1f1f21;
-    --ink:#f5f5f7;
-    --muted:#a6a6ac;
-    --border:rgba(245,245,247,.12);
-    --accent:#ff7a5c;
-    --accent-2:#ff947a;
-    --accent-ink:#1a1a1a;
-    --accent-soft:#3a2620;
-    --ever:#63c2a4;
-    --ever-soft:#12302a;
-    --shadow: 0 30px 70px -30px rgba(0,0,0,.7);
-    --shadow-sm: 0 10px 30px -14px rgba(0,0,0,.6);
-    color-scheme: dark;
-  }
-
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
-
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font-family:"Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
-  }
-  img{max-width:100%; display:block;}
-  a{color:inherit;}
-  h1,h2,h3,h4{
-    font-family:"Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
-    font-weight:800;
-    line-height:1.05;
-    letter-spacing:-0.02em;
-    text-wrap:balance;
-    margin:0;
-  }
-  p{ margin:0; line-height:1.65; }
-  .wrap{ max-width:var(--wrap); margin-inline:auto; padding-inline:24px; }
-  .eyebrow{
-    font-family:"Manrope",sans-serif;
-    font-weight:700;
-    font-size:.78rem;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color:var(--accent);
-  }
-  section{ padding-block: clamp(64px,9vw,128px); }
-  .btn{
-    display:inline-flex; align-items:center; gap:8px;
-    padding:14px 28px;
-    border-radius:var(--radius-pill);
-    font-family:"Manrope",sans-serif;
-    font-weight:700;
-    font-size:.98rem;
-    text-decoration:none;
-    border:1px solid transparent;
-    cursor:pointer;
-    transition:transform .25s ease, box-shadow .25s ease, background-color .25s ease;
-  }
-  .btn:active{ transform:scale(.97); }
-  .btn-primary{ background:var(--accent); color:var(--accent-ink); box-shadow:0 14px 30px -12px rgba(224,86,63,.55); }
-  .btn-primary:hover{ background:var(--accent-2); transform:translateY(-2px); }
-  .btn-ghost{ background:rgba(255,255,255,.14); color:#fff; border-color:rgba(255,255,255,.4); backdrop-filter:blur(6px); }
-  .btn-ghost:hover{ background:rgba(255,255,255,.24); transform:translateY(-2px); }
-  .btn-dark{ background:var(--ink); color:var(--bg); }
-  .btn-dark:hover{ transform:translateY(-2px); }
-
-  .reveal{ opacity:1; transform:none; transition:opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
-  .reveal.reveal-pending{ opacity:0; transform:translateY(28px); }
-
-  /* ---------- NAV ---------- */
-  header.nav{
-    position:fixed; inset-inline:0; top:0; z-index:100;
-    padding-top:env(safe-area-inset-top,0px);
-    background:rgba(251,251,253,.72);
-    backdrop-filter:saturate(180%) blur(16px);
-    -webkit-backdrop-filter:saturate(180%) blur(16px);
-    border-bottom:1px solid transparent;
-    transition:border-color .3s ease, background-color .3s ease;
-  }
-  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) header.nav{ background:rgba(0,0,0,.6); } }
-  :root[data-theme="dark"] header.nav{ background:rgba(0,0,0,.6); }
-  header.nav.scrolled{ border-bottom-color:var(--border); }
-  .nav-inner{ display:flex; align-items:center; justify-content:space-between; height:64px; }
-  .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; }
-  .brand img{ height:30px; width:auto; border-radius:6px; }
-  .brand span{ font-family:"Manrope",sans-serif; font-weight:800; font-size:1rem; letter-spacing:-.01em; }
-  nav.links{ display:flex; align-items:center; gap:34px; }
-  nav.links a{ text-decoration:none; font-size:.92rem; font-weight:600; color:var(--ink); opacity:.82; transition:opacity .2s; }
-  nav.links a:hover{ opacity:1; }
-  .nav-cta{ display:flex; align-items:center; gap:16px; }
-  .icon-btn{ display:none; }
-
-  @media (max-width: 860px){
-    nav.links{
-      position:fixed; top:64px; left:0; right:0;
-      flex-direction:column; align-items:flex-start; gap:0;
-      background:var(--surface); border-bottom:1px solid var(--border);
-      padding:8px 24px 20px;
-      transform:translateY(-8px); opacity:0; pointer-events:none;
-      transition:opacity .25s ease, transform .25s ease;
-    }
-    nav.links.open{ opacity:1; transform:none; pointer-events:auto; }
-    nav.links a{ padding:12px 0; width:100%; border-bottom:1px solid var(--border); }
-    .nav-cta .btn-primary-nav{ display:none; }
-    .icon-btn{ display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:10px; border:none; background:transparent; cursor:pointer; }
-  }
-
-  /* ---------- HERO ---------- */
-  .hero{
-    position:relative;
-    min-height:min(880px, 100svh);
-    display:flex; align-items:center; justify-content:center;
-    padding-top:64px;
-    background:#111 url('https://hyrsoluciones.cl/wp-content/uploads/2022/02/rect982-min.jpg') center 30%/cover no-repeat;
-    isolation:isolate;
-  }
-  .hero::before{
-    content:""; position:absolute; inset:0; z-index:0;
-    background:linear-gradient(180deg, rgba(10,8,8,.55) 0%, rgba(10,8,8,.62) 45%, rgba(10,8,8,.86) 100%);
-  }
-  .hero-content{ position:relative; z-index:1; text-align:center; color:#fff; max-width:840px; margin-inline:auto; padding-inline:24px; }
-  .hero .eyebrow{ color:var(--accent-2); }
-  .hero h1{ font-size:clamp(2.4rem, 6vw, 4.4rem); margin-top:14px; color:#fff; }
-  .hero p.lead{ margin:22px auto 0; max-width:620px; font-size:clamp(1.02rem,1.7vw,1.2rem); color:rgba(255,255,255,.86); }
-  .hero-ctas{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:34px; }
-
-  .stat-bar{
-    position:relative; z-index:2;
-    max-width:var(--wrap); margin:-64px auto 0; padding-inline:24px;
-  }
-  .stat-grid{
-    display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
-    background:var(--border);
-    border-radius:var(--radius-lg);
-    overflow:hidden;
-    box-shadow:var(--shadow);
-  }
-  .stat-card{
-    background:var(--surface);
-    padding:30px 24px;
-    display:flex; flex-direction:column; gap:10px; align-items:flex-start;
-  }
-  .stat-card svg{ width:30px; height:30px; stroke:var(--accent); }
-  .stat-card h3{ font-size:1.05rem; }
-  .stat-card p{ color:var(--muted); font-size:.94rem; }
-  @media (max-width:720px){ .stat-grid{ grid-template-columns:1fr; } .stat-bar{ margin-top:-40px; } }
-
-  /* ---------- TRUST STRIP ---------- */
-  .trust{ padding-block:clamp(70px,8vw,110px) clamp(40px,6vw,70px); text-align:center; }
-  .trust h2{ font-size:clamp(1.3rem,2.4vw,1.7rem); max-width:640px; margin-inline:auto; }
-  .trust-banner{ margin-top:38px; border-radius:var(--radius-md); overflow:hidden; background:var(--surface-2); padding:22px; }
-  .trust-banner img{ width:100%; height:auto; opacity:.92; }
-
-  /* ---------- SERVICES ---------- */
-  .service-row{ display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; padding-block:56px; }
-  .service-row.reverse .service-media{ order:2; }
-  .service-media img{ width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:var(--radius-xl); box-shadow:var(--shadow-sm); }
-  .service-tag{ display:inline-flex; align-items:center; gap:8px; font-family:"Manrope",sans-serif; font-weight:700; font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; padding:7px 14px; border-radius:var(--radius-pill); }
-  .tag-coral{ background:var(--accent-soft); color:var(--accent-2); }
-  .tag-ever{ background:var(--ever-soft); color:var(--ever); }
-  .service-copy h3{ font-size:clamp(1.7rem,3vw,2.3rem); margin-top:16px; }
-  .service-copy p.desc{ margin-top:16px; color:var(--muted); font-size:1.04rem; max-width:52ch; }
-  .feature-list{ list-style:none; margin:26px 0 0; padding:0; display:grid; gap:12px; }
-  .feature-list li{ display:flex; gap:12px; align-items:flex-start; font-size:.98rem; }
-  .feature-list svg{ flex:none; width:20px; height:20px; margin-top:2px; stroke:var(--accent); }
-  .service-row.reverse .feature-list svg{ stroke:var(--ever); }
-
-  .mini-services{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:20px; }
-  .mini-card{ background:var(--surface-2); border-radius:var(--radius-lg); padding:28px; display:flex; flex-direction:column; gap:12px; }
-  .mini-card svg{ width:26px; height:26px; stroke:var(--accent); }
-  .mini-card h4{ font-size:1.05rem; }
-  .mini-card p{ color:var(--muted); font-size:.92rem; }
-
-  @media (max-width:860px){
-    .service-row, .service-row.reverse{ grid-template-columns:1fr; gap:28px; }
-    .service-row.reverse .service-media{ order:0; }
-    .mini-services{ grid-template-columns:1fr; }
-  }
-
-  /* ---------- GALLERY ---------- */
-  .gallery-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:24px; flex-wrap:wrap; margin-bottom:40px; }
-  .gallery-head h2{ font-size:clamp(1.8rem,3.4vw,2.6rem); max-width:16ch; }
-  .gallery-head p{ color:var(--muted); max-width:40ch; }
-  .masonry{ column-count:4; column-gap:14px; }
-  .masonry figure{ margin:0 0 14px; break-inside:avoid; border-radius:var(--radius-md); overflow:hidden; position:relative; cursor:zoom-in; background:var(--surface-2); }
-  .masonry img{ width:100%; height:auto; display:block; transition:transform .5s ease; }
-  .masonry figure:hover img{ transform:scale(1.06); }
-  .masonry figure::after{
-    content:""; position:absolute; inset:0;
-    background:linear-gradient(180deg, transparent 60%, rgba(0,0,0,.35) 100%);
-    opacity:0; transition:opacity .3s ease;
-  }
-  .masonry figure:hover::after{ opacity:1; }
-  @media (max-width:980px){ .masonry{ column-count:3; } }
-  @media (max-width:680px){ .masonry{ column-count:2; } }
-
-  .lightbox{
-    position:fixed; inset:0; z-index:300;
-    background:rgba(5,5,6,.92);
-    display:flex; align-items:center; justify-content:center;
-    padding:32px;
-    opacity:0; pointer-events:none; transition:opacity .25s ease;
-  }
-  .lightbox.open{ opacity:1; pointer-events:auto; }
-  .lightbox img{ max-width:min(92vw,1100px); max-height:88vh; border-radius:12px; box-shadow:0 40px 80px rgba(0,0,0,.5); }
-  .lightbox button{ position:absolute; top:22px; right:26px; width:44px; height:44px; border-radius:50%; border:none; background:rgba(255,255,255,.12); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-  .lightbox button:hover{ background:rgba(255,255,255,.22); }
-
-  /* ---------- CTA BANNER ---------- */
-  .cta-banner{
-    background:linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
-    border-radius:var(--radius-xl);
-    padding:clamp(48px,7vw,84px) clamp(24px,6vw,72px);
-    text-align:center; color:#fff;
-    box-shadow:var(--shadow);
-  }
-  .cta-banner h2{ font-size:clamp(1.9rem,4vw,3rem); color:#fff; }
-  .cta-banner p{ margin-top:14px; color:rgba(255,255,255,.9); font-size:1.05rem; }
-  .cta-banner .btn-dark{ margin-top:30px; }
-
-  /* ---------- CONTACT ---------- */
-  .contact-grid{ display:grid; grid-template-columns:.9fr 1.1fr; gap:56px; align-items:start; }
-  .contact-info h2{ font-size:clamp(1.8rem,3vw,2.4rem); }
-  .contact-info > p{ color:var(--muted); margin-top:14px; max-width:44ch; }
-  .contact-list{ list-style:none; margin:32px 0 0; padding:0; display:grid; gap:20px; }
-  .contact-list li{ display:flex; gap:14px; align-items:flex-start; }
-  .contact-list .ico{ flex:none; width:42px; height:42px; border-radius:12px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; }
-  .contact-list svg{ width:19px; height:19px; stroke:var(--accent); }
-  .contact-list a{ text-decoration:none; font-weight:600; }
-  .contact-list a:hover{ color:var(--accent); }
-  .contact-list .label{ display:block; font-size:.8rem; color:var(--muted); margin-bottom:2px; }
-  .social-row{ display:flex; gap:12px; margin-top:28px; }
-  .social-row a{ width:42px; height:42px; border-radius:50%; background:var(--surface-2); display:flex; align-items:center; justify-content:center; text-decoration:none; position:relative; }
-  .social-row svg{ width:18px; height:18px; stroke:var(--muted); }
-  .social-row .soon{ position:absolute; bottom:-26px; left:50%; transform:translateX(-50%); font-size:.68rem; color:var(--muted); white-space:nowrap; opacity:0; transition:opacity .2s; }
-  .social-row a:hover .soon{ opacity:1; }
-  .map-frame{ margin-top:30px; border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--border); height:220px; }
-  .map-frame iframe{ width:100%; height:100%; border:0; filter:grayscale(.25); }
-
-  .form-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); padding:clamp(24px,4vw,44px); box-shadow:var(--shadow-sm); }
-  .form-card h3{ font-size:1.3rem; }
-  .form-card > p{ color:var(--muted); margin-top:8px; font-size:.92rem; }
-  .field{ margin-top:20px; display:flex; flex-direction:column; gap:8px; }
-  .field label{ font-size:.85rem; font-weight:600; }
-  .field input, .field textarea{
-    font:inherit; font-size:.98rem;
-    padding:13px 15px; border-radius:var(--radius-md);
-    border:1px solid var(--border); background:var(--surface-2); color:var(--ink);
-    resize:vertical;
-  }
-  .field input:focus, .field textarea:focus{ outline:2px solid var(--accent); outline-offset:1px; }
-  .form-card .btn-primary{ margin-top:24px; width:100%; justify-content:center; border:none; }
-
-  @media (max-width:900px){ .contact-grid{ grid-template-columns:1fr; } }
-
-  /* ---------- FOOTER ---------- */
-  footer{ background:var(--ink); color:var(--bg); padding-block:56px 34px; }
-  :root[data-theme="dark"] footer, :root:not([data-theme="light"]) footer{}
-  .footer-top{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:32px; padding-bottom:36px; border-bottom:1px solid rgba(255,255,255,.14); }
-  footer .brand span{ color:var(--bg); }
-  footer .brand img{ filter:brightness(0) invert(1); }
-  .footer-links{ display:flex; gap:28px; flex-wrap:wrap; }
-  .footer-links a{ text-decoration:none; opacity:.75; font-size:.92rem; }
-  .footer-links a:hover{ opacity:1; }
-  .footer-bottom{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding-top:24px; font-size:.82rem; opacity:.6; }
-
-  .skip{ position:absolute; left:-999px; top:0; background:#fff; color:#000; padding:10px 16px; z-index:1000; }
-  .skip:focus{ left:16px; top:16px; }
-  a:focus-visible, button:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-</style>
+<link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
 <a class="skip" href="#contenido">Saltar al contenido</a>
 
 <header class="nav" id="siteNav">
   <div class="wrap nav-inner">
-    <a class="brand" href="#inicio">
+    <a class="brand" href="index.html">
       <img src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/rect8810.png" alt="HyR Soluciones" />
       <span>HyR Soluciones</span>
     </a>
     <nav class="links" id="navLinks">
-      <a href="#inicio">Inicio</a>
-      <a href="#nosotros">Nosotros</a>
-      <a href="#servicios">Servicios</a>
-      <a href="#proyectos">Proyectos</a>
-      <a href="#contacto">Contacto</a>
+      <a href="index.html" aria-current="page">Inicio</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="index.html#servicios">Servicios</a>
+      <a href="proyectos.html">Proyectos</a>
+      <a href="contacto.html">Contacto</a>
     </nav>
     <div class="nav-cta">
-      <a class="btn btn-primary btn-primary-nav" href="#contacto" style="padding:10px 20px;">Cotizar</a>
+      <a class="btn btn-primary btn-primary-nav" href="contacto.html" style="padding:10px 20px;">Cotizar</a>
       <button class="icon-btn" id="menuToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
@@ -372,14 +54,14 @@
       <h1>Multiservicios que transforman espacios.</h1>
       <p class="lead">Aseo industrial, obras menores, transporte, sanitización y jardinería — un solo equipo, un solo estándar de calidad.</p>
       <div class="hero-ctas">
-        <a class="btn btn-primary" href="#contacto">Solicitar cotización</a>
+        <a class="btn btn-primary" href="contacto.html">Solicitar cotización</a>
         <a class="btn btn-ghost" href="#proyectos">Ver proyectos</a>
       </div>
     </div>
   </section>
 
   <div class="stat-bar">
-    <div class="stat-grid reveal" id="statBar">
+    <div class="stat-grid reveal">
       <div class="stat-card">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.2-5.4 3.2 1.3-6-4.6-4.1 6.1-.6z"/></svg>
         <h3>Experiencia</h3>
@@ -398,7 +80,7 @@
     </div>
   </div>
 
-  <section class="trust" id="nosotros">
+  <section class="trust" id="confianza">
     <div class="wrap">
       <p class="eyebrow reveal">Confían en nosotros</p>
       <h2 class="reveal">Empresas e instituciones que ya trabajan con HyR Soluciones</h2>
@@ -466,10 +148,10 @@
           <p class="eyebrow reveal">Proyectos</p>
           <h2 class="reveal">Nuestro trabajo habla por sí solo.</h2>
         </div>
-        <p class="reveal">Una selección de trabajos ejecutados por nuestro equipo. Haz clic en cualquier fotografía para ampliarla.</p>
+        <p class="reveal">Una muestra de trabajos ejecutados por nuestro equipo. Haz clic en cualquier fotografía para ampliarla.</p>
       </div>
 
-      <div class="masonry reveal" id="gallery">
+      <div class="masonry reveal">
         <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/IMG_1295-1024x768.jpeg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
         <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/0d2fadd9-4641-4486-874c-79b9a6c67482-768x1024.jpg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
         <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/7a93a68a-aeb6-4f49-a211-340cc9d60bce-768x1024.jpg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
@@ -478,15 +160,10 @@
         <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/cf3ac8e9-8594-4dcb-a6f4-3699c3dfb2a2-768x1024.jpg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
         <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/FD4A6F37-0A8B-4E37-8F37-3CCCDAFD743A-1024x576.jpg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
         <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/IMG_4103-768x1024.jpeg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
-        <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/3fa24bdf-0e41-4b24-b9b1-ed8814dac1b4-576x1024.jpg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
-        <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/da8bbc53-77be-4a99-9c59-b003602bcbd7-768x1024.jpg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
-        <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/IMG_5553-768x1024.jpeg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
-        <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/818298f9-4048-463e-bc00-21ee46ad85c5-576x1024.jpg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
-        <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/IMG_5567-768x1024.jpeg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
-        <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/E72CBF00-D762-403E-9C43-68E5E056F38A-576x1024.jpg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
-        <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/IMG_6074-768x1024.jpeg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
-        <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/IMG_6260-768x1024.jpeg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
-        <figure><img loading="lazy" src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/IMG_4107-768x1024.jpeg" alt="Proyecto ejecutado por HyR Soluciones"/></figure>
+      </div>
+
+      <div class="teaser-actions reveal">
+        <a class="btn btn-dark" href="proyectos.html">Ver todos los proyectos</a>
       </div>
     </div>
   </section>
@@ -497,77 +174,7 @@
         <p class="eyebrow" style="color:rgba(255,255,255,.85);">¿Tienes un proyecto en mente?</p>
         <h2>Conversemos y te enviamos una cotización a la brevedad.</h2>
         <p>Aseo, obras menores, transporte, sanitización o jardinería: cuéntanos qué necesitas.</p>
-        <a class="btn btn-dark" href="#contacto">Contactar ahora</a>
-      </div>
-    </div>
-  </section>
-
-  <section id="contacto">
-    <div class="wrap">
-      <div class="contact-grid">
-        <div class="contact-info reveal">
-          <p class="eyebrow">Contacto</p>
-          <h2>Conversemos sobre tu proyecto</h2>
-          <p>Escríbenos, llámanos o pasa a visitarnos. Respondemos a la brevedad.</p>
-
-          <ul class="contact-list">
-            <li>
-              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-4.5 7-11a7 7 0 0 0-14 0c0 6.5 7 11 7 11z"/><circle cx="12" cy="11" r="3"/></svg></span>
-              <div>
-                <span class="label">Dirección</span>
-                <a href="https://www.google.com/maps/search/?api=1&query=General+Aldunate+719%2C+Chile" target="_blank" rel="noopener">General Aldunate 719, Oficina 1105</a>
-              </div>
-            </li>
-            <li>
-              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1.1.4 2.1.7 3.1a2 2 0 0 1-.4 2.1L8 10.4a16 16 0 0 0 6 6l1.5-1.4a2 2 0 0 1 2.1-.4c1 .3 2 .6 3.1.7a2 2 0 0 1 1.3 2.6z"/></svg></span>
-              <div>
-                <span class="label">Teléfono</span>
-                <a href="tel:+56994502086">+56 9 9450 2086</a>
-              </div>
-            </li>
-            <li>
-              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg></span>
-              <div>
-                <span class="label">Correo</span>
-                <a href="mailto:contacto@hyrsoluciones.cl">contacto@hyrsoluciones.cl</a>
-              </div>
-            </li>
-          </ul>
-
-          <div class="social-row">
-            <a href="#" aria-label="Twitter"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 5.9c-.7.3-1.5.6-2.3.7.8-.5 1.4-1.3 1.7-2.3-.8.5-1.7.8-2.6 1a4.1 4.1 0 0 0-7 3.7A11.6 11.6 0 0 1 3.4 4.6a4.1 4.1 0 0 0 1.3 5.5c-.6 0-1.3-.2-1.8-.5v.1c0 2 1.4 3.6 3.3 4a4.2 4.2 0 0 1-1.9.1 4.1 4.1 0 0 0 3.9 2.9A8.3 8.3 0 0 1 2 18.6a11.7 11.7 0 0 0 6.3 1.8c7.5 0 11.7-6.3 11.7-11.7v-.5c.8-.6 1.5-1.3 2-2.1z"/></svg><span class="soon">Próximamente</span></a>
-            <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 8.5h2V5.5h-2A3.5 3.5 0 0 0 11.5 9v2H9.5v3h2V21h3v-7h2.2l.8-3H14.5V9c0-.3.2-.5.5-.5z"/></svg><span class="soon">Próximamente</span></a>
-            <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><circle cx="17" cy="7" r="1"/></svg><span class="soon">Próximamente</span></a>
-          </div>
-
-          <div class="map-frame">
-            <iframe title="Ubicación HyR Soluciones" loading="lazy" src="https://www.google.com/maps?q=General+Aldunate+719,+Chile&output=embed"></iframe>
-          </div>
-        </div>
-
-        <div class="reveal">
-          <form class="form-card" action="mailto:contacto@hyrsoluciones.cl" method="post" enctype="text/plain">
-            <h3>Formulario de contacto</h3>
-            <p>Al enviar, se abrirá tu aplicación de correo con el mensaje listo para despachar.</p>
-            <div class="field">
-              <label for="fname">Nombre / Empresa</label>
-              <input id="fname" name="Nombre" type="text" required />
-            </div>
-            <div class="field">
-              <label for="fphone">Teléfono</label>
-              <input id="fphone" name="Telefono" type="tel" />
-            </div>
-            <div class="field">
-              <label for="femail">Email</label>
-              <input id="femail" name="Email" type="email" required />
-            </div>
-            <div class="field">
-              <label for="fmsg">Mensaje</label>
-              <textarea id="fmsg" name="Mensaje" rows="5" required></textarea>
-            </div>
-            <button class="btn btn-primary" type="submit">Enviar mensaje</button>
-          </form>
-        </div>
+        <a class="btn btn-dark" href="contacto.html">Contactar ahora</a>
       </div>
     </div>
   </section>
@@ -576,15 +183,15 @@
 <footer>
   <div class="wrap">
     <div class="footer-top">
-      <a class="brand" href="#inicio">
+      <a class="brand" href="index.html">
         <img src="https://hyrsoluciones.cl/wp-content/uploads/2022/02/rect8810.png" alt="HyR Soluciones" />
         <span>HyR Soluciones SPA</span>
       </a>
       <nav class="footer-links">
-        <a href="#nosotros">Nosotros</a>
-        <a href="#servicios">Servicios</a>
-        <a href="#proyectos">Proyectos</a>
-        <a href="#contacto">Contacto</a>
+        <a href="nosotros.html">Nosotros</a>
+        <a href="index.html#servicios">Servicios</a>
+        <a href="proyectos.html">Proyectos</a>
+        <a href="contacto.html">Contacto</a>
       </nav>
     </div>
     <div class="footer-bottom">
@@ -601,49 +208,6 @@
   <img id="lightboxImg" src="" alt="" />
 </div>
 
-<script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-
-  var navEl = document.getElementById('siteNav');
-  window.addEventListener('scroll', function(){
-    navEl.classList.toggle('scrolled', window.scrollY > 8);
-  }, { passive:true });
-
-  var toggle = document.getElementById('menuToggle');
-  var links = document.getElementById('navLinks');
-  toggle.addEventListener('click', function(){
-    var open = links.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
-  links.querySelectorAll('a').forEach(function(a){
-    a.addEventListener('click', function(){ links.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); });
-  });
-
-  try {
-    var revealEls = document.querySelectorAll('.reveal');
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.remove('reveal-pending'); io.unobserve(e.target); } });
-    }, { threshold:.15 });
-    revealEls.forEach(function(el){
-      var rect = el.getBoundingClientRect();
-      if (rect.top > window.innerHeight * 0.85) { el.classList.add('reveal-pending'); }
-      io.observe(el);
-    });
-  } catch(e) {}
-
-  var lightbox = document.getElementById('lightbox');
-  var lightboxImg = document.getElementById('lightboxImg');
-  document.querySelectorAll('.masonry figure img').forEach(function(img){
-    img.addEventListener('click', function(){
-      lightboxImg.src = img.src;
-      lightboxImg.alt = img.alt;
-      lightbox.classList.add('open');
-    });
-  });
-  function closeLightbox(){ lightbox.classList.remove('open'); lightboxImg.src=''; }
-  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
-  lightbox.addEventListener('click', function(e){ if(e.target === lightbox) closeLightbox(); });
-  window.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLightbox(); });
-</script>
+<script src="assets/main.js" defer></script>
 </body>
 </html>
