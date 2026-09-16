@@ -1,11 +1,8 @@
-name: Publicar Escala de Notas en GitHub Pages
+name: Publicar sitio en GitHub Pages
 
 on:
   push:
     branches: [main]
-    paths:
-      - 'escala-de-notas/**'
-      - '.github/workflows/pages.yml'
   workflow_dispatch:
 
 permissions:
@@ -32,10 +29,10 @@ jobs:
         with:
           enablement: true
 
-      - name: Subir la app como artefacto de Pages
+      - name: Subir el sitio como artefacto de Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: escala-de-notas
+          path: .
 
       - name: Desplegar en GitHub Pages
         id: deployment
