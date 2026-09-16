@@ -246,6 +246,20 @@
   }
   .placeholder-card b{display:block; color:var(--ink-soft); font-size:.86rem; font-weight:700; margin-bottom:4px;}
 
+  .recurso-card{
+    display:flex; align-items:center; gap:12px; text-align:left; border-radius:14px; padding:14px 16px;
+    border:1px solid var(--border); background:var(--surface); transition:.2s var(--ease);
+  }
+  .recurso-card:hover{border-color:transparent; box-shadow:var(--shadow-sm); transform:translateY(-2px);}
+  .recurso-card .r-ic{
+    width:40px; height:40px; flex:0 0 auto; border-radius:11px; display:flex; align-items:center; justify-content:center;
+    font-size:1.15rem; background:var(--grad, linear-gradient(135deg, var(--orange), var(--red)));
+  }
+  .recurso-card .r-info{min-width:0; flex:1;}
+  .recurso-card .r-info b{display:block; font-size:.88rem; font-weight:700; color:var(--ink);}
+  .recurso-card .r-info span{display:block; font-size:.76rem; color:var(--ink-faint); margin-top:2px;}
+  .recurso-card .r-go{flex:0 0 auto; font-size:.78rem; font-weight:700; color:var(--ink-soft);}
+
   /* ---------- footer ---------- */
   footer{
     position:relative; z-index:1; margin-top:40px; padding:40px 0 60px; text-align:center;
@@ -468,8 +482,12 @@
 
       <div class="cat-row">
         <div class="cat-card">
-          <div class="cat-head"><span class="ic">🎮</span><h4>Juegos interactivos</h4><span class="count">Próximamente</span></div>
-          <div class="placeholder-card"><b>Sin juegos publicados</b>Aquí aparecerán los juegos interactivos de Geometría.</div>
+          <div class="cat-head"><span class="ic">🎮</span><h4>Juegos interactivos</h4><span class="count">1 disponible</span></div>
+          <a class="recurso-card" href="juegos/geometria/angulos.html" style="--grad:linear-gradient(135deg, var(--orange), var(--red));">
+            <span class="r-ic">📐</span>
+            <span class="r-info"><b>Ángulos — Explora y Mide</b><span>Tipos, medición, triángulo y transportador interactivos</span></span>
+            <span class="r-go">Jugar →</span>
+          </a>
         </div>
         <div class="cat-card">
           <div class="cat-head"><span class="ic">📘</span><h4>Guías de aprendizaje</h4><span class="count">Próximamente</span></div>
