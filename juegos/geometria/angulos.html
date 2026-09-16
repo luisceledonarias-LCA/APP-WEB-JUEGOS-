@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ángulos — Explora y Mide</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --azul: #1B3A6B;
+    --azul-2: #274E8C;
+    --dorado: #C9A84C;
+    --verde: #27AE60;
+    --rojo: #E74C3C;
+    --naranja: #E8792E;
+    --fondo: #F0F4F8;
+    --blanco: #FFFFFF;
+    --gris-linea: #C7D0DD;
+    --sombra: 0 4px 15px rgba(0,0,0,0.12);
+    --radio: 12px;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--fondo); color: #1F2733; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  @media (prefers-reduced-motion: reduce) { *{ animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+  header { background: linear-gradient(135deg, var(--azul), var(--azul-2)); color: var(--blanco); padding: 18px 20px; text-align: center; }
+  header h1 { font-size: 1.65rem; letter-spacing: -.01em; }
+  header .subtitulo { font-size: .92rem; opacity: .85; margin-top: 4px; }
+  header .badge { display: inline-block; background: var(--dorado); color: var(--azul); font-weight: 700; padding: 4px 14px; border-radius: 20px; font-size: .85rem; margin-top: 8px; }
+
+  nav.menu-tabs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 16px 12px; background: var(--blanco); border-bottom: 1px solid var(--gris-linea); position: sticky; top: 0; z-index: 20; }
+  .tab { display: flex; align-items: center; gap: 7px; padding: 10px 16px; border-radius: 999px; border: 2px solid var(--gris-linea); background: var(--blanco); color: var(--azul); font-size: .88rem; font-weight: 700; cursor: pointer; transition: .18s; }
+  .tab .num { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:var(--fondo); font-size:.72rem; }
+  .tab:hover { border-color: var(--azul-2); }
+  .tab.activa { background: var(--dorado); border-color: var(--dorado); color: var(--azul); }
+  .tab.activa .num { background: var(--azul); color: var(--dorado); }
+
+  main { max-width: 920px; margin: 0 auto; padding: 24px 16px 60px; }
+  .seccion { display: none; }
+  .seccion.activa { display: block; animation: fadeIn .35s ease; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  .card { background: var(--blanco); border-radius: var(--radio); padding: 26px; box-shadow: var(--sombra); margin-bottom: 18px; }
+  .card h2 { color: var(--azul); font-size: 1.35rem; margin-bottom: 6px; }
+  .card .kicker { color: var(--naranja); font-weight: 700; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; display:block; }
+  .card p { line-height: 1.65; font-size: 1.02rem; color: #33404F; }
+  .card p + p { margin-top: 12px; }
+  .card ul { margin: 12px 0 0 20px; line-height: 1.8; }
+  .card svg { display:block; margin: 18px auto 4px; max-width: 100%; height: auto; }
+
+  .def-box { background: #EEF2F9; border-left: 5px solid var(--azul); border-radius: 8px; padding: 16px 18px; margin-top: 16px; }
+  .def-box strong { color: var(--azul); }
+
+  .tipos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 8px; }
+  .tipo-card { border: 2px solid var(--gris-linea); border-radius: var(--radio); padding: 16px; text-align: center; transition: .18s; }
+  .tipo-card:hover { border-color: var(--dorado); transform: translateY(-2px); }
+  .tipo-card h3 { color: var(--azul); font-size: 1.05rem; margin-bottom: 2px; }
+  .tipo-card .rango { color: var(--naranja); font-weight: 700; font-size: .88rem; margin-bottom: 8px; display:block; }
+  .tipo-card p { font-size: .88rem; text-align: left; color: #4A5568; }
+
+  .vf-item { border: 2px solid var(--gris-linea); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+  .vf-item .enunciado { font-weight: 600; font-size: 1rem; margin-bottom: 10px; }
+  .vf-botones { display: flex; gap: 10px; }
+  .vf-btn { flex:1; padding: 9px 0; border-radius: 8px; border: 2px solid var(--gris-linea); background: var(--blanco); font-weight: 700; cursor: pointer; font-size: .95rem; transition: .15s; }
+  .vf-btn:hover { border-color: var(--azul); }
+  .vf-btn.correcta { background:#E8F8F0; border-color:var(--verde); color:#1A6B3A; }
+  .vf-btn.incorrecta { background:#FDEEEE; border-color:var(--rojo); color:#922B1A; }
+  .vf-feedback { margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: .9rem; display: none; }
+  .vf-feedback.correcto { display:block; background:#E8F8F0; color:#1A6B3A; border-left:4px solid var(--verde); }
+  .vf-feedback.incorrecto { display:block; background:#FDEEEE; color:#922B1A; border-left:4px solid var(--rojo); }
+  .vf-score { text-align:center; font-weight:700; color:var(--azul); margin-top: 4px; }
+
+  .instr { background:#FFF6E6; border-left: 5px solid var(--dorado); border-radius: 8px; padding: 12px 16px; font-size: .92rem; margin-bottom: 16px; color:#5A4A1E; }
+
+  .lienzo-wrap { display:flex; justify-content:center; }
+  svg.interactivo { touch-action: none; user-select: none; }
+  .handle { cursor: grab; }
+  .handle:active { cursor: grabbing; }
+
+  .resumen-fila { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top: 14px; }
+  .chip-angulo { background: var(--fondo); border:2px solid var(--gris-linea); border-radius: 10px; padding: 8px 16px; text-align:center; min-width:92px; }
+  .chip-angulo .val { font-size:1.25rem; font-weight:800; color:var(--azul); font-variant-numeric: tabular-nums; }
+  .chip-angulo .lbl { font-size:.72rem; color:#667; text-transform:uppercase; letter-spacing:.04em; }
+  .chip-suma { background: var(--verde); color:#fff; border-radius: 10px; padding: 8px 18px; text-align:center; }
+  .chip-suma .val { font-size:1.25rem; font-weight:800; font-variant-numeric: tabular-nums; }
+  .chip-suma .lbl { font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; opacity:.9; }
+
+  .retos-lista { display:grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-top: 16px; }
+  .reto { border:2px solid var(--gris-linea); border-radius: 10px; padding: 10px 12px; font-size: .88rem; display:flex; align-items:center; gap:8px; transition:.2s; }
+  .reto .check { font-size: 1.1rem; }
+  .reto.logrado { background:#E8F8F0; border-color: var(--verde); color:#1A6B3A; font-weight:600; }
+
+  .btn { display:inline-block; padding: 11px 24px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; transition:transform .15s, opacity .15s; }
+  .btn:hover { transform: translateY(-2px); opacity:.92; }
+  .btn-primario { background: var(--azul); color:#fff; }
+  .btn-acento { background: var(--dorado); color: var(--azul); }
+  .acciones { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px; }
+
+  .reto-panel { background:#EEF2F9; border-radius: var(--radio); padding: 18px 20px; margin-top: 18px; }
+  .reto-panel .cabecera { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom: 10px;}
+  .reto-panel .titulo { font-weight:800; color:var(--azul); font-size:1.05rem; }
+  .reto-panel .contador { font-size:.85rem; color:#556; font-weight:700; }
+  .reto-objetivo { text-align:center; font-size:1.15rem; margin: 6px 0 14px; }
+  .reto-objetivo b { color: var(--naranja); font-size: 1.4rem; }
+  .reto-feedback { text-align:center; padding: 10px; border-radius:8px; font-weight:600; margin-top: 12px; display:none; }
+  .reto-feedback.correcto { display:block; background:#E8F8F0; color:#1A6B3A; }
+  .reto-feedback.incorrecto { display:block; background:#FDEEEE; color:#922B1A; }
+
+  .checklist-retos { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:14px; }
+  .punto-reto { width:30px; height:30px; border-radius:50%; background:var(--blanco); border:2px solid var(--gris-linea); display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:800; color:#889; }
+  .punto-reto.actual { border-color: var(--dorado); color:var(--azul); box-shadow: 0 0 0 3px rgba(201,168,76,.3); }
+  .punto-reto.hecho { background: var(--verde); border-color: var(--verde); color:#fff; }
+
+  .final-panel { text-align:center; padding: 20px; }
+  .puntaje-grande { font-size: 3.2rem; font-weight:800; color: var(--azul); }
+  .clasificacion { font-size: 1.4rem; margin: 6px 0 4px; }
+
+  .confetti-container { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index: 999; overflow:hidden; }
+  .confetti-pieza { position:absolute; width:9px; height:9px; border-radius:2px; animation: caer 2.4s ease-in forwards; }
+  @keyframes caer { 0%{opacity:1; transform:translateY(-20px) rotate(0deg);} 100%{opacity:0; transform:translateY(100vh) rotate(720deg);} }
+
+  footer { text-align:center; padding: 22px; color:#8A94A3; font-size:.8rem; }
+
+  @media (max-width: 480px) {
+    header h1 { font-size: 1.25rem; }
+    .card { padding: 18px; }
+    .tab { font-size: .8rem; padding: 8px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📐 Ángulos — Explora y Mide</h1>
+  <div class="subtitulo">Colegio Nuestra Señora del Carmen · 5° a 7° Básico</div>
+  <span class="badge">Geometría · Ángulos</span>
+</header>
+
+<nav class="menu-tabs" id="menuTabs">
+  <button class="tab activa" data-seccion="s1"><span class="num">1</span> Qué son los ángulos</button>
+  <button class="tab" data-seccion="s2"><span class="num">2</span> Tipos de ángulos</button>
+  <button class="tab" data-seccion="s3"><span class="num">3</span> Medición de ángulos</button>
+  <button class="tab" data-seccion="s4"><span class="num">4</span> Ángulos en el triángulo</button>
+  <button class="tab" data-seccion="s5"><span class="num">5</span> Ángulos en el transportador</button>
+</nav>
+
+<main>
+
+  <!-- ========== SECCIÓN 1 ========== -->
+  <section class="seccion activa" id="s1">
+    <div class="card">
+      <span class="kicker">Concepto</span>
+      <h2>¿Qué son los ángulos?</h2>
+      <p>Un <strong>ángulo</strong> es la región del plano comprendida entre dos rayos (semirrectas) que comparten un mismo punto de origen, llamado <strong>vértice</strong>.</p>
+
+      <svg viewBox="0 0 320 220" class="diagrama-estatico" aria-label="Diagrama de un ángulo con vértice, lados y abertura">
+        <line x1="40" y1="190" x2="280" y2="190" stroke="#1B3A6B" stroke-width="3.5"/>
+        <line x1="40" y1="190" x2="150" y2="50" stroke="#1B3A6B" stroke-width="3.5"/>
+        <path d="M 90 190 A 50 50 0 0 0 66.6 152.6" fill="none" stroke="#E8792E" stroke-width="3"/>
+        <circle cx="40" cy="190" r="5" fill="#1B3A6B"/>
+        <text x="18" y="205" font-size="14" font-weight="700" fill="#1B3A6B">A (vértice)</text>
+        <text x="284" y="195" font-size="14" font-weight="700" fill="#1B3A6B">B</text>
+        <text x="148" y="42" font-size="14" font-weight="700" fill="#1B3A6B">C</text>
+        <text x="98" y="172" font-size="14" font-weight="800" fill="#E8792E">∠BAC</text>
+      </svg>
+
+      <div class="def-box">
+        <strong>Elementos de un ángulo</strong>
+        <ul>
+          <li><strong>Vértice:</strong> punto de origen común de los dos rayos (en el diagrama, el punto A).</li>
+          <li><strong>Lados:</strong> los dos rayos que forman el ángulo (los segmentos AB y AC).</li>
+          <li><strong>Abertura o amplitud:</strong> la separación entre los lados, que se mide en grados (°).</li>
+        </ul>
+      </div>
+
+      <div class="def-box" style="border-left-color:var(--naranja); background:#FFF3EA;">
+        <strong>Notación</strong>
+        <p style="margin-top:6px">Un ángulo se anota con el símbolo <strong>∠</strong> seguido de tres letras — por ejemplo, <strong>∠BAC</strong> — donde la <strong>letra del medio siempre corresponde al vértice</strong>. También puede anotarse con una letra griega, como <strong>∠α</strong>.</p>
+      </div>
+
+      <p style="margin-top:16px"><strong>Importante:</strong> la medida de un ángulo depende únicamente de la abertura entre sus lados, <em>no</em> de la longitud con que estos se dibujen.</p>
+    </div>
+  </section>
+
+  <!-- ========== SECCIÓN 2 ========== -->
+  <section class="seccion" id="s2">
+    <div class="card">
+      <span class="kicker">Clasificación</span>
+      <h2>Tipos de ángulos</h2>
+      <p>Los ángulos se clasifican según su medida en grados sexagesimales (°).</p>
+      <div class="tipos-grid" id="tiposGrid"></div>
+    </div>
+  </section>
+
+  <!-- ========== SECCIÓN 3 ========== -->
+  <section class="seccion" id="s3">
+    <div class="card">
+      <span class="kicker">Instrumento y unidad</span>
+      <h2>Medición de ángulos</h2>
+      <p>La unidad de medida de los ángulos es el <strong>grado sexagesimal (°)</strong>. Un giro completo alrededor de un punto equivale a <strong>360°</strong>; por lo tanto, un grado corresponde a 1/360 de un giro completo.</p>
+      <p>El instrumento utilizado para medir la abertura de un ángulo es el <strong>transportador</strong>. Para medir correctamente:</p>
+      <ul>
+        <li>Se hace coincidir el <strong>vértice</strong> del ángulo con el centro del transportador.</li>
+        <li>Se alinea uno de los <strong>lados</strong> del ángulo con la línea de 0°.</li>
+        <li>Se lee el valor donde el segundo lado cruza la escala graduada.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <span class="kicker">Práctica rápida</span>
+      <h2>Verdadero o falso</h2>
+      <div id="vfLista"></div>
+      <div class="vf-score" id="vfScore">Aciertos: 0 / 0</div>
+      <div class="acciones"><button class="btn btn-primario" id="vfReiniciar">🔄 Reiniciar práctica</button></div>
+    </div>
+  </section>
+
+  <!-- ========== SECCIÓN 4 ========== -->
+  <section class="seccion" id="s4">
+    <div class="card">
+      <span class="kicker">Exploración interactiva</span>
+      <h2>Ángulos interiores de un triángulo</h2>
+      <div class="instr">👆 Arrastra cualquiera de los tres vértices (A, B o C) para cambiar la forma del triángulo y observa cómo se recalculan sus tres ángulos interiores.</div>
+
+      <div class="lienzo-wrap">
+        <svg viewBox="0 0 400 320" width="400" height="320" class="interactivo" id="svgTriangulo" aria-label="Triángulo interactivo para medir ángulos interiores"></svg>
+      </div>
+
+      <div class="resumen-fila" id="resumenAngulos"></div>
+
+      <p style="text-align:center; margin-top:14px; color:#556;">La suma de los ángulos interiores de <strong>cualquier</strong> triángulo es siempre 180°. Comprueba que esto se cumple sin importar la forma que le des.</p>
+
+      <div class="reto-panel">
+        <div class="cabecera"><span class="titulo">🏁 Retos de construcción</span></div>
+        <p style="font-size:.9rem; color:#556; margin-bottom:4px;">Modifica el triángulo hasta lograr cada uno de estos retos. Quedarán marcados automáticamente.</p>
+        <div class="retos-lista" id="retosTriangulo"></div>
+      </div>
+
+      <div class="acciones"><button class="btn btn-primario" id="reiniciarTriangulo">🔄 Reiniciar triángulo</button></div>
+    </div>
+  </section>
+
+  <!-- ========== SECCIÓN 5 ========== -->
+  <section class="seccion" id="s5">
+    <div class="card">
+      <span class="kicker">Exploración interactiva</span>
+      <h2>Ángulos en el transportador</h2>
+      <div class="instr">👆 Arrastra el brazo <strong>naranjo</strong> para abrir o cerrar el ángulo. El lado dorado permanece fijo en 0°. Lee la medida directamente en la escala.</div>
+
+      <div class="lienzo-wrap">
+        <svg viewBox="0 0 420 270" width="420" height="270" class="interactivo" id="svgTransportador" aria-label="Transportador interactivo para medir ángulos"></svg>
+      </div>
+
+      <div class="resumen-fila">
+        <div class="chip-angulo" style="min-width:160px;">
+          <div class="val" id="lecturaActual">0°</div>
+          <div class="lbl">Ángulo actual</div>
+        </div>
+      </div>
+
+      <div class="reto-panel">
+        <div class="cabecera">
+          <span class="titulo">🎯 Retos de medición</span>
+          <span class="contador" id="retoContador">Reto 1 de 8</span>
+        </div>
+        <div class="reto-objetivo">Forma un ángulo de <b id="retoObjetivoValor">30°</b></div>
+        <div class="acciones" style="margin-top:0;">
+          <button class="btn btn-acento" id="comprobarReto">✅ Comprobar</button>
+        </div>
+        <div class="reto-feedback" id="retoFeedback"></div>
+        <div class="checklist-retos" id="retosPuntos"></div>
+      </div>
+
+      <div class="card final-panel" id="panelFinalTransportador" style="display:none; margin-top:16px;">
+        <div class="puntaje-grande" id="puntajeFinalT"></div>
+        <div class="clasificacion" id="clasificacionT"></div>
+        <p id="mensajeFinalT" style="color:#555; margin:8px 0 18px;"></p>
+        <button class="btn btn-primario" id="reiniciarRetosT">🔄 Reiniciar retos</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="confetti-container" id="confetti"></div>
+<footer>Profesor: Luis Celedón A. &nbsp;|&nbsp; RBD 5678-2 &nbsp;|&nbsp; 2026</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ NAVEGACIÓN ENTRE SECCIONES ============ */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  var secciones = Array.prototype.slice.call(document.querySelectorAll('.seccion'));
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      tabs.forEach(function(t){ t.classList.remove('activa'); });
+      secciones.forEach(function(s){ s.classList.remove('activa'); });
+      tab.classList.add('activa');
+      document.getElementById(tab.dataset.seccion).classList.add('activa');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  /* ============ UTILIDADES GEOMÉTRICAS ============ */
+  function polarToCartesian(cx, cy, r, angleDeg){
+    var a = angleDeg * Math.PI / 180;
+    return { x: cx + r * Math.cos(a), y: cy - r * Math.sin(a) };
+  }
+  function norm360(a){ return ((a % 360) + 360) % 360; }
+
+  // Arco menor entre dos ángulos absolutos (0-360, convención matemática estándar)
+  function arcoEntreAngulos(cx, cy, r, a1, a2){
+    var ccw = norm360(a2 - a1);
+    var sweep = ccw <= 180 ? 0 : 1;
+    var p1 = polarToCartesian(cx, cy, r, a1);
+    var p2 = polarToCartesian(cx, cy, r, a2);
+    return 'M ' + p1.x.toFixed(2) + ' ' + p1.y.toFixed(2) + ' A ' + r + ' ' + r + ' 0 0 ' + sweep + ' ' + p2.x.toFixed(2) + ' ' + p2.y.toFixed(2);
+  }
+  function diferenciaMinima(a1, a2){
+    var d = norm360(a2 - a1);
+    return d <= 180 ? d : 360 - d;
+  }
+  function svgPoint(svg, evt){
+    var pt = svg.createSVGPoint();
+    pt.x = evt.clientX; pt.y = evt.clientY;
+    var ctm = svg.getScreenCTM();
+    return pt.matrixTransform(ctm.inverse());
+  }
+  function svgNS(tag, attrs){
+    var el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (var k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+
+  function iconoAngulo(theta, colorArco){
+    var cx = 20, cy = 90, r1 = 70, rArc = 26;
+    var svg = '<svg viewBox="0 0 140 110" width="120" height="95">';
+    if (theta >= 360){
+      // Ícono especial: giro completo
+      svg += '<circle cx="70" cy="55" r="34" fill="none" stroke="#1B3A6B" stroke-width="4"/>';
+      svg += '<path d="M 70 21 A 34 34 0 1 1 45 30" fill="none" stroke="#E8792E" stroke-width="4" marker-end="url(#flecha)"/>';
+      svg += '<defs><marker id="flecha" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#E8792E"/></marker></defs>';
+      svg += '</svg>';
+      return svg;
+    }
+    var p2 = polarToCartesian(cx, cy, r1, theta);
+    var arc = arcoEntreAngulos(cx, cy, rArc, 0, theta);
+    svg += '<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+r1)+'" y2="'+cy+'" stroke="#1B3A6B" stroke-width="4"/>';
+    svg += '<line x1="'+cx+'" y1="'+cy+'" x2="'+p2.x.toFixed(1)+'" y2="'+p2.y.toFixed(1)+'" stroke="#1B3A6B" stroke-width="4"/>';
+    svg += '<path d="'+arc+'" fill="none" stroke="'+colorArco+'" stroke-width="3.5"/>';
+    svg += '<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#1B3A6B"/>';
+    svg += '</svg>';
+    return svg;
+  }
+
+  /* ============ SECCIÓN 2: TIPOS DE ÁNGULOS ============ */
+  var TIPOS = [
+    { nombre:'Agudo', rango:'0° &lt; θ &lt; 90°', theta:55, ej:'Ejemplo: el ángulo entre las manecillas de un reloj marcando las 2:00 aproximadamente.' },
+    { nombre:'Recto', rango:'θ = 90°', theta:90, ej:'Ejemplo: el ángulo formado por dos lados consecutivos de una hoja de papel.' },
+    { nombre:'Obtuso', rango:'90° &lt; θ &lt; 180°', theta:130, ej:'Ejemplo: el ángulo de apertura del respaldo de una silla reclinada.' },
+    { nombre:'Llano', rango:'θ = 180°', theta:180, ej:'Sus lados forman una línea recta. Equivale a medio giro.' },
+    { nombre:'Completo', rango:'θ = 360°', theta:360, ej:'Corresponde a un giro completo alrededor del vértice.' }
+  ];
+  var tiposGrid = document.getElementById('tiposGrid');
+  TIPOS.forEach(function(t){
+    var div = document.createElement('div');
+    div.className = 'tipo-card';
+    div.innerHTML = iconoAngulo(t.theta, '#E8792E') +
+      '<h3>Ángulo ' + t.nombre + '</h3>' +
+      '<span class="rango">' + t.rango + '</span>' +
+      '<p>' + t.ej + '</p>';
+    tiposGrid.appendChild(div);
+  });
+
+  /* ============ SECCIÓN 3: VERDADERO/FALSO ============ */
+  var VF = [
+    { enunciado:'Un ángulo recto mide exactamente 90°.', r:true, feedback:'Correcto. El ángulo recto mide siempre 90°, ni más ni menos.' },
+    { enunciado:'Un ángulo obtuso puede medir 200°.', r:false, feedback:'Falso. El ángulo obtuso mide entre 90° y 180°. Un ángulo de 200° es mayor que un ángulo llano.' },
+    { enunciado:'El instrumento utilizado para medir la abertura de un ángulo se llama transportador.', r:true, feedback:'Correcto. El transportador permite leer la medida de un ángulo en grados.' },
+    { enunciado:'Un giro completo equivale a 180°.', r:false, feedback:'Falso. Un giro completo equivale a 360°. 180° corresponde a un ángulo llano (medio giro).' },
+    { enunciado:'Para medir un ángulo con el transportador, se debe hacer coincidir el vértice del ángulo con el centro del instrumento.', r:true, feedback:'Correcto. Además, uno de los lados debe alinearse con la línea de 0°.' },
+    { enunciado:'El ángulo llano mide 180° y sus lados forman una línea recta.', r:true, feedback:'Correcto. El ángulo llano corresponde a medio giro completo.' }
+  ];
+  var vfLista = document.getElementById('vfLista');
+  var vfScoreEl = document.getElementById('vfScore');
+  var vfAciertos = 0, vfRespondidas = 0;
+
+  function renderVF(){
+    vfLista.innerHTML = '';
+    vfAciertos = 0; vfRespondidas = 0;
+    VF.forEach(function(item, i){
+      var div = document.createElement('div');
+      div.className = 'vf-item';
+      div.innerHTML =
+        '<div class="enunciado">' + (i+1) + '. ' + item.enunciado + '</div>' +
+        '<div class="vf-botones">' +
+          '<button class="vf-btn" data-val="true">Verdadero</button>' +
+          '<button class="vf-btn" data-val="false">Falso</button>' +
+        '</div>' +
+        '<div class="vf-feedback"></div>';
+      var botones = div.querySelectorAll('.vf-btn');
+      botones.forEach(function(btn){
+        btn.addEventListener('click', function(){
+          if (div.dataset.resuelto) return;
+          div.dataset.resuelto = '1';
+          var eleccion = btn.dataset.val === 'true';
+          var acierto = eleccion === item.r;
+          botones.forEach(function(b){
+            var esCorrecta = (b.dataset.val === 'true') === item.r;
+            b.classList.add(esCorrecta ? 'correcta' : (b === btn ? 'incorrecta' : ''));
+          });
+          var fb = div.querySelector('.vf-feedback');
+          fb.textContent = (acierto ? '✔ ' : '✘ ') + item.feedback;
+          fb.className = 'vf-feedback ' + (acierto ? 'correcto' : 'incorrecto');
+          vfRespondidas++;
+          if (acierto) vfAciertos++;
+          vfScoreEl.textContent = 'Aciertos: ' + vfAciertos + ' / ' + vfRespondidas + ' respondidas (' + VF.length + ' en total)';
+        });
+      });
+      vfLista.appendChild(div);
+    });
+    vfScoreEl.textContent = 'Aciertos: 0 / 0 respondidas (' + VF.length + ' en total)';
+  }
+  renderVF();
+  document.getElementById('vfReiniciar').addEventListener('click', renderVF);
+
+  /* ============ SECCIÓN 4: TRIÁNGULO INTERACTIVO ============ */
+  var svgTri = document.getElementById('svgTriangulo');
+  var VB = { x0:20, x1:380, y0:24, y1:300 };
+  var triangulo = {
+    A: { x:200, y:60 },
+    B: { x:80,  y:260 },
+    C: { x:320, y:260 }
+  };
+  var resumenAngulos = document.getElementById('resumenAngulos');
+  var retosTriDiv = document.getElementById('retosTriangulo');
+  var RETOS_TRI = [
+    { id:'recto', nombre:'△ Rectángulo', desc:'un ángulo ≈ 90°' },
+    { id:'obtuso', nombre:'△ Obtusángulo', desc:'un ángulo > 90°' },
+    { id:'acutangulo', nombre:'△ Acutángulo', desc:'los tres ángulos < 90°' },
+    { id:'isosceles', nombre:'△ Isósceles', desc:'dos ángulos iguales' }
+  ];
+  var retosTriLogrados = {};
+
+  function anguloEntreVertices(V, P1, P2){
+    var a1 = Math.atan2(-(P1.y - V.y), P1.x - V.x) * 180 / Math.PI;
+    var a2 = Math.atan2(-(P2.y - V.y), P2.x - V.x) * 180 / Math.PI;
+    return { a1: norm360(a1), a2: norm360(a2), medida: diferenciaMinima(a1, a2) };
+  }
+
+  function dibujarTriangulo(){
+    var A = triangulo.A, B = triangulo.B, C = triangulo.C;
+    var eA = anguloEntreVertices(A, B, C);
+    var eB = anguloEntreVertices(B, A, C);
+    var eC = anguloEntreVertices(C, A, B);
+
+    var angA = Math.round(eA.medida * 10) / 10;
+    var angB = Math.round(eB.medida * 10) / 10;
+    var angC = Math.round((180 - angA - angB) * 10) / 10;
+
+    var arcR = 30;
+    svgTri.innerHTML =
+      '<polygon points="' + A.x+','+A.y+' '+B.x+','+B.y+' '+C.x+','+C.y + '" fill="rgba(27,58,107,0.08)" stroke="#1B3A6B" stroke-width="3"/>' +
+      '<path d="' + arcoEntreAngulos(A.x, A.y, arcR, eA.a1, eA.a2) + '" fill="none" stroke="#E8792E" stroke-width="3"/>' +
+      '<path d="' + arcoEntreAngulos(B.x, B.y, arcR, eB.a1, eB.a2) + '" fill="none" stroke="#E8792E" stroke-width="3"/>' +
+      '<path d="' + arcoEntreAngulos(C.x, C.y, arcR, eC.a1, eC.a2) + '" fill="none" stroke="#E8792E" stroke-width="3"/>';
+
+    function etiqueta(V, texto, dx, dy){
+      return '<text x="' + (V.x+dx) + '" y="' + (V.y+dy) + '" font-size="15" font-weight="800" fill="#1B3A6B" text-anchor="middle">' + texto + '</text>';
+    }
+    svgTri.innerHTML +=
+      etiqueta(A, 'A', 0, A.y < 60 ? 22 : -14) +
+      etiqueta(B, 'B', B.x < 60 ? 18 : -18, 20) +
+      etiqueta(C, 'C', C.x > 340 ? -18 : 18, 20) +
+      etiqueta(A, angA.toFixed(1)+'°', 0, A.y < 90 ? 40 : -30) +
+      etiqueta(B, angB.toFixed(1)+'°', B.x < 90 ? 34 : -34, -6) +
+      etiqueta(C, angC.toFixed(1)+'°', C.x > 330 ? -34 : 34, -6);
+
+    ['A','B','C'].forEach(function(id){
+      var p = triangulo[id];
+      var h = svgNS('circle', { cx:p.x, cy:p.y, r:15, fill:'#C9A84C', stroke:'#1B3A6B', 'stroke-width':3, class:'handle' });
+      h.dataset.vertice = id;
+      svgTri.appendChild(h);
+      h.addEventListener('pointerdown', iniciarArrastreVertice);
+    });
+
+    resumenAngulos.innerHTML =
+      '<div class="chip-angulo"><div class="val">' + angA.toFixed(1) + '°</div><div class="lbl">Ángulo A</div></div>' +
+      '<div class="chip-angulo"><div class="val">' + angB.toFixed(1) + '°</div><div class="lbl">Ángulo B</div></div>' +
+      '<div class="chip-angulo"><div class="val">' + angC.toFixed(1) + '°</div><div class="lbl">Ángulo C</div></div>' +
+      '<div class="chip-suma"><div class="val">' + (angA+angB+angC).toFixed(1) + '°</div><div class="lbl">✓ Suma interior</div></div>';
+
+    var angulos = [angA, angB, angC];
+    var max = Math.max.apply(null, angulos);
+    if (Math.abs(max - 90) <= 2) retosTriLogrados.recto = true;
+    if (max > 92) retosTriLogrados.obtuso = true;
+    if (angulos.every(function(a){ return a < 88; })) retosTriLogrados.acutangulo = true;
+    var parIgual = Math.abs(angA-angB) <= 2 || Math.abs(angB-angC) <= 2 || Math.abs(angA-angC) <= 2;
+    if (parIgual) retosTriLogrados.isosceles = true;
+    renderRetosTriangulo();
+  }
+
+  function renderRetosTriangulo(){
+    retosTriDiv.innerHTML = '';
+    RETOS_TRI.forEach(function(r){
+      var logrado = !!retosTriLogrados[r.id];
+      var div = document.createElement('div');
+      div.className = 'reto' + (logrado ? ' logrado' : '');
+      div.innerHTML = '<span class="check">' + (logrado ? '✅' : '⬜') + '</span> <span>' + r.nombre + ' <small>(' + r.desc + ')</small></span>';
+      retosTriDiv.appendChild(div);
+    });
+  }
+
+  var arrastreActivo = null;
+  function iniciarArrastreVertice(evt){
+    arrastreActivo = evt.currentTarget.dataset.vertice;
+    evt.currentTarget.setPointerCapture(evt.pointerId);
+    evt.preventDefault();
+  }
+  svgTri.addEventListener('pointermove', function(evt){
+    if (!arrastreActivo) return;
+    var p = svgPoint(svgTri, evt);
+    var nx = Math.min(VB.x1, Math.max(VB.x0, p.x));
+    var ny = Math.min(VB.y1, Math.max(VB.y0, p.y));
+    var anterior = triangulo[arrastreActivo];
+    var previo = { x: anterior.x, y: anterior.y };
+    triangulo[arrastreActivo] = { x: nx, y: ny };
+    var A = triangulo.A, B = triangulo.B, C = triangulo.C;
+    var area = Math.abs((B.x-A.x)*(C.y-A.y) - (C.x-A.x)*(B.y-A.y)) / 2;
+    if (area < 900) { triangulo[arrastreActivo] = previo; return; }
+    dibujarTriangulo();
+  });
+  window.addEventListener('pointerup', function(){ arrastreActivo = null; });
+
+  document.getElementById('reiniciarTriangulo').addEventListener('click', function(){
+    triangulo = { A:{x:200,y:60}, B:{x:80,y:260}, C:{x:320,y:260} };
+    dibujarTriangulo();
+  });
+
+  dibujarTriangulo();
+
+  /* ============ SECCIÓN 5: TRANSPORTADOR INTERACTIVO ============ */
+  var svgT = document.getElementById('svgTransportador');
+  var O = { x:210, y:230 };
+  var R = 165;
+  var anguloActual = 60;
+
+  function dibujarTransportador(){
+    var partes = [];
+    // Cuerpo semicircular
+    var p0 = polarToCartesian(O.x, O.y, R, 0);
+    var p180 = polarToCartesian(O.x, O.y, R, 180);
+    partes.push('<path d="M '+p0.x+' '+p0.y+' A '+R+' '+R+' 0 0 0 '+p180.x+' '+p180.y+' Z" fill="#FFFFFF" stroke="#8FA0BC" stroke-width="2"/>');
+    // Base plana (regla)
+    partes.push('<line x1="'+(O.x-R-14)+'" y1="'+O.y+'" x2="'+(O.x+R+14)+'" y2="'+O.y+'" stroke="#8FA0BC" stroke-width="2"/>');
+
+    // Marcas de grado
+    for (var d = 0; d <= 180; d += 5){
+      var mayor = d % 10 === 0;
+      var largo = mayor ? 14 : 7;
+      var pIn = polarToCartesian(O.x, O.y, R - largo, d);
+      var pOut = polarToCartesian(O.x, O.y, R, d);
+      partes.push('<line x1="'+pIn.x.toFixed(1)+'" y1="'+pIn.y.toFixed(1)+'" x2="'+pOut.x.toFixed(1)+'" y2="'+pOut.y.toFixed(1)+'" stroke="#556" stroke-width="'+(mayor?1.6:1)+'"/>');
+      if (mayor){
+        var pLbl = polarToCartesian(O.x, O.y, R - 28, d);
+        partes.push('<text x="'+pLbl.x.toFixed(1)+'" y="'+(pLbl.y.toFixed(1))+'" font-size="11" font-weight="700" fill="#33404F" text-anchor="middle" dominant-baseline="middle">'+d+'</text>');
+      }
+    }
+
+    // Arco de medición del ángulo actual
+    partes.push('<path d="' + arcoEntreAngulos(O.x, O.y, 46, 0, anguloActual) + '" fill="none" stroke="#E8792E" stroke-width="4"/>');
+    var pLbl2 = polarToCartesian(O.x, O.y, 64, anguloActual / 2);
+    partes.push('<text x="'+pLbl2.x.toFixed(1)+'" y="'+pLbl2.y.toFixed(1)+'" font-size="15" font-weight="800" fill="#E8792E" text-anchor="middle">'+Math.round(anguloActual)+'°</text>');
+
+    // Lado fijo (dorado)
+    var pFijo = polarToCartesian(O.x, O.y, 150, 0);
+    partes.push('<line x1="'+O.x+'" y1="'+O.y+'" x2="'+pFijo.x+'" y2="'+pFijo.y+'" stroke="#C9A84C" stroke-width="4"/>');
+
+    // Brazo móvil (naranjo) + manija arrastrable
+    var pArm = polarToCartesian(O.x, O.y, 150, anguloActual);
+    partes.push('<line x1="'+O.x+'" y1="'+O.y+'" x2="'+pArm.x.toFixed(1)+'" y2="'+pArm.y.toFixed(1)+'" stroke="#E8792E" stroke-width="5"/>');
+
+    // Centro
+    partes.push('<circle cx="'+O.x+'" cy="'+O.y+'" r="5" fill="#1B3A6B"/>');
+
+    svgT.innerHTML = partes.join('');
+
+    var manija = svgNS('circle', { cx:pArm.x.toFixed(1), cy:pArm.y.toFixed(1), r:16, fill:'#E8792E', stroke:'#1B3A6B', 'stroke-width':3, class:'handle' });
+    svgT.appendChild(manija);
+    manija.addEventListener('pointerdown', function(evt){
+      arrastrandoBrazo = true;
+      manija.setPointerCapture(evt.pointerId);
+      evt.preventDefault();
+    });
+
+    document.getElementById('lecturaActual').textContent = Math.round(anguloActual) + '°';
+  }
+
+  var arrastrandoBrazo = false;
+  svgT.addEventListener('pointermove', function(evt){
+    if (!arrastrandoBrazo) return;
+    var p = svgPoint(svgT, evt);
+    var dx = p.x - O.x, dy = p.y - O.y;
+    var theta;
+    if (O.y - p.y >= 0){
+      theta = Math.atan2(O.y - p.y, dx) * 180 / Math.PI;
+    } else {
+      theta = dx >= 0 ? 0 : 180;
+    }
+    anguloActual = Math.max(0, Math.min(180, theta));
+    dibujarTransportador();
+  });
+  window.addEventListener('pointerup', function(){ arrastrandoBrazo = false; });
+
+  dibujarTransportador();
+
+  /* ---- Retos del transportador ---- */
+  var RETOS_T = [30, 45, 90, 120, 15, 150, 75, 165];
+  var retoIndex = 0, retoScore = 0;
+  var retoContador = document.getElementById('retoContador');
+  var retoObjetivoValor = document.getElementById('retoObjetivoValor');
+  var retoFeedback = document.getElementById('retoFeedback');
+  var retosPuntos = document.getElementById('retosPuntos');
+  var retosEstado = RETOS_T.map(function(){ return null; }); // null=pendiente, true=logrado
+
+  function renderRetoActual(){
+    retoContador.textContent = 'Reto ' + (retoIndex+1) + ' de ' + RETOS_T.length;
+    retoObjetivoValor.textContent = RETOS_T[retoIndex] + '°';
+    retoFeedback.className = 'reto-feedback';
+    retoFeedback.textContent = '';
+    retosPuntos.innerHTML = '';
+    RETOS_T.forEach(function(v, i){
+      var span = document.createElement('span');
+      span.className = 'punto-reto' + (i === retoIndex ? ' actual' : '') + (retosEstado[i] ? ' hecho' : '');
+      span.textContent = retosEstado[i] ? '✓' : (i+1);
+      retosPuntos.appendChild(span);
+    });
+  }
+  renderRetoActual();
+
+  document.getElementById('comprobarReto').addEventListener('click', function(){
+    var objetivo = RETOS_T[retoIndex];
+    var diff = Math.abs(anguloActual - objetivo);
+    if (diff <= 3){
+      retosEstado[retoIndex] = true;
+      retoScore++;
+      retoFeedback.className = 'reto-feedback correcto';
+      retoFeedback.textContent = '✔ ¡Correcto! Formaste un ángulo de aproximadamente ' + objetivo + '°.';
+      setTimeout(function(){
+        if (retoIndex < RETOS_T.length - 1){
+          retoIndex++;
+          renderRetoActual();
+        } else {
+          mostrarFinalTransportador();
+        }
+      }, 900);
+    } else {
+      retoFeedback.className = 'reto-feedback incorrecto';
+      retoFeedback.textContent = '✘ Tu ángulo mide aproximadamente ' + Math.round(anguloActual) + '°. Ajusta el brazo para acercarte a ' + objetivo + '°.';
+    }
+    renderRetoActual();
+  });
+
+  function mostrarFinalTransportador(){
+    var porcentaje = Math.round((retoScore / RETOS_T.length) * 100);
+    var emoji, texto;
+    if (porcentaje >= 90) { emoji='🏆'; texto='¡Excelente! Dominas la medición de ángulos.'; }
+    else if (porcentaje >= 70) { emoji='⭐'; texto='¡Muy bien! Sigue practicando.'; }
+    else if (porcentaje >= 50) { emoji='📚'; texto='Buen esfuerzo. Repasa los retos fallidos.'; }
+    else { emoji='💪'; texto='¡No te rindas! Vuelve a intentarlo.'; }
+    document.getElementById('puntajeFinalT').textContent = retoScore + ' / ' + RETOS_T.length;
+    document.getElementById('clasificacionT').textContent = emoji + ' ' + texto;
+    document.getElementById('mensajeFinalT').textContent = 'Retos de medición completados.';
+    document.getElementById('panelFinalTransportador').style.display = 'block';
+    if (porcentaje >= 70) lanzarConfetti();
+  }
+
+  document.getElementById('reiniciarRetosT').addEventListener('click', function(){
+    retoIndex = 0; retoScore = 0;
+    retosEstado = RETOS_T.map(function(){ return null; });
+    document.getElementById('panelFinalTransportador').style.display = 'none';
+    renderRetoActual();
+  });
+
+  function lanzarConfetti(){
+    var colores = ['#1B3A6B','#C9A84C','#27AE60','#E74C3C','#E8792E'];
+    var c = document.getElementById('confetti');
+    for (var i = 0; i < 70; i++){
+      var p = document.createElement('div');
+      p.className = 'confetti-pieza';
+      p.style.cssText = 'left:' + (Math.random()*100) + '%; background:' + colores[Math.floor(Math.random()*colores.length)] + '; animation-delay:' + (Math.random()*1.2) + 's; animation-duration:' + (2+Math.random()) + 's';
+      c.appendChild(p);
+    }
+    setTimeout(function(){ c.innerHTML = ''; }, 4500);
+  }
+
+})();
+</script>
+</body>
+</html>
