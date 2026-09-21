@@ -206,6 +206,7 @@
     background:var(--surface); color:var(--ink); resize:vertical;
   }
   .stats-input textarea:focus{border-color:var(--accent);}
+  .stats-input-note{margin:7px 0 0; font-size:.74rem; color:var(--ink-faint); font-style:italic;}
 
   .chart-title{
     font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
@@ -509,12 +510,24 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
     <section class="panel stats-card" aria-label="Estadística de logro del curso">
       <div class="stats-top">
         <h2>Estadística del curso</h2>
-        <p>Ingrese los puntajes obtenidos por el curso para ver, en porcentajes, cuántos estudiantes se ubican en cada nivel de logro.</p>
+        <p>Ingrese el puntaje obtenido por <b>cada uno de los estudiantes del curso</b> (uno por alumno) para ver, en cantidad y porcentaje, cuántos se ubican en cada nivel de logro.</p>
       </div>
       <div class="stats-body">
         <div class="stats-input">
           <label for="studentScores">Puntajes obtenidos <span class="hint">uno por línea o separados por coma</span></label>
-          <textarea id="studentScores" rows="9" placeholder="45&#10;38&#10;52&#10;60&#10;33&#10;58"></textarea>
+          <textarea id="studentScores" rows="9">45
+38
+52
+60
+33
+58
+41
+55
+48
+59
+30
+44</textarea>
+          <p class="stats-input-note">Estos son datos de ejemplo — bórrelos y reemplácelos por los puntajes reales de su curso.</p>
           <div class="stats-summary" id="statsSummary"></div>
         </div>
         <div class="stats-chart-wrap">
