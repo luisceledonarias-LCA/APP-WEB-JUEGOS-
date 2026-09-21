@@ -452,8 +452,9 @@
       <div class="cat-row">
         <div class="cat-card">
           <div class="cat-head"><span class="ic">🎮</span><h4>Juegos interactivos</h4><span class="count">1 disponible</span></div>
+          <div class="placeholder-card sin-seleccion"><b>Selecciona un curso</b>Elige un curso en "Filtrar por curso" para ver los juegos disponibles de este eje.</div>
           <div class="recursos-list">
-            <a class="recurso-card" href="juegos/numeros/numeros-y-operaciones.html" data-cursos="5" style="--grad:linear-gradient(135deg, var(--blue), var(--cyan));">
+            <a class="recurso-card oculto" href="juegos/numeros/numeros-y-operaciones.html" data-cursos="5" style="--grad:linear-gradient(135deg, var(--blue), var(--cyan));">
               <span class="r-ic">🔢</span>
               <span class="r-info"><b>Números Grandes y Fracciones — Desafío Numérico</b><span>Valor posicional, cálculo mental, fracciones y decimales · 5° Básico</span></span>
               <span class="r-go">Jugar →</span>
@@ -559,8 +560,9 @@
       <div class="cat-row">
         <div class="cat-card">
           <div class="cat-head"><span class="ic">🎮</span><h4>Juegos interactivos</h4><span class="count">1 disponible</span></div>
+          <div class="placeholder-card sin-seleccion"><b>Selecciona un curso</b>Elige un curso en "Filtrar por curso" para ver los juegos disponibles de este eje.</div>
           <div class="recursos-list">
-            <a class="recurso-card" href="juegos/geometria/angulos.html" data-cursos="5,6,7" style="--grad:linear-gradient(135deg, var(--orange), var(--red));">
+            <a class="recurso-card oculto" href="juegos/geometria/angulos.html" data-cursos="5,6,7" style="--grad:linear-gradient(135deg, var(--orange), var(--red));">
               <span class="r-ic">📐</span>
               <span class="r-info"><b>Ángulos — Explora y Mide</b><span>Tipos, medición, triángulo y transportador interactivos · 5° a 7° Básico</span></span>
               <span class="r-go">Jugar →</span>
@@ -766,11 +768,20 @@
     if (!botones.length) return;
     var recursos = Array.prototype.slice.call(section.querySelectorAll('.recurso-card[data-cursos]'));
 
-    function actualizarSinResultado(){
-      section.querySelectorAll('.recursos-list').forEach(function(lista){
+    function actualizarEstadoRecursos(gradoSeleccionado){
+      section.querySelectorAll('.cat-card').forEach(function(card){
+        var lista = card.querySelector('.recursos-list');
+        if (!lista) return;
+        var sinSeleccion = card.querySelector('.sin-seleccion');
+        var sinResultado = card.querySelector('.sin-resultado');
         var visibles = lista.querySelectorAll('.recurso-card:not(.oculto)').length;
-        var vacio = lista.parentElement.querySelector('.sin-resultado');
-        if (vacio) vacio.hidden = visibles > 0;
+        if (!gradoSeleccionado){
+          if (sinSeleccion) sinSeleccion.hidden = false;
+          if (sinResultado) sinResultado.hidden = true;
+        } else {
+          if (sinSeleccion) sinSeleccion.hidden = true;
+          if (sinResultado) sinResultado.hidden = visibles > 0;
+        }
       });
     }
 
@@ -780,8 +791,8 @@
         botones.forEach(function(b){ b.classList.remove('activo'); b.setAttribute('aria-pressed', 'false'); });
 
         if (yaActivo){
-          recursos.forEach(function(r){ r.classList.remove('oculto'); });
-          actualizarSinResultado();
+          recursos.forEach(function(r){ r.classList.add('oculto'); });
+          actualizarEstadoRecursos(null);
           return;
         }
 
@@ -792,9 +803,11 @@
           var cursos = (r.dataset.cursos || '').split(',').map(function(s){ return s.trim(); });
           r.classList.toggle('oculto', cursos.indexOf(grado) === -1);
         });
-        actualizarSinResultado();
+        actualizarEstadoRecursos(grado);
       });
     });
+
+    actualizarEstadoRecursos(null);
   });
 
   /* Back to top */
