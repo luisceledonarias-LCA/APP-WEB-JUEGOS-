@@ -144,7 +144,8 @@
   /* ---------- Layout ---------- */
   .layout{display:grid; grid-template-columns: 336px 1fr; gap:22px; align-items:start;}
   .layout > *{min-width:0;}
-  @media (max-width:860px){ .layout{grid-template-columns:1fr;} }
+  .layout > .table-card{grid-column: 1 / -1;}
+  @media (max-width:860px){ .layout{grid-template-columns:1fr;} .layout > .table-card{grid-column:auto;} }
 
   .panel{
     background:var(--surface); border:1px solid var(--border); border-radius:16px;
@@ -276,13 +277,16 @@
   .step-group button[aria-pressed="true"]{background:var(--accent); color:#fff;}
 
   .table-scroll{display:inline-block; max-width:100%; max-height:min(68vh, 620px); overflow:auto; border:1px solid var(--border); border-radius:12px; vertical-align:top;}
-  table.scale-table{width:auto; max-width:100%; border-collapse:collapse; font-size:.88rem;}
+  .table-groups{display:flex; align-items:flex-start; width:max-content;}
+  table.scale-table{width:auto; max-width:100%; border-collapse:collapse; font-size:.82rem;}
+  .table-groups table.scale-table{border-left:1px solid var(--border);}
+  .table-groups table.scale-table:first-child{border-left:none;}
   .scale-table thead th{
     position:sticky; top:0; background:var(--surface-3); color:var(--ink-soft);
-    text-align:left; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
-    padding:10px 12px; border-bottom:1px solid var(--border); font-weight:700; white-space:nowrap;
+    text-align:left; font-size:.68rem; letter-spacing:.05em; text-transform:uppercase;
+    padding:8px 9px; border-bottom:1px solid var(--border); font-weight:700; white-space:nowrap;
   }
-  .scale-table td{padding:6px 12px; border-bottom:1px solid var(--border); font-family:var(--font-mono); white-space:nowrap;}
+  .scale-table td{padding:4px 9px; border-bottom:1px solid var(--border); font-family:var(--font-mono); white-space:nowrap;}
   .scale-table tbody tr:last-child td{border-bottom:none;}
   .scale-table td.nota-cell{font-weight:700; font-size:.95rem;}
   .scale-table td.desc-cell{font-family:var(--font-body); font-weight:600; font-size:.8rem;}
@@ -427,35 +431,6 @@
         </div>
       </section>
 
-      <!-- Tabla completa -->
-      <section class="panel table-card" aria-label="Tabla de conversión completa">
-        <div class="table-top">
-          <div>
-            <h2>Tabla de conversión</h2>
-          </div>
-          <div class="table-top-actions">
-            <div class="step-group" role="group" aria-label="Incremento de puntaje mostrado">
-              <button type="button" data-step="1" aria-pressed="true">de 1 en 1</button>
-              <button type="button" data-step="0.5">de 0,5 en 0,5</button>
-            </div>
-            <button type="button" class="btn" id="printBtn">Imprimir escala</button>
-          </div>
-        </div>
-        <div class="table-scroll">
-          <table class="scale-table">
-            <thead>
-              <tr>
-                <th>Puntaje</th>
-                <th>% de logro</th>
-                <th>Nota</th>
-                <th>Desempeño</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>
-      </section>
-
       <!-- Fundamento matemático -->
       <details class="panel formula-card">
         <summary>Fundamento matemático de la escala</summary>
@@ -471,6 +446,25 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
       </details>
 
     </div>
+
+    <!-- Tabla completa: ocupa todo el ancho para ver la escala completa de un vistazo -->
+    <section class="panel table-card" aria-label="Tabla de conversión completa">
+      <div class="table-top">
+        <div>
+          <h2>Tabla de conversión</h2>
+        </div>
+        <div class="table-top-actions">
+          <div class="step-group" role="group" aria-label="Incremento de puntaje mostrado">
+            <button type="button" data-step="1" aria-pressed="true">de 1 en 1</button>
+            <button type="button" data-step="0.5">de 0,5 en 0,5</button>
+          </div>
+          <button type="button" class="btn" id="printBtn">Imprimir escala</button>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <div class="table-groups" id="tableGroups"></div>
+      </div>
+    </section>
   </main>
 
   <footer>Instrumento de referencia para uso docente · los valores no constituyen una normativa oficial de evaluación.</footer>
@@ -499,7 +493,7 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
     scaleThresholdLabel: document.getElementById('scaleThresholdLabel'),
     scaleLabelMin: document.getElementById('scaleLabelMin'),
     scaleLabelMax: document.getElementById('scaleLabelMax'),
-    tableBody: document.getElementById('tableBody'),
+    tableGroups: document.getElementById('tableGroups'),
     statPA: document.getElementById('statPA'),
     statRango: document.getElementById('statRango'),
     statDecimas: document.getElementById('statDecimas'),
@@ -646,22 +640,41 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
       rows.push(pr);
       if(pr >= cfg.puntajeMax) break;
     }
-    var html = '';
     var paRounded = Math.round(cfg.puntajeAprobacion * 100) / 100;
-    for(var i=0; i<rows.length; i++){
-      var p = rows[i];
+
+    function rowHtml(p){
       var nota = calcNota(p, cfg);
       var desc = descriptor(nota, cfg);
       var pct = cfg.puntajeMax > 0 ? (p / cfg.puntajeMax) * 100 : 0;
       var isAprobRow = Math.abs(p - paRounded) < (state.step / 2 + 0.001);
-      html += '<tr class="row-' + desc.cls + (isAprobRow ? ' row-aprobacion' : '') + '">'
+      return '<tr class="row-' + desc.cls + (isAprobRow ? ' row-aprobacion' : '') + '">'
         + '<td>' + fmt1(p) + '</td>'
         + '<td>' + fmt1(pct) + ' %</td>'
         + '<td class="nota-cell">' + fmt1(nota) + (isAprobRow ? '<span class="aprob-flag">aprob.</span>' : '') + '</td>'
         + '<td class="desc-cell">' + desc.label + '</td>'
         + '</tr>';
     }
-    els.tableBody.innerHTML = html;
+
+    // Reparte las filas en columnas lado a lado para verlas todas de un vistazo,
+    // en vez de una sola lista vertical muy larga.
+    var ROWS_PER_COL = 22;
+    var MAX_COLS = 6;
+    var colCount = Math.min(MAX_COLS, Math.max(1, Math.ceil(rows.length / ROWS_PER_COL)));
+    var rowsPerCol = Math.ceil(rows.length / colCount);
+
+    var groupsHtml = '';
+    for(var c = 0; c < colCount; c++){
+      var start = c * rowsPerCol;
+      var end = Math.min(start + rowsPerCol, rows.length);
+      if(start >= end) break;
+      var bodyHtml = '';
+      for(var i = start; i < end; i++){ bodyHtml += rowHtml(rows[i]); }
+      groupsHtml += '<table class="scale-table">'
+        + '<thead><tr><th>Puntaje</th><th>% de logro</th><th>Nota</th><th>Desempeño</th></tr></thead>'
+        + '<tbody>' + bodyHtml + '</tbody>'
+        + '</table>';
+    }
+    els.tableGroups.innerHTML = groupsHtml;
   }
 
   function renderAll(){
