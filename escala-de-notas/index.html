@@ -281,6 +281,12 @@
   table.scale-table{width:auto; max-width:100%; border-collapse:collapse; font-size:.82rem;}
   .table-groups table.scale-table{border-left:1px solid var(--border);}
   .table-groups table.scale-table:first-child{border-left:none;}
+  .table-scroll.single-col{display:block;}
+  .table-scroll.single-col .table-groups{width:100%;}
+  .table-scroll.single-col table.scale-table{width:100%;}
+  .table-scroll.single-col .scale-table th,
+  .table-scroll.single-col .scale-table td{white-space:normal; overflow-wrap:break-word; padding:6px; line-height:1.3;}
+  .table-scroll.single-col .aprob-flag{display:inline-block; margin-top:2px;}
   .scale-table thead th{
     position:sticky; top:0; background:var(--surface-3); color:var(--ink-soft);
     text-align:left; font-size:.68rem; letter-spacing:.05em; text-transform:uppercase;
@@ -497,6 +503,8 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
     scaleLabelMin: document.getElementById('scaleLabelMin'),
     scaleLabelMax: document.getElementById('scaleLabelMax'),
     tableGroups: document.getElementById('tableGroups'),
+    tableScroll: document.querySelector('.table-scroll'),
+    tableCard: document.querySelector('.table-card'),
     statPA: document.getElementById('statPA'),
     statRango: document.getElementById('statRango'),
     statDecimas: document.getElementById('statDecimas'),
@@ -659,10 +667,16 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
     }
 
     // Reparte las filas en columnas lado a lado para verlas todas de un vistazo,
-    // en vez de una sola lista vertical muy larga.
-    var ROWS_PER_COL = 22;
+    // en vez de una sola lista vertical muy larga. El número de columnas se
+    // ajusta al ancho real disponible, para que en celular quepa 1 columna,
+    // en tablet 2-3, y en pantallas grandes tantas como entren sin scroll.
+    var COL_WIDTH = 335;
+    var MIN_ROWS_PER_COL = 8;
     var MAX_COLS = 6;
-    var colCount = Math.min(MAX_COLS, Math.max(1, Math.ceil(rows.length / ROWS_PER_COL)));
+    var availWidth = els.tableCard ? (els.tableCard.clientWidth - 40) : 320;
+    var colsByWidth = Math.max(1, Math.floor(availWidth / COL_WIDTH));
+    var colsByRows = Math.max(1, Math.ceil(rows.length / MIN_ROWS_PER_COL));
+    var colCount = Math.min(MAX_COLS, colsByWidth, colsByRows);
     var rowsPerCol = Math.ceil(rows.length / colCount);
 
     var groupsHtml = '';
@@ -678,6 +692,7 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
         + '</table>';
     }
     els.tableGroups.innerHTML = groupsHtml;
+    els.tableScroll.classList.toggle('single-col', colCount === 1);
   }
 
   function renderAll(){
@@ -742,6 +757,12 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
   });
 
   els.printBtn.addEventListener('click', function(){ window.print(); });
+
+  var resizeTimer = null;
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(renderAll, 120);
+  });
 
   loadSaved();
   renderAll();
