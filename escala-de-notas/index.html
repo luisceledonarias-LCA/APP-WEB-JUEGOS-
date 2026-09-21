@@ -142,10 +142,10 @@
   #installBtn{white-space:nowrap;}
 
   /* ---------- Layout ---------- */
-  .layout{display:grid; grid-template-columns: 336px 1fr; gap:22px; align-items:start;}
-  .layout > *{min-width:0;}
-  .layout > .table-card{grid-column: 1 / -1;}
-  @media (max-width:860px){ .layout{grid-template-columns:1fr;} .layout > .table-card{grid-column:auto;} }
+  .layout{display:flex; flex-direction:column; gap:22px;}
+  .top-row{display:grid; grid-template-columns: 336px 1fr; gap:22px; align-items:start;}
+  .top-row > *{min-width:0;}
+  @media (max-width:860px){ .top-row{grid-template-columns:1fr;} }
 
   .panel{
     background:var(--surface); border:1px solid var(--border); border-radius:16px;
@@ -321,7 +321,8 @@
   @media print{
     .config-panel, .btn, .calc-input-row input[type="range"], .table-top-actions, .formula-card{display:none !important;}
     body{background:#fff; color:#000; padding:0;}
-    .layout{grid-template-columns:1fr; display:block;}
+    .layout{display:block;}
+    .top-row{grid-template-columns:1fr; display:block;}
     .panel{box-shadow:none; border:1px solid #999;}
     .table-scroll{display:block; max-height:none; overflow:visible;}
   }
@@ -342,6 +343,7 @@
   </header>
 
   <main class="layout">
+   <div class="top-row">
     <!-- ============ CONFIG PANEL ============ -->
     <aside class="panel config-panel" aria-label="Configuración de la escala">
       <h2>Parámetros del instrumento</h2>
@@ -446,6 +448,7 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
       </details>
 
     </div>
+   </div>
 
     <!-- Tabla completa: ocupa todo el ancho para ver la escala completa de un vistazo -->
     <section class="panel table-card" aria-label="Tabla de conversión completa">
