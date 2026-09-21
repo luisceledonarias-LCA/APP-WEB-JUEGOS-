@@ -1,0 +1,20 @@
+{
+  "name": "Libro de Clases y Calificaciones",
+  "short_name": "Notas",
+  "description": "Libro de clases digital con cálculo automático de promedios, rúbricas generadas con IA, corrección agrupada, retroalimentación personalizada y alertas de bajo rendimiento.",
+  "id": "/notas-y-calificaciones/",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "background_color": "#F7F3EA",
+  "theme_color": "#2F4E8C",
+  "orientation": "any",
+  "lang": "es-CL",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
