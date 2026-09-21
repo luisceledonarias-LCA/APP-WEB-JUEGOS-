@@ -238,13 +238,21 @@
   }
   .grado-btn{
     font-family:inherit; padding:16px 20px; min-width:110px; flex:1 1 110px; max-width:150px;
-    border-radius:999px; border:1.5px solid var(--border);
-    background:var(--surface); color:var(--ink-soft); font-size:1rem; font-weight:700; cursor:pointer;
+    border-radius:999px; border:2px solid var(--gc, var(--border));
+    background:var(--surface); color:var(--gc, var(--ink-soft)); font-size:1rem; font-weight:800; cursor:pointer;
     text-align:center; transition:.18s var(--ease);
   }
-  .grado-btn:hover{color:var(--ink); border-color:var(--ink-faint);}
-  .grado-btn.activo{background:var(--grad); border-color:transparent; color:#fff; box-shadow:var(--shadow-sm);}
+  .grado-btn:hover{background:var(--gc, var(--surface-2)); color:#0B0C10;}
+  .grado-btn.activo{background:var(--gc, var(--grad)); border-color:var(--gc, transparent); color:#0B0C10; box-shadow:var(--shadow-sm);}
   .grado-btn:focus-visible{outline-offset:2px;}
+  .grado-btn:nth-of-type(1){ --gc:var(--blue); }
+  .grado-btn:nth-of-type(2){ --gc:var(--cyan); }
+  .grado-btn:nth-of-type(3){ --gc:var(--green); }
+  .grado-btn:nth-of-type(4){ --gc:var(--teal); }
+  .grado-btn:nth-of-type(5){ --gc:var(--yellow); }
+  .grado-btn:nth-of-type(6){ --gc:var(--orange); }
+  .grado-btn:nth-of-type(7){ --gc:var(--pink); }
+  .grado-btn:nth-of-type(8){ --gc:var(--purple); }
 
   .cat-row{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:16px;}
   @media (max-width:860px){ .cat-row{grid-template-columns:1fr;} }
