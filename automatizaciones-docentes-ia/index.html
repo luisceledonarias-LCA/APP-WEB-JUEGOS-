@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Automatizaciones Docentes con IA</title>
+<meta name="description" content="Guía de 25 automatizaciones con Inteligencia Artificial para profesores: asistencia, notas y calificaciones, evaluaciones, calendario y comunicación con apoderados.">
+
+<!-- App instalable: tablet, celular y computador -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#081420">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Automatiz. IA">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
+
+<style>
+  :root {
+    --bg: #f1f5fa;
+    --surface: #ffffff;
+    --surface-2: #e6edf6;
+    --border: #cdd8e8;
+    --text: #0c1e32;
+    --text-2: #3b5670;
+    --text-muted: #688196;
+    --accent: #0b6b84;
+    --accent-light: #ddf2f8;
+    --green: #15803d;
+    --green-bg: #dcfce7;
+    --green-text: #14532d;
+    --shadow-sm: 0 1px 3px rgba(14,30,50,.07), 0 1px 2px rgba(14,30,50,.04);
+    --shadow: 0 4px 14px rgba(14,30,50,.08), 0 1px 4px rgba(14,30,50,.04);
+    --cat-asistencia: #7c3aed;
+    --cat-notas: #0d9488;
+    --cat-eval: #dc2626;
+    --cat-cal: #1d4ed8;
+    --cat-reuniones: #ea580c;
+    --hero-bg: #081420;
+    --hero-surface: #0f2236;
+    --hero-border: #1c3a55;
+    --hero-text: #dce9f5;
+    --hero-muted: #6a8faa;
+    --hero-gold: #f0a030;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0b1827;
+      --surface: #111f30;
+      --surface-2: #172c40;
+      --border: #1f3c57;
+      --text: #d4e4f2;
+      --text-2: #7da5c2;
+      --text-muted: #4f7291;
+      --accent: #22a8c8;
+      --accent-light: #0c3548;
+      --green: #4ade80;
+      --green-bg: #052614;
+      --green-text: #bbf7d0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.25);
+      --shadow: 0 4px 14px rgba(0,0,0,.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0b1827;
+    --surface: #111f30;
+    --surface-2: #172c40;
+    --border: #1f3c57;
+    --text: #d4e4f2;
+    --text-2: #7da5c2;
+    --text-muted: #4f7291;
+    --accent: #22a8c8;
+    --accent-light: #0c3548;
+    --green: #4ade80;
+    --green-bg: #052614;
+    --green-text: #bbf7d0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.25);
+    --shadow: 0 4px 14px rgba(0,0,0,.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg);
+  }
+
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+    padding-inline: 20px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--hero-bg);
+    padding-block: 52px 0;
+  }
+
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--hero-muted);
+    margin-bottom: 20px;
+  }
+
+  .hero-eyebrow-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--hero-gold);
+  }
+
+  .hero h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(30px, 5.5vw, 50px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0 0 18px;
+    color: var(--hero-text);
+    text-wrap: balance;
+    max-width: 680px;
+  }
+
+  .hero h1 .gold { color: var(--hero-gold); }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--hero-muted);
+    max-width: 520px;
+    margin: 0 0 36px;
+    line-height: 1.65;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--hero-border);
+  }
+
+  .stat { display: flex; flex-direction: column; gap: 3px; }
+
+  .stat-num {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--hero-gold);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--hero-muted);
+  }
+
+  /* ── TIME BAR ── */
+  .time-bar-row {
+    background: var(--hero-bg);
+    padding-block: 18px 22px;
+  }
+
+  .time-bar-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--hero-muted);
+    margin-bottom: 8px;
+  }
+
+  .bar-track {
+    height: 7px;
+    background: var(--hero-surface);
+    border-radius: 4px;
+    display: flex;
+    overflow: hidden;
+    gap: 2px;
+    margin-bottom: 10px;
+  }
+
+  .bar-seg {
+    height: 100%;
+    transition: opacity .2s;
+  }
+
+  .bar-legend {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--hero-muted);
+  }
+
+  .legend-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── TABS ── */
+  .tabs-wrap {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 20;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .tabs-scroll {
+    display: flex;
+    gap: 4px;
+    padding: 10px 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    max-width: 880px;
+    margin: 0 auto;
+    align-items: center;
+  }
+
+  .tabs-scroll::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 15px;
+    border-radius: 22px;
+    border: 1.5px solid transparent;
+    background: none;
+    cursor: pointer;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: background .14s, color .14s;
+    white-space: nowrap;
+  }
+
+  .tab-btn:hover { background: var(--surface-2); color: var(--text); }
+
+  .tab-btn.active { color: #fff !important; }
+  .tab-btn[data-cat="asistencia"].active { background: var(--cat-asistencia); }
+  .tab-btn[data-cat="notas"].active { background: var(--cat-notas); }
+  .tab-btn[data-cat="evaluaciones"].active { background: var(--cat-eval); }
+  .tab-btn[data-cat="calendario"].active { background: var(--cat-cal); }
+  .tab-btn[data-cat="reuniones"].active { background: var(--cat-reuniones); }
+
+  /* ── MAIN CONTENT ── */
+  main { padding-block: 34px 52px; }
+
+  /* Panel header */
+  .panel-header { margin-bottom: 28px; }
+
+  .cat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 4px 11px;
+    border-radius: 20px;
+    background: var(--surface-2);
+    margin-bottom: 14px;
+  }
+
+  .cat-pill[data-cat="asistencia"] { color: var(--cat-asistencia); }
+  .cat-pill[data-cat="notas"] { color: var(--cat-notas); }
+  .cat-pill[data-cat="evaluaciones"] { color: var(--cat-eval); }
+  .cat-pill[data-cat="calendario"] { color: var(--cat-cal); }
+  .cat-pill[data-cat="reuniones"] { color: var(--cat-reuniones); }
+
+  .panel-header h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 700;
+    margin: 0 0 10px;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  .panel-header p {
+    color: var(--text-2);
+    max-width: 600px;
+    margin: 0 0 14px;
+    font-size: 15px;
+  }
+
+  .time-saved-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green);
+    background: var(--green-bg);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  /* Automation cards */
+  .auto-grid {
+    display: grid;
+    gap: 14px;
+  }
+
+  .auto-card {
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .auto-num {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .auto-body h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 7px;
+    line-height: 1.3;
+  }
+
+  .auto-body p {
+    font-size: 14px;
+    color: var(--text-2);
+    margin: 0 0 11px;
+    line-height: 1.6;
+  }
+
+  .tools-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .tool-tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 9px;
+    border-radius: 9px;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .auto-tip {
+    font-size: 13px;
+    color: var(--text-muted);
+    padding-left: 10px;
+    border-left: 2px solid var(--border);
+    margin: 0;
+    line-height: 1.55;
+    font-style: italic;
+  }
+
+  /* ── SUMMARY ── */
+  .summary-section {
+    background: var(--hero-bg);
+    padding-block: 50px;
+  }
+
+  .summary-section h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: var(--hero-text);
+  }
+
+  .summary-sub {
+    color: var(--hero-muted);
+    margin: 0 0 36px;
+    max-width: 560px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .impact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 44px;
+  }
+
+  .impact-card {
+    background: var(--hero-surface);
+    border: 1px solid var(--hero-border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+
+  .impact-num {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--hero-gold);
+    line-height: 1;
+    margin-bottom: 5px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .impact-label {
+    font-size: 12px;
+    color: var(--hero-muted);
+    line-height: 1.4;
+  }
+
+  .roadmap-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--hero-text);
+    margin: 0 0 20px;
+  }
+
+  .roadmap-list {
+    display: grid;
+    gap: 16px;
+  }
+
+  .roadmap-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .road-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--hero-surface);
+    border: 1.5px solid #2a4c68;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--hero-gold);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .road-body h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #b8d0e6;
+    margin: 0 0 4px;
+  }
+
+  .road-body p {
+    font-size: 13px;
+    color: var(--hero-muted);
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 580px) {
+    .hero { padding-block: 36px 0; }
+    .hero-stats { gap: 24px; }
+    .stat-num { font-size: 30px; }
+    .auto-card {
+      grid-template-columns: 1fr;
+    }
+    .auto-num { width: 28px; height: 28px; font-size: 12px; border-radius: 7px; }
+    .impact-grid { grid-template-columns: repeat(2, 1fr); }
+    .tab-btn { padding: 6px 12px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="container">
+    <p class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span>
+      Investigación Docente · Septiembre 2026
+    </p>
+    <h1>Automatizaciones con <span class="gold">IA</span><br>para Profesores</h1>
+    <p class="hero-sub">Flujos de trabajo inteligentes que liberan hasta <strong style="color:var(--hero-text)">5.9 horas semanales</strong> — el equivalente a 10 jornadas laborales al año — para que el docente se concentre en lo que importa: enseñar.</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">5.9</span>
+        <span class="stat-label">horas/semana recuperadas</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">5</span>
+        <span class="stat-label">áreas automatizables</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">25</span>
+        <span class="stat-label">automatizaciones detalladas</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">20+</span>
+        <span class="stat-label">herramientas disponibles</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TIME BAR ═══ -->
+<div class="time-bar-row">
+  <div class="container">
+    <p class="time-bar-label">Tiempo semanal recuperado por área</p>
+    <div class="bar-track">
+      <div class="bar-seg" style="width:25%;background:var(--cat-asistencia);border-radius:3px 0 0 3px"></div>
+      <div class="bar-seg" style="width:31%;background:var(--cat-notas)"></div>
+      <div class="bar-seg" style="width:24%;background:var(--cat-eval)"></div>
+      <div class="bar-seg" style="width:12%;background:var(--cat-cal)"></div>
+      <div class="bar-seg" style="width:8%;background:var(--cat-reuniones);border-radius:0 3px 3px 0"></div>
+    </div>
+    <div class="bar-legend">
+      <span class="legend-item"><span class="legend-dot" style="background:var(--cat-asistencia)"></span>Asistencia ~1.5 h</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--cat-notas)"></span>Notas ~1.8 h</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--cat-eval)"></span>Evaluaciones ~1.4 h</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--cat-cal)"></span>Calendario ~0.7 h</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--cat-reuniones)"></span>Reuniones ~0.5 h</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TABS NAV ═══ -->
+<div class="tabs-wrap">
+  <div class="tabs-scroll">
+    <button class="tab-btn active" data-cat="asistencia" onclick="showPanel('asistencia',this)">📋 Asistencia</button>
+    <button class="tab-btn" data-cat="notas" onclick="showPanel('notas',this)">📊 Notas y Calificaciones</button>
+    <button class="tab-btn" data-cat="evaluaciones" onclick="showPanel('evaluaciones',this)">✏️ Evaluaciones</button>
+    <button class="tab-btn" data-cat="calendario" onclick="showPanel('calendario',this)">📅 Calendario</button>
+    <button class="tab-btn" data-cat="reuniones" onclick="showPanel('reuniones',this)">🤝 Reuniones y Comunicación</button>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<main>
+  <div class="container">
+
+    <!-- ──────── ASISTENCIA ──────── -->
+    <div id="panel-asistencia">
+      <div class="panel-header">
+        <span class="cat-pill" data-cat="asistencia">📋 Asistencia</span>
+        <h2>Registro y Control de Asistencia</h2>
+        <p>Elimina el tiempo dedicado al pase de lista manual. Con estas automatizaciones el registro ocurre de forma autónoma, los reportes se envían solos y las alertas llegan antes de que el problema escale.</p>
+        <span class="time-saved-badge">⏱ Recupera ~1.5 horas semanales</span>
+      </div>
+      <div class="auto-grid">
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-asistencia)">1</div>
+          <div class="auto-body">
+            <h3>Registro por Código QR al Ingreso</h3>
+            <p>Los estudiantes escanean un QR al entrar al aula. El sistema registra automáticamente la hora, la fecha y el nombre del estudiante en una planilla centralizada, sin ninguna acción del docente.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Google Forms</span>
+              <span class="tool-tag">Google Sheets</span>
+              <span class="tool-tag">QR Scanner</span>
+            </div>
+            <p class="auto-tip">Crea un Google Form con el nombre del estudiante como única pregunta. Genera el QR del enlace del formulario y publícalo en la pizarra. Las respuestas se consolidan en Sheets con marca de tiempo automática.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-asistencia)">2</div>
+          <div class="auto-body">
+            <h3>Planilla Inteligente con Apps Script</h3>
+            <p>Una hoja de cálculo que calcula automáticamente porcentajes de asistencia por estudiante, genera semáforos de alerta (verde/amarillo/rojo) según el umbral del establecimiento y totaliza por semana o unidad.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Google Sheets</span>
+              <span class="tool-tag">Google Apps Script</span>
+            </div>
+            <p class="auto-tip">Con un script de 15 líneas puedes programar que la planilla envíe automáticamente un resumen a jefatura cada viernes a las 17:00 hrs. No requiere conocimientos avanzados de programación.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-asistencia)">3</div>
+          <div class="auto-body">
+            <h3>Alerta Automática a Apoderados por Inasistencia</h3>
+            <p>Cuando un estudiante acumula un número definido de inasistencias consecutivas o en el mes, el sistema genera y envía automáticamente un mensaje de notificación al apoderado sin intervención del docente.</p>
+            <div class="tools-row">
+              <span class="tool-tag">ClassDojo</span>
+              <span class="tool-tag">Seesaw</span>
+              <span class="tool-tag">Gmail + Apps Script</span>
+            </div>
+            <p class="auto-tip">ClassDojo permite configurar umbrales de asistencia que activan mensajes automáticos. Define el umbral según el reglamento del establecimiento (ej: 3 inasistencias seguidas).</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-asistencia)">4</div>
+          <div class="auto-body">
+            <h3>Informe Semanal Automatizado a Coordinación</h3>
+            <p>El sistema genera y envía cada semana un reporte completo de asistencia del curso a coordinación académica: estadísticas por estudiante, tendencias y alertas de riesgo, todo sin acción manual.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Google Apps Script</span>
+              <span class="tool-tag">Looker Studio</span>
+              <span class="tool-tag">Gmail</span>
+            </div>
+            <p class="auto-tip">Conecta la planilla de asistencia con Looker Studio para tener un dashboard visual actualizado en tiempo real. El script puede generar un PDF del reporte y enviarlo programadamente.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-asistencia)">5</div>
+          <div class="auto-body">
+            <h3>Identificación Temprana de Estudiantes en Riesgo</h3>
+            <p>La IA analiza los patrones de asistencia e identifica a estudiantes con tendencias de deserción o ausentismo crónico, generando alertas preventivas para que el docente o el equipo de orientación intervenga a tiempo.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Quid</span>
+              <span class="tool-tag">Google Sheets + IA</span>
+              <span class="tool-tag">Power BI</span>
+            </div>
+            <p class="auto-tip">Establece el umbral: si un estudiante falta más del 15% de las clases del mes, activa automáticamente un protocolo de seguimiento registrado en el sistema.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ──────── NOTAS ──────── -->
+    <div id="panel-notas" hidden>
+      <div class="panel-header">
+        <span class="cat-pill" data-cat="notas">📊 Notas y Calificaciones</span>
+        <h2>Gestión Inteligente de Calificaciones</h2>
+        <p>Desde el cálculo automático de promedios hasta retroalimentación personalizada por IA, reduce el tiempo de corrección y multiplica la calidad del feedback sin aumentar la carga de trabajo.</p>
+        <span class="time-saved-badge">⏱ Recupera ~1.8 horas semanales</span>
+      </div>
+      <div class="auto-grid">
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-notas)">1</div>
+          <div class="auto-body">
+            <h3>Libro de Clases Digital con Cálculo Automático</h3>
+            <p>Planilla que calcula en tiempo real los promedios ponderados según la estructura de evaluación del establecimiento. Incluye semáforos de rendimiento, proyección de nota final y alertas de riesgo académico.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Google Sheets</span>
+              <span class="tool-tag">Google Classroom</span>
+              <span class="tool-tag">Excel con macros</span>
+            </div>
+            <p class="auto-tip">Configura los pesos de cada instrumento (prueba 40%, tarea 30%, proyecto 30%) una sola vez. El sistema recalcula todos los promedios automáticamente cada vez que ingresas una nota.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-notas)">2</div>
+          <div class="auto-body">
+            <h3>Rúbricas Generadas con IA en Segundos</h3>
+            <p>Describe el Objetivo de Aprendizaje, el tipo de tarea y el nivel del curso. La IA genera en segundos una rúbrica completa con indicadores, niveles de desempeño y descriptores listos para usar o editar.</p>
+            <div class="tools-row">
+              <span class="tool-tag">MagicSchool AI</span>
+              <span class="tool-tag">Megaprofe</span>
+              <span class="tool-tag">Claude AI</span>
+            </div>
+            <p class="auto-tip">MagicSchool AI incluye más de 80 plantillas de rúbricas adaptables. Guarda tus rúbricas más usadas como plantillas propias para reutilizarlas cada año sin partir desde cero.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-notas)">3</div>
+          <div class="auto-body">
+            <h3>Corrección Agrupada con IA (Gradescope)</h3>
+            <p>La IA detecta y agrupa automáticamente las respuestas similares de distintos estudiantes. Corriges un grupo una sola vez y el sistema aplica el mismo puntaje y comentario a todas las respuestas equivalentes, reduciendo hasta 70% el tiempo de corrección.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Gradescope</span>
+              <span class="tool-tag">Google Classroom</span>
+            </div>
+            <p class="auto-tip">Especialmente poderoso para pruebas de desarrollo. En cursos de 30+ estudiantes donde se repiten los mismos errores, este sistema es un multiplicador de tiempo enorme.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-notas)">4</div>
+          <div class="auto-body">
+            <h3>Retroalimentación Personalizada por IA</h3>
+            <p>Con base en los errores detectados en cada evaluación, la IA genera comentarios únicos y personalizados por estudiante que explican el error cometido y proponen estrategias concretas de mejora.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Brisk Teaching</span>
+              <span class="tool-tag">Formative</span>
+              <span class="tool-tag">Claude AI</span>
+            </div>
+            <p class="auto-tip">Brisk Teaching genera feedback directamente en Google Docs sin cambiar de plataforma. Los estudiantes reciben retroalimentación inmediata sin esperar días para saber en qué fallaron.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-notas)">5</div>
+          <div class="auto-body">
+            <h3>Alertas Automáticas de Bajo Rendimiento</h3>
+            <p>El sistema monitorea automáticamente el rendimiento académico de cada estudiante. Cuando alguien cae bajo el umbral definido, activa una alerta al docente y —si se configura— al apoderado, sugiriendo el protocolo de apoyo correspondiente.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Google Classroom</span>
+              <span class="tool-tag">Formative</span>
+              <span class="tool-tag">Apps Script</span>
+            </div>
+            <p class="auto-tip">Define el umbral (ej: promedio menor a 4.0 según escala chilena) y el sistema activa el proceso de apoyo automáticamente, sin que tengas que revisar manualmente todas las notas del curso.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ──────── EVALUACIONES ──────── -->
+    <div id="panel-evaluaciones" hidden>
+      <div class="panel-header">
+        <span class="cat-pill" data-cat="evaluaciones">✏️ Evaluaciones</span>
+        <h2>Creación, Corrección y Seguimiento de Evaluaciones</h2>
+        <p>Genera instrumentos evaluativos en minutos, automatiza la corrección, administra el banco de ítems y elimina el problema de las evaluaciones pendientes que se acumulan sin recordatorio.</p>
+        <span class="time-saved-badge">⏱ Recupera ~1.4 horas semanales</span>
+      </div>
+      <div class="auto-grid">
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-eval)">1</div>
+          <div class="auto-body">
+            <h3>Generador de Pruebas con IA según OA</h3>
+            <p>Ingresa el Objetivo de Aprendizaje, el nivel del curso, el tipo de preguntas y la cantidad de ítems deseados. La IA genera en segundos una prueba completa con pauta de corrección y criterios incluidos.</p>
+            <div class="tools-row">
+              <span class="tool-tag">MagicSchool AI</span>
+              <span class="tool-tag">Megaprofe</span>
+              <span class="tool-tag">Quizizz</span>
+              <span class="tool-tag">Claude AI</span>
+            </div>
+            <p class="auto-tip">Especifica el nivel cognitivo de Bloom que quieres evaluar (recordar, comprender, aplicar, analizar). La IA adapta la complejidad de las preguntas automáticamente al nivel indicado.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-eval)">2</div>
+          <div class="auto-body">
+            <h3>Evaluaciones Diferenciadas Automáticas</h3>
+            <p>A partir de un instrumento estándar, la IA genera automáticamente versiones adaptadas para estudiantes con diferentes niveles de desempeño o necesidades educativas especiales, respetando los mismos OA pero ajustando la complejidad.</p>
+            <div class="tools-row">
+              <span class="tool-tag">MagicSchool AI</span>
+              <span class="tool-tag">Diffit</span>
+              <span class="tool-tag">Claude AI</span>
+            </div>
+            <p class="auto-tip">Genera una versión simplificada y una desafiante del mismo instrumento sin duplicar el trabajo. Ideal para cursos con alta diversidad de aprendizajes y PADEM activo.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-eval)">3</div>
+          <div class="auto-body">
+            <h3>Recordatorio de Evaluaciones Pendientes de Corrección</h3>
+            <p>El sistema lleva un registro de todos los instrumentos enviados y detecta automáticamente cuáles aún no tienen notas ingresadas. Envía recordatorios al docente con los días transcurridos y los plazos límite.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Google Classroom</span>
+              <span class="tool-tag">Taskade</span>
+              <span class="tool-tag">Notion AI</span>
+            </div>
+            <p class="auto-tip">Google Classroom puede configurarse para notificarte cuando hay trabajos sin calificar por más de X días. Este simple ajuste elimina el síndrome de "tengo pruebas acumuladas sin corregir".</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-eval)">4</div>
+          <div class="auto-body">
+            <h3>Banco de Ítems Organizado por OA</h3>
+            <p>Construye una biblioteca de preguntas clasificadas por Objetivo de Aprendizaje, unidad, tipo de ítem y nivel cognitivo. La IA puede seleccionar y combinar ítems automáticamente para generar nuevas evaluaciones coherentes con la planificación.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Quizizz</span>
+              <span class="tool-tag">Kahoot!</span>
+              <span class="tool-tag">Google Forms</span>
+            </div>
+            <p class="auto-tip">Organiza el banco según los OA del currículum MINEDUC para tu asignatura y nivel. Al cabo de un semestre tendrás cientos de ítems listos para combinar en nuevas pruebas sin partir desde cero.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-eval)">5</div>
+          <div class="auto-body">
+            <h3>Análisis Automático de Resultados por Ítem</h3>
+            <p>Tras una evaluación, la IA analiza los resultados e identifica los ítems con mayor tasa de error, los OA no logrados por la mayoría y sugiere automáticamente actividades de remediación focalizadas para las próximas clases.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Formative</span>
+              <span class="tool-tag">Google Forms + Sheets</span>
+              <span class="tool-tag">Quid</span>
+            </div>
+            <p class="auto-tip">Este análisis que manualmente tomaría 2 horas, con IA se obtiene en segundos. Úsalo para planificar clases de refuerzo exactamente donde el curso tiene mayor brecha de aprendizaje.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ──────── CALENDARIO ──────── -->
+    <div id="panel-calendario" hidden>
+      <div class="panel-header">
+        <span class="cat-pill" data-cat="calendario">📅 Calendario y Eventos</span>
+        <h2>Gestión Inteligente del Calendario Docente</h2>
+        <p>Sincroniza la planificación curricular, las fechas de evaluación y los eventos institucionales en un sistema unificado que te recuerda, detecta conflictos y gestiona tu tiempo automáticamente.</p>
+        <span class="time-saved-badge">⏱ Recupera ~0.7 horas semanales</span>
+      </div>
+      <div class="auto-grid">
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-cal)">1</div>
+          <div class="auto-body">
+            <h3>Sincronización Automática del Calendario Escolar</h3>
+            <p>Importa el calendario oficial del establecimiento a Google Calendar. Feriados, consejos de profesores, reuniones de apoderados y fechas institucionales aparecen automáticamente en tu agenda personal sin copiar ningún dato.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Google Calendar</span>
+              <span class="tool-tag">Microsoft Teams</span>
+              <span class="tool-tag">iCal (.ics)</span>
+            </div>
+            <p class="auto-tip">Solicita al establecimiento que publique el calendario como archivo .ics suscribible. Cualquier modificación oficial se refleja automáticamente en tu agenda sin que tengas que actualizarla manualmente.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-cal)">2</div>
+          <div class="auto-body">
+            <h3>Recordatorios Inteligentes por Tipo de Evento</h3>
+            <p>Configura alertas automáticas diferenciadas: recordatorio a estudiantes N días antes de una prueba, recordatorio al docente cuando se acerca la fecha de entrega de notas al sistema y notificación a apoderados de evaluaciones próximas.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Google Calendar</span>
+              <span class="tool-tag">Google Classroom</span>
+              <span class="tool-tag">Taskade</span>
+            </div>
+            <p class="auto-tip">Crea una regla: toda evaluación creada en Google Classroom genera automáticamente un evento en el calendario con recordatorios escalonados: 5 días, 2 días y 1 día antes.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-cal)">3</div>
+          <div class="auto-body">
+            <h3>Planificación Curricular Distribuida con IA</h3>
+            <p>La IA distribuye automáticamente los Objetivos de Aprendizaje a lo largo del año académico, respetando los días hábiles reales, feriados regionales y el tiempo disponible por semana, generando una calendarización editable exportable a Google Calendar.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Notion AI</span>
+              <span class="tool-tag">Taskade</span>
+              <span class="tool-tag">Claude AI</span>
+            </div>
+            <p class="auto-tip">Ingresa los OA del plan de estudio MINEDUC para tu nivel y asignatura. La IA genera la distribución temporal completa, señalando los períodos de mayor densidad curricular para anticipar el ritmo de clases.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-cal)">4</div>
+          <div class="auto-body">
+            <h3>Panel de Cobertura Curricular en Tiempo Real</h3>
+            <p>Un tablero que muestra qué porcentaje del programa has cubierto versus el tiempo transcurrido del año escolar. Detecta automáticamente retrasos y propone ajustes a la planificación para terminar el 100% del programa en plazo.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Google Sheets</span>
+              <span class="tool-tag">Looker Studio</span>
+              <span class="tool-tag">Notion AI</span>
+            </div>
+            <p class="auto-tip">Registra una vez por semana las clases realizadas. El sistema calcula automáticamente si vas al ritmo necesario para cubrir todos los OA antes de las evaluaciones de fin de año del establecimiento.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-cal)">5</div>
+          <div class="auto-body">
+            <h3>Gestión del Tiempo con IA Anti-Burnout</h3>
+            <p>Herramientas que analizan tu calendario semanal y bloquean automáticamente tiempos de planificación, corrección y descanso. Detectan sobrecarga y reagendan compromisos menores para proteger el tiempo de trabajo profundo y prevenir el burnout docente.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Reclaim.ai</span>
+              <span class="tool-tag">Motion</span>
+              <span class="tool-tag">Setmore</span>
+            </div>
+            <p class="auto-tip">Reclaim.ai aprende tus patrones de trabajo y protege automáticamente bloques para tus tareas prioritarias. Reporta un ahorro promedio de 45 minutos semanales solo en gestión de agenda.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ──────── REUNIONES ──────── -->
+    <div id="panel-reuniones" hidden>
+      <div class="panel-header">
+        <span class="cat-pill" data-cat="reuniones">🤝 Reuniones y Comunicación</span>
+        <h2>Reuniones Efectivas y Comunicación Automatizada</h2>
+        <p>Desde la transcripción y resumen automático de reuniones hasta el envío masivo de informes personalizados a apoderados: automatiza todo el flujo de comunicación institucional y profesional.</p>
+        <span class="time-saved-badge">⏱ Recupera ~0.5 horas semanales</span>
+      </div>
+      <div class="auto-grid">
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-reuniones)">1</div>
+          <div class="auto-body">
+            <h3>Transcripción y Acta Automática de Reuniones</h3>
+            <p>La IA transcribe y resume las reuniones de consejo de profesores, equipos de gestión y entrevistas de apoderados. Genera un acta estructurada con acuerdos, compromisos, responsables y plazos detectados automáticamente, sin redactar una sola línea.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Fireflies AI</span>
+              <span class="tool-tag">Otter.ai</span>
+              <span class="tool-tag">Microsoft Copilot</span>
+            </div>
+            <p class="auto-tip">Fireflies AI se integra con Google Meet y Zoom. Activa la grabación al inicio de la reunión y al finalizar recibes automáticamente el resumen con puntos clave, compromisos y seguimiento de tareas.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-reuniones)">2</div>
+          <div class="auto-body">
+            <h3>Correos a Apoderados Personalizados en Segundos</h3>
+            <p>La IA redacta correos individualizados por estudiante, combinando datos de asistencia, notas y comportamiento en mensajes con tono personalizado y empático. Lo que antes tomaba 30 minutos, ahora toma 5.</p>
+            <div class="tools-row">
+              <span class="tool-tag">MagicSchool AI</span>
+              <span class="tool-tag">Claude AI</span>
+              <span class="tool-tag">Gmail + Apps Script</span>
+            </div>
+            <p class="auto-tip">La IA adapta automáticamente el tono del correo según si la noticia es positiva (reconocimiento) o requiere atención (citación). Un mismo prompt genera 35 correos únicos para todo el curso.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-reuniones)">3</div>
+          <div class="auto-body">
+            <h3>Programación Autónoma de Entrevistas de Apoderados</h3>
+            <p>Comparte un enlace de reserva. Los apoderados eligen su horario disponible de forma independiente. El sistema gestiona la agenda, evita conflictos, envía confirmaciones y recordatorios automáticos 24 horas antes a ambas partes.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Calendly</span>
+              <span class="tool-tag">Setmore</span>
+              <span class="tool-tag">Google Calendar</span>
+            </div>
+            <p class="auto-tip">Configura tus horarios disponibles para entrevistas una vez al inicio del período. Los apoderados reservan con total autonomía y tú solo apareces en el horario acordado, sin back-and-forth de mensajes.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-reuniones)">4</div>
+          <div class="auto-body">
+            <h3>Informe de Avance Académico Automático Mensual</h3>
+            <p>El sistema genera automáticamente informes individuales por estudiante cada mes o trimestre, con notas, asistencia y observaciones, y los envía por correo a cada apoderado de forma masiva y personalizada sin intervención manual.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Google Classroom</span>
+              <span class="tool-tag">Apps Script + PDF</span>
+              <span class="tool-tag">Quid</span>
+            </div>
+            <p class="auto-tip">Un script conecta tu libro de clases en Sheets con un generador de PDF y Gmail. Configúralo una vez y cada mes se ejecuta automáticamente generando y enviando un informe individual por alumno.</p>
+          </div>
+        </div>
+
+        <div class="auto-card">
+          <div class="auto-num" style="background:var(--cat-reuniones)">5</div>
+          <div class="auto-body">
+            <h3>Diario Docente Inteligente por Dictado de Voz</h3>
+            <p>Al terminar cada módulo, dicta tus observaciones por voz durante 2 minutos. La IA transcribe, organiza y estructura automáticamente las anotaciones en un diario digital etiquetado por estudiante, OA cubierto y tipo de observación.</p>
+            <div class="tools-row">
+              <span class="tool-tag">Otter.ai</span>
+              <span class="tool-tag">Notion AI</span>
+              <span class="tool-tag">Google Keep</span>
+            </div>
+            <p class="auto-tip">2 minutos de dictado reemplaza 15 minutos de escritura manual. Al final del mes tienes un registro completo, estructurado y buscable de todas tus clases, listo para informes de rendimiento y reuniones de apoderados.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /container -->
+</main>
+
+<!-- ═══ SUMMARY ═══ -->
+<section class="summary-section">
+  <div class="container">
+    <h2>Impacto Total de la Automatización Docente</h2>
+    <p class="summary-sub">Implementadas de forma gradual, estas automatizaciones recuperan el equivalente a <strong style="color:var(--hero-gold)">10 jornadas laborales completas</strong> al año, transformando el tiempo administrativo en tiempo pedagógico.</p>
+
+    <div class="impact-grid">
+      <div class="impact-card">
+        <div class="impact-num">5.9</div>
+        <div class="impact-label">horas semanales<br>recuperadas</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">236</div>
+        <div class="impact-label">horas anuales<br>liberadas</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">25</div>
+        <div class="impact-label">automatizaciones<br>documentadas</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">80%</div>
+        <div class="impact-label">menos tiempo en<br>tareas administrativas</div>
+      </div>
+    </div>
+
+    <h3 class="roadmap-title">Hoja de Ruta de Implementación</h3>
+    <div class="roadmap-list">
+      <div class="roadmap-item">
+        <div class="road-num">1</div>
+        <div class="road-body">
+          <h4>Semana 1–2 · Fundamentos digitales</h4>
+          <p>Configura Google Classroom como hub central. Activa el QR de asistencia y la planilla automatizada de notas. Son las dos automatizaciones con mayor retorno inmediato de tiempo.</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="road-num">2</div>
+        <div class="road-body">
+          <h4>Mes 1 · IA para evaluaciones y notas</h4>
+          <p>Integra MagicSchool AI o Claude para generación de pruebas, rúbricas y retroalimentación. Configura recordatorios de evaluaciones pendientes y activa las alertas de bajo rendimiento.</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="road-num">3</div>
+        <div class="road-body">
+          <h4>Mes 2–3 · Comunicación y calendario inteligente</h4>
+          <p>Activa Fireflies AI para reuniones y Calendly para entrevistas de apoderados. Sincroniza el calendario escolar, programa informes mensuales automáticos y comienza el diario docente por voz.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const allPanels = ['asistencia','notas','evaluaciones','calendario','reuniones'].reduce((m,id) => {
+    m[id] = document.getElementById('panel-' + id);
+    return m;
+  }, {});
+
+  function showPanel(id, btn) {
+    Object.values(allPanels).forEach(p => { p.hidden = true; });
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    allPanels[id].hidden = false;
+    btn.classList.add('active');
+    // Smooth scroll to main content on mobile
+    if (window.innerWidth < 640) {
+      document.querySelector('main').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Recursos Docentes</title>
+<meta name="description" content="Portal de recursos docentes: calculadora de escala de notas y guía de automatizaciones con Inteligencia Artificial para profesores.">
+
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<meta name="theme-color" content="#2F4E8C">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#F7F3EA;
+    --surface:#FFFFFF;
+    --surface-2:#EEE7D8;
+    --ink:#26243A;
+    --ink-soft:#5E5A72;
+    --border:#DCD3BC;
+    --accent:#2F4E8C;
+    --accent-ink:#1E3A70;
+    --accent-soft:#DCE3F4;
+    --gold:#9C7A22;
+    --gold-soft:#F1E6BE;
+    --shadow: 0 1px 2px rgba(38,36,58,.06), 0 8px 24px -12px rgba(38,36,58,.18);
+    --font-display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#181A2A;
+      --surface:#20223A;
+      --surface-2:#282B48;
+      --ink:#EEEBF4;
+      --ink-soft:#B4B0C8;
+      --border:#333758;
+      --accent:#6E93D6;
+      --accent-ink:#A9C1EE;
+      --accent-soft:#28345C;
+      --gold:#D9BB6A;
+      --gold-soft:#3A3320;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  *,*::before,*::after{ box-sizing:border-box; }
+  body{
+    margin:0;
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .wrap{ max-width: 920px; margin: 0 auto; padding-inline: 20px; }
+
+  header.site{
+    padding-block: 56px 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .eyebrow{
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 14px;
+  }
+  header.site h1{
+    font-family: var(--font-display);
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 700;
+    margin: 0 0 14px;
+    line-height: 1.15;
+  }
+  header.site p{
+    color: var(--ink-soft);
+    max-width: 560px;
+    margin: 0;
+    font-size: 16px;
+  }
+
+  main{ padding-block: 44px 60px; }
+
+  .grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .card{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 26px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover, .card:focus-visible{
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(38,36,58,.08), 0 16px 32px -16px rgba(38,36,58,.28);
+  }
+
+  .card-icon{
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    background: var(--accent-soft);
+  }
+
+  .card h2{
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .card p{
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: 0;
+    flex-grow: 1;
+  }
+
+  .card-cta{
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  footer.site{
+    padding-block: 26px 48px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <p class="eyebrow">Portal de Recursos Docentes</p>
+    <h1>Herramientas para el trabajo pedagógico diario</h1>
+    <p>Aplicaciones y guías desarrolladas para apoyar la labor docente: cálculo de calificaciones, planificación y automatización de tareas administrativas con Inteligencia Artificial.</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="grid">
+
+      <a class="card" href="escala-de-notas/index.html">
+        <div class="card-icon">📐</div>
+        <h2>Escala de Notas</h2>
+        <p>Calculadora de escala 1,0–7,0 con puntaje máximo, nota de aprobación y porcentaje de exigencia configurables. Instalable como aplicación.</p>
+        <span class="card-cta">Abrir calculadora →</span>
+      </a>
+
+      <a class="card" href="automatizaciones-docentes-ia/index.html">
+        <div class="card-icon">🤖</div>
+        <h2>Automatizaciones Docentes con IA</h2>
+        <p>Guía de 25 automatizaciones con Inteligencia Artificial para asistencia, notas, evaluaciones, calendario y comunicación con apoderados.</p>
+        <span class="card-cta">Ver guía →</span>
+      </a>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">Recursos de apoyo a la docencia · uso educativo</div>
+</footer>
+
+</body>
+</html>

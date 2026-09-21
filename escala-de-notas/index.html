@@ -142,9 +142,10 @@
   #installBtn{white-space:nowrap;}
 
   /* ---------- Layout ---------- */
-  .layout{display:grid; grid-template-columns: 336px 1fr; gap:22px; align-items:start;}
-  .layout > *{min-width:0;}
-  @media (max-width:860px){ .layout{grid-template-columns:1fr;} }
+  .layout{display:flex; flex-direction:column; gap:22px;}
+  .top-row{display:grid; grid-template-columns: 336px 1fr; gap:22px; align-items:start;}
+  .top-row > *{min-width:0;}
+  @media (max-width:860px){ .top-row{grid-template-columns:1fr;} }
 
   .panel{
     background:var(--surface); border:1px solid var(--border); border-radius:16px;
@@ -185,6 +186,56 @@
   .stat-row{display:flex; justify-content:space-between; align-items:baseline; font-size:.84rem;}
   .stat-row span:first-child{color:var(--ink-soft);}
   .stat-row span:last-child{font-family:var(--font-mono); font-weight:700; color:var(--ink);}
+
+  /* ---------- Estadística del curso ---------- */
+  .stats-top{margin-bottom:20px;}
+  .stats-top h2{font-size:1.05rem; font-weight:700; margin:0 0 6px;}
+  .stats-top p{color:var(--ink-soft); font-size:.86rem; margin:0; max-width:64ch; line-height:1.55;}
+
+  .stats-body{display:grid; grid-template-columns:300px 1fr; gap:28px; align-items:start;}
+  @media (max-width:760px){ .stats-body{grid-template-columns:1fr;} }
+
+  .stats-input label{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size:.78rem; font-weight:600; color:var(--ink-soft); margin-bottom:5px; letter-spacing:.01em;
+  }
+  .stats-input label .hint{font-weight:400; color:var(--ink-faint); font-size:.72rem;}
+  .stats-input textarea{
+    width:100%; min-height:190px; font-family:var(--font-mono); font-size:.85rem; line-height:1.5;
+    padding:10px 12px; border-radius:9px; border:1.5px solid var(--border);
+    background:var(--surface); color:var(--ink); resize:vertical;
+  }
+  .stats-input textarea:focus{border-color:var(--accent);}
+  .stats-input-note{margin:7px 0 0; font-size:.74rem; color:var(--ink-faint); font-style:italic;}
+
+  .chart-title{
+    font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--ink-soft); margin:0 0 14px;
+  }
+  .chart-title .hint{display:block; text-transform:none; letter-spacing:0; font-weight:400; color:var(--ink-faint); font-size:.76rem; margin-top:3px;}
+
+  .chart-detail{margin-top:24px; padding-top:22px; border-top:1px dashed var(--border);}
+
+  .bar-chart{display:grid; gap:18px;}
+  .bar-row{display:grid; grid-template-columns:140px 1fr 84px; gap:14px; align-items:center;}
+  @media (max-width:560px){ .bar-row{grid-template-columns:1fr; gap:6px;} .bar-value{text-align:left;} }
+  .bar-label-name{display:flex; align-items:center; gap:7px; font-size:.86rem; font-weight:600;}
+  .bar-dot{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+  .bar-label small{display:block; margin-top:2px; font-weight:400; color:var(--ink-faint); font-size:.72rem; font-family:var(--font-mono);}
+  .bar-track{height:14px; background:var(--surface-2); border-radius:7px; overflow:hidden;}
+  .bar-fill{height:100%; border-radius:7px; min-width:3px;}
+  .bar-value{font-family:var(--font-mono); font-size:.9rem; font-weight:700; text-align:right; white-space:nowrap;}
+  .bar-value small{display:block; margin-top:1px; font-weight:500; color:var(--ink-faint); font-size:.72rem;}
+
+  .bar-chart-compact{gap:9px;}
+  .bar-chart-compact .bar-row{grid-template-columns:44px 1fr 92px; gap:10px;}
+  @media (max-width:560px){ .bar-chart-compact .bar-row{grid-template-columns:38px 1fr 68px; gap:8px;} }
+  .bar-chart-compact .bar-label-name{font-family:var(--font-mono); font-size:.9rem; font-weight:700;}
+  .bar-chart-compact .bar-track{height:11px;}
+  .bar-chart-compact .bar-value{font-size:.8rem;}
+  .bar-chart-compact .bar-value small{display:inline; margin-top:0; margin-left:4px;}
+
+  .chart-empty{color:var(--ink-faint); font-size:.86rem; margin:0; padding:8px 0;}
 
   .btn{
     font-family:var(--font-body); font-weight:600; font-size:.85rem; cursor:pointer;
@@ -275,14 +326,23 @@
   .step-group button + button{border-left:1.5px solid var(--border);}
   .step-group button[aria-pressed="true"]{background:var(--accent); color:#fff;}
 
-  .table-scroll{overflow-x:auto; border:1px solid var(--border); border-radius:12px;}
-  table.scale-table{width:100%; border-collapse:collapse; font-size:.88rem;}
+  .table-scroll{display:inline-block; max-width:100%; max-height:min(68vh, 620px); overflow:auto; border:1px solid var(--border); border-radius:12px; vertical-align:top;}
+  .table-groups{display:flex; align-items:flex-start; width:max-content;}
+  table.scale-table{width:auto; max-width:100%; border-collapse:collapse; font-size:.82rem;}
+  .table-groups table.scale-table{border-left:1px solid var(--border);}
+  .table-groups table.scale-table:first-child{border-left:none;}
+  .table-scroll.single-col{display:block;}
+  .table-scroll.single-col .table-groups{width:100%;}
+  .table-scroll.single-col table.scale-table{width:100%;}
+  .table-scroll.single-col .scale-table th,
+  .table-scroll.single-col .scale-table td{white-space:normal; overflow-wrap:break-word; padding:6px; line-height:1.3;}
+  .table-scroll.single-col .aprob-flag{display:inline-block; margin-top:2px;}
   .scale-table thead th{
     position:sticky; top:0; background:var(--surface-3); color:var(--ink-soft);
-    text-align:left; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
-    padding:10px 14px; border-bottom:1px solid var(--border); font-weight:700;
+    text-align:left; font-size:.68rem; letter-spacing:.05em; text-transform:uppercase;
+    padding:8px 9px; border-bottom:1px solid var(--border); font-weight:700; white-space:nowrap;
   }
-  .scale-table td{padding:8px 14px; border-bottom:1px solid var(--border); font-family:var(--font-mono);}
+  .scale-table td{padding:4px 9px; border-bottom:1px solid var(--border); font-family:var(--font-mono); white-space:nowrap;}
   .scale-table tbody tr:last-child td{border-bottom:none;}
   .scale-table td.nota-cell{font-weight:700; font-size:.95rem;}
   .scale-table td.desc-cell{font-family:var(--font-body); font-weight:600; font-size:.8rem;}
@@ -315,10 +375,12 @@
   footer{margin-top:30px; text-align:center; font-size:.78rem; color:var(--ink-faint);}
 
   @media print{
-    .config-panel, .btn, .calc-input-row input[type="range"], .table-top-actions, .formula-card{display:none !important;}
+    .config-panel, .btn, .calc-input-row input[type="range"], .table-top-actions, .formula-card, .stats-card{display:none !important;}
     body{background:#fff; color:#000; padding:0;}
-    .layout{grid-template-columns:1fr; display:block;}
+    .layout{display:block;}
+    .top-row{grid-template-columns:1fr; display:block;}
     .panel{box-shadow:none; border:1px solid #999;}
+    .table-scroll{display:block; max-height:none; overflow:visible;}
   }
 </style>
 </head>
@@ -337,6 +399,7 @@
   </header>
 
   <main class="layout">
+   <div class="top-row">
     <!-- ============ CONFIG PANEL ============ -->
     <aside class="panel config-panel" aria-label="Configuración de la escala">
       <h2>Parámetros del instrumento</h2>
@@ -426,35 +489,6 @@
         </div>
       </section>
 
-      <!-- Tabla completa -->
-      <section class="panel table-card" aria-label="Tabla de conversión completa">
-        <div class="table-top">
-          <div>
-            <h2>Tabla de conversión</h2>
-          </div>
-          <div class="table-top-actions">
-            <div class="step-group" role="group" aria-label="Incremento de puntaje mostrado">
-              <button type="button" data-step="1" aria-pressed="true">de 1 en 1</button>
-              <button type="button" data-step="0.5">de 0,5 en 0,5</button>
-            </div>
-            <button type="button" class="btn" id="printBtn">Imprimir escala</button>
-          </div>
-        </div>
-        <div class="table-scroll">
-          <table class="scale-table">
-            <thead>
-              <tr>
-                <th>Puntaje</th>
-                <th>% de logro</th>
-                <th>Nota</th>
-                <th>Desempeño</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>
-      </section>
-
       <!-- Fundamento matemático -->
       <details class="panel formula-card">
         <summary>Fundamento matemático de la escala</summary>
@@ -470,6 +504,64 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
       </details>
 
     </div>
+   </div>
+
+    <!-- Estadística del curso: % de logro y desempeño del grupo -->
+    <section class="panel stats-card" aria-label="Estadística de logro del curso">
+      <div class="stats-top">
+        <h2>Estadística del curso</h2>
+        <p>Ingrese el puntaje obtenido por <b>cada uno de los estudiantes del curso</b> (uno por alumno) para ver, en cantidad y porcentaje, cuántos se ubican en cada nivel de logro.</p>
+      </div>
+      <div class="stats-body">
+        <div class="stats-input">
+          <label for="studentScores">Puntajes obtenidos <span class="hint">uno por línea o separados por coma</span></label>
+          <textarea id="studentScores" rows="9">45
+38
+52
+60
+33
+58
+41
+55
+48
+59
+30
+44</textarea>
+          <p class="stats-input-note">Estos son datos de ejemplo — bórrelos y reemplácelos por los puntajes reales de su curso.</p>
+          <div class="stats-summary" id="statsSummary"></div>
+        </div>
+        <div class="stats-chart-wrap">
+          <h3 class="chart-title">Por nivel de logro</h3>
+          <div class="bar-chart" id="barChart" role="img" aria-label="Distribución porcentual del curso por nivel de logro"></div>
+          <p class="chart-empty" id="chartEmpty">Ingrese los puntajes del curso para ver los gráficos.</p>
+        </div>
+      </div>
+
+      <!-- Gráfico aparte: panorámica completa, detallada por cada nota -->
+      <div class="chart-detail" id="noteChartWrap" hidden>
+        <h3 class="chart-title">Por nota <span class="hint">panorámica completa: cantidad y % de estudiantes en cada calificación</span></h3>
+        <div class="bar-chart bar-chart-compact" id="noteChart" role="img" aria-label="Cantidad y porcentaje de estudiantes por cada nota obtenida"></div>
+      </div>
+    </section>
+
+    <!-- Tabla completa: ocupa todo el ancho para ver la escala completa de un vistazo -->
+    <section class="panel table-card" aria-label="Tabla de conversión completa">
+      <div class="table-top">
+        <div>
+          <h2>Tabla de conversión</h2>
+        </div>
+        <div class="table-top-actions">
+          <div class="step-group" role="group" aria-label="Incremento de puntaje mostrado">
+            <button type="button" data-step="1" aria-pressed="true">de 1 en 1</button>
+            <button type="button" data-step="0.5">de 0,5 en 0,5</button>
+          </div>
+          <button type="button" class="btn" id="printBtn">Imprimir escala</button>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <div class="table-groups" id="tableGroups"></div>
+      </div>
+    </section>
   </main>
 
   <footer>Instrumento de referencia para uso docente · los valores no constituyen una normativa oficial de evaluación.</footer>
@@ -498,10 +590,18 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
     scaleThresholdLabel: document.getElementById('scaleThresholdLabel'),
     scaleLabelMin: document.getElementById('scaleLabelMin'),
     scaleLabelMax: document.getElementById('scaleLabelMax'),
-    tableBody: document.getElementById('tableBody'),
+    tableGroups: document.getElementById('tableGroups'),
+    tableScroll: document.querySelector('.table-scroll'),
+    tableCard: document.querySelector('.table-card'),
     statPA: document.getElementById('statPA'),
     statRango: document.getElementById('statRango'),
     statDecimas: document.getElementById('statDecimas'),
+    studentScores: document.getElementById('studentScores'),
+    statsSummary: document.getElementById('statsSummary'),
+    barChart: document.getElementById('barChart'),
+    chartEmpty: document.getElementById('chartEmpty'),
+    noteChart: document.getElementById('noteChart'),
+    noteChartWrap: document.getElementById('noteChartWrap'),
     errorMsg: document.getElementById('errorMsg'),
     resetBtn: document.getElementById('resetBtn'),
     printBtn: document.getElementById('printBtn')
@@ -593,6 +693,105 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
     return {label:'Sobresaliente', cls:'sobresaliente'};
   }
 
+  var LEVELS = [
+    { cls:'insuficiente', label:'Insuficiente', color:'var(--fail)' },
+    { cls:'suficiente',   label:'Suficiente',   color:'var(--warm)' },
+    { cls:'bueno',        label:'Bueno',        color:'var(--accent)' },
+    { cls:'sobresaliente',label:'Sobresaliente',color:'var(--pass)' }
+  ];
+
+  function parseScores(raw){
+    return raw.split(/[\n,;]+/)
+      .map(function(s){ return s.trim().replace(',', '.'); })
+      .filter(function(s){ return s.length > 0; })
+      .map(function(s){ return parseFloat(s); })
+      .filter(function(n){ return isFinite(n); });
+  }
+
+  function logroRanges(cfg){
+    var span = (100 - cfg.exigencia) / 3;
+    var e = cfg.exigencia, e1 = e + span, e2 = e + span * 2;
+    return {
+      insuficiente: 'menos de ' + fmt1(e) + ' %',
+      suficiente: fmt1(e) + ' – ' + fmt1(e1) + ' %',
+      bueno: fmt1(e1) + ' – ' + fmt1(e2) + ' %',
+      sobresaliente: fmt1(e2) + ' – 100 %'
+    };
+  }
+
+  function renderChart(cfg){
+    var scores = parseScores(els.studentScores.value);
+
+    if(!scores.length){
+      els.barChart.innerHTML = '';
+      els.noteChart.innerHTML = '';
+      els.noteChartWrap.hidden = true;
+      els.statsSummary.innerHTML = '';
+      els.chartEmpty.hidden = false;
+      return;
+    }
+    els.chartEmpty.hidden = true;
+    els.noteChartWrap.hidden = false;
+
+    var counts = {insuficiente:0, suficiente:0, bueno:0, sobresaliente:0};
+    var notaSum = 0, aprobCount = 0;
+    scores.forEach(function(s){
+      var p = Math.max(0, Math.min(cfg.puntajeMax, s));
+      var nota = calcNota(p, cfg);
+      counts[descriptor(nota, cfg).cls]++;
+      notaSum += nota;
+      if(nota >= cfg.notaAprobacion) aprobCount++;
+    });
+
+    var total = scores.length;
+    var promedio = Math.round((notaSum / total) * 10) / 10;
+    var pctAprob = Math.round((aprobCount / total) * 1000) / 10;
+
+    els.statsSummary.innerHTML =
+      '<div class="stat-row"><span>Estudiantes</span><span>' + total + '</span></div>'
+      + '<div class="stat-row"><span>Promedio del curso</span><span>' + fmt1(promedio) + '</span></div>'
+      + '<div class="stat-row"><span>% de aprobación</span><span>' + fmt1(pctAprob) + ' %</span></div>';
+
+    var ranges = logroRanges(cfg);
+    var chartHtml = '';
+    LEVELS.forEach(function(lvl){
+      var n = counts[lvl.cls];
+      var pct = Math.round((n / total) * 1000) / 10;
+      chartHtml += '<div class="bar-row">'
+        + '<div class="bar-label"><span class="bar-label-name"><span class="bar-dot" style="background:' + lvl.color + '"></span>' + lvl.label + '</span>'
+          + '<small>' + ranges[lvl.cls] + ' de logro</small></div>'
+        + '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%; background:' + lvl.color + '"></div></div>'
+        + '<div class="bar-value">' + fmt1(pct) + ' %<small>' + n + (n === 1 ? ' estudiante' : ' estudiantes') + '</small></div>'
+        + '</div>';
+    });
+    els.barChart.innerHTML = chartHtml;
+
+    // Gráfico aparte: panorámica completa, con la cantidad y el % exactos
+    // de estudiantes que obtuvieron cada nota (no solo agrupados por nivel).
+    var notaMinInt = Math.round(cfg.notaMin);
+    var notaMaxInt = Math.round(cfg.notaMax);
+    var noteCounts = {};
+    scores.forEach(function(s){
+      var p = Math.max(0, Math.min(cfg.puntajeMax, s));
+      var bucket = Math.max(notaMinInt, Math.min(notaMaxInt, Math.round(calcNota(p, cfg))));
+      noteCounts[bucket] = (noteCounts[bucket] || 0) + 1;
+    });
+
+    var noteHtml = '';
+    for(var nota = notaMaxInt; nota >= notaMinInt; nota--){
+      var nCount = noteCounts[nota] || 0;
+      var nPct = Math.round((nCount / total) * 1000) / 10;
+      var color = LEVELS.filter(function(l){ return l.cls === descriptor(nota, cfg).cls; })[0].color;
+      var fillStyle = 'width:' + nPct + '%; background:' + color + (nCount === 0 ? '; min-width:0' : '');
+      noteHtml += '<div class="bar-row">'
+        + '<div class="bar-label"><span class="bar-label-name">' + fmt1(nota) + '</span></div>'
+        + '<div class="bar-track"><div class="bar-fill" style="' + fillStyle + '"></div></div>'
+        + '<div class="bar-value">' + fmt1(nPct) + ' %<small>(' + nCount + ')</small></div>'
+        + '</div>';
+    }
+    els.noteChart.innerHTML = noteHtml;
+  }
+
   function renderCalculator(cfg){
     var pObt = num(els.puntajeObtenido);
     if(pObt < 0) pObt = 0;
@@ -645,22 +844,48 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
       rows.push(pr);
       if(pr >= cfg.puntajeMax) break;
     }
-    var html = '';
     var paRounded = Math.round(cfg.puntajeAprobacion * 100) / 100;
-    for(var i=0; i<rows.length; i++){
-      var p = rows[i];
+
+    function rowHtml(p){
       var nota = calcNota(p, cfg);
       var desc = descriptor(nota, cfg);
       var pct = cfg.puntajeMax > 0 ? (p / cfg.puntajeMax) * 100 : 0;
       var isAprobRow = Math.abs(p - paRounded) < (state.step / 2 + 0.001);
-      html += '<tr class="row-' + desc.cls + (isAprobRow ? ' row-aprobacion' : '') + '">'
+      return '<tr class="row-' + desc.cls + (isAprobRow ? ' row-aprobacion' : '') + '">'
         + '<td>' + fmt1(p) + '</td>'
         + '<td>' + fmt1(pct) + ' %</td>'
         + '<td class="nota-cell">' + fmt1(nota) + (isAprobRow ? '<span class="aprob-flag">aprob.</span>' : '') + '</td>'
         + '<td class="desc-cell">' + desc.label + '</td>'
         + '</tr>';
     }
-    els.tableBody.innerHTML = html;
+
+    // Reparte las filas en columnas lado a lado para verlas todas de un vistazo,
+    // en vez de una sola lista vertical muy larga. El número de columnas se
+    // ajusta al ancho real disponible, para que en celular quepa 1 columna,
+    // en tablet 2-3, y en pantallas grandes tantas como entren sin scroll.
+    var COL_WIDTH = 335;
+    var MIN_ROWS_PER_COL = 8;
+    var MAX_COLS = 6;
+    var availWidth = els.tableCard ? (els.tableCard.clientWidth - 40) : 320;
+    var colsByWidth = Math.max(1, Math.floor(availWidth / COL_WIDTH));
+    var colsByRows = Math.max(1, Math.ceil(rows.length / MIN_ROWS_PER_COL));
+    var colCount = Math.min(MAX_COLS, colsByWidth, colsByRows);
+    var rowsPerCol = Math.ceil(rows.length / colCount);
+
+    var groupsHtml = '';
+    for(var c = 0; c < colCount; c++){
+      var start = c * rowsPerCol;
+      var end = Math.min(start + rowsPerCol, rows.length);
+      if(start >= end) break;
+      var bodyHtml = '';
+      for(var i = start; i < end; i++){ bodyHtml += rowHtml(rows[i]); }
+      groupsHtml += '<table class="scale-table">'
+        + '<thead><tr><th>Puntaje</th><th>% de logro</th><th>Nota</th><th>Desempeño</th></tr></thead>'
+        + '<tbody>' + bodyHtml + '</tbody>'
+        + '</table>';
+    }
+    els.tableGroups.innerHTML = groupsHtml;
+    els.tableScroll.classList.toggle('single-col', colCount === 1);
   }
 
   function renderAll(){
@@ -669,6 +894,7 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
     renderCalculator(cfg);
     renderStats(cfg);
     renderTable(cfg);
+    renderChart(cfg);
     persist(cfg);
   }
 
@@ -706,6 +932,12 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
     renderAll();
   });
 
+  var scoresTimer = null;
+  els.studentScores.addEventListener('input', function(){
+    clearTimeout(scoresTimer);
+    scoresTimer = setTimeout(renderAll, 150);
+  });
+
   document.querySelectorAll('.chip[data-exigencia]').forEach(function(chip){
     chip.addEventListener('click', function(){ setExigenciaChip(parseFloat(chip.dataset.exigencia)); });
   });
@@ -725,6 +957,12 @@ Nota(p) = NotaAprob + [(p − PA) ÷ (PuntajeMáx − PA)] × (NotaMáx − Nota
   });
 
   els.printBtn.addEventListener('click', function(){ window.print(); });
+
+  var resizeTimer = null;
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(renderAll, 120);
+  });
 
   loadSaved();
   renderAll();
