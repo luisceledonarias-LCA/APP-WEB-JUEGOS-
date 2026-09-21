@@ -276,13 +276,13 @@
   .step-group button[aria-pressed="true"]{background:var(--accent); color:#fff;}
 
   .table-scroll{overflow-x:auto; border:1px solid var(--border); border-radius:12px;}
-  table.scale-table{width:100%; border-collapse:collapse; font-size:.88rem;}
+  table.scale-table{width:auto; max-width:100%; border-collapse:collapse; font-size:.88rem;}
   .scale-table thead th{
     position:sticky; top:0; background:var(--surface-3); color:var(--ink-soft);
     text-align:left; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
-    padding:10px 14px; border-bottom:1px solid var(--border); font-weight:700;
+    padding:10px 12px; border-bottom:1px solid var(--border); font-weight:700; white-space:nowrap;
   }
-  .scale-table td{padding:8px 14px; border-bottom:1px solid var(--border); font-family:var(--font-mono);}
+  .scale-table td{padding:6px 12px; border-bottom:1px solid var(--border); font-family:var(--font-mono); white-space:nowrap;}
   .scale-table tbody tr:last-child td{border-bottom:none;}
   .scale-table td.nota-cell{font-weight:700; font-size:.95rem;}
   .scale-table td.desc-cell{font-family:var(--font-body); font-weight:600; font-size:.8rem;}
