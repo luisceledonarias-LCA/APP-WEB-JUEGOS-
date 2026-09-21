@@ -231,15 +231,16 @@
   .hab-card p{font-size:.82rem; color:var(--ink-soft); line-height:1.55;}
 
   /* ---------- filtro de curso por eje ---------- */
-  .grados-row{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:24px;}
+  .grados-row{display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:12px; margin-bottom:24px; text-align:center;}
   .grados-label{
     font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
-    color:var(--ink-faint); margin-right:4px; width:100%; margin-bottom:2px;
+    color:var(--ink-faint); width:100%; margin-bottom:4px; text-align:center;
   }
   .grado-btn{
-    font-family:inherit; padding:7px 14px; border-radius:999px; border:1.5px solid var(--border);
-    background:var(--surface); color:var(--ink-soft); font-size:.82rem; font-weight:700; cursor:pointer;
-    transition:.18s var(--ease);
+    font-family:inherit; padding:16px 20px; min-width:110px; flex:1 1 110px; max-width:150px;
+    border-radius:999px; border:1.5px solid var(--border);
+    background:var(--surface); color:var(--ink-soft); font-size:1rem; font-weight:700; cursor:pointer;
+    text-align:center; transition:.18s var(--ease);
   }
   .grado-btn:hover{color:var(--ink); border-color:var(--ink-faint);}
   .grado-btn.activo{background:var(--grad); border-color:transparent; color:#fff; box-shadow:var(--shadow-sm);}
