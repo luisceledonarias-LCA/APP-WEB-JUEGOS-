@@ -1,11 +1,8 @@
-name: Publicar Escala de Notas en GitHub Pages
+name: Publicar Portal Docente en GitHub Pages
 
 on:
   push:
     branches: [main]
-    paths:
-      - 'escala-de-notas/**'
-      - '.github/workflows/pages.yml'
   workflow_dispatch:
 
 permissions:
@@ -32,10 +29,15 @@ jobs:
         with:
           enablement: true
 
-      - name: Subir la app como artefacto de Pages
+      - name: Preparar carpeta de publicación (sin .git ni .github)
+        run: |
+          mkdir -p _site
+          rsync -a --exclude='.git' --exclude='.github' --exclude='_site' ./ _site/
+
+      - name: Subir el sitio como artefacto de Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: escala-de-notas
+          path: _site
 
       - name: Desplegar en GitHub Pages
         id: deployment
