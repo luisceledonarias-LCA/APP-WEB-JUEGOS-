@@ -275,7 +275,7 @@
   .step-group button + button{border-left:1.5px solid var(--border);}
   .step-group button[aria-pressed="true"]{background:var(--accent); color:#fff;}
 
-  .table-scroll{display:inline-block; max-width:100%; overflow-x:auto; border:1px solid var(--border); border-radius:12px; vertical-align:top;}
+  .table-scroll{display:inline-block; max-width:100%; max-height:380px; overflow:auto; border:1px solid var(--border); border-radius:12px; vertical-align:top;}
   table.scale-table{width:auto; max-width:100%; border-collapse:collapse; font-size:.88rem;}
   .scale-table thead th{
     position:sticky; top:0; background:var(--surface-3); color:var(--ink-soft);
@@ -319,6 +319,7 @@
     body{background:#fff; color:#000; padding:0;}
     .layout{grid-template-columns:1fr; display:block;}
     .panel{box-shadow:none; border:1px solid #999;}
+    .table-scroll{display:block; max-height:none; overflow:visible;}
   }
 </style>
 </head>
