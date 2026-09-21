@@ -230,6 +230,21 @@
   .hab-card h4{font-size:.92rem; font-weight:750; margin-bottom:6px;}
   .hab-card p{font-size:.82rem; color:var(--ink-soft); line-height:1.55;}
 
+  /* ---------- filtro de curso por eje ---------- */
+  .grados-row{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:24px;}
+  .grados-label{
+    font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--ink-faint); margin-right:4px; width:100%; margin-bottom:2px;
+  }
+  .grado-btn{
+    font-family:inherit; padding:7px 14px; border-radius:999px; border:1.5px solid var(--border);
+    background:var(--surface); color:var(--ink-soft); font-size:.82rem; font-weight:700; cursor:pointer;
+    transition:.18s var(--ease);
+  }
+  .grado-btn:hover{color:var(--ink); border-color:var(--ink-faint);}
+  .grado-btn.activo{background:var(--grad); border-color:transparent; color:#fff; box-shadow:var(--shadow-sm);}
+  .grado-btn:focus-visible{outline-offset:2px;}
+
   .cat-row{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:16px;}
   @media (max-width:860px){ .cat-row{grid-template-columns:1fr;} }
   .cat-card{
@@ -261,6 +276,9 @@
   .recurso-card .r-info b{display:block; font-size:.88rem; font-weight:700; color:var(--ink);}
   .recurso-card .r-info span{display:block; font-size:.76rem; color:var(--ink-faint); margin-top:2px;}
   .recurso-card .r-go{flex:0 0 auto; font-size:.78rem; font-weight:700; color:var(--ink-soft);}
+  .recursos-list{display:flex; flex-direction:column; gap:10px;}
+  .recurso-card.oculto{display:none;}
+  .placeholder-card.sin-resultado{margin-top:10px;}
 
   /* ---------- herramientas docentes grid ---------- */
   .herramientas-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:18px;}
@@ -410,6 +428,18 @@
         <div class="hab-card" style="--grad:linear-gradient(135deg, var(--blue), var(--cyan));"><span class="tag">Argumentar</span><h4>Procedimientos de cálculo</h4><p>Explicar y justificar procedimientos de cálculo utilizando vocabulario matemático preciso.</p></div>
       </div>
 
+      <div class="grados-row" style="--grad:linear-gradient(135deg, var(--blue), var(--cyan));">
+        <span class="grados-label">Filtrar por curso</span>
+        <button type="button" class="grado-btn" data-grado="1" aria-pressed="false" title="1° Básico">1°</button>
+        <button type="button" class="grado-btn" data-grado="2" aria-pressed="false" title="2° Básico">2°</button>
+        <button type="button" class="grado-btn" data-grado="3" aria-pressed="false" title="3° Básico">3°</button>
+        <button type="button" class="grado-btn" data-grado="4" aria-pressed="false" title="4° Básico">4°</button>
+        <button type="button" class="grado-btn" data-grado="5" aria-pressed="false" title="5° Básico">5°</button>
+        <button type="button" class="grado-btn" data-grado="6" aria-pressed="false" title="6° Básico">6°</button>
+        <button type="button" class="grado-btn" data-grado="7" aria-pressed="false" title="7° Básico">7°</button>
+        <button type="button" class="grado-btn" data-grado="8" aria-pressed="false" title="8° Básico">8°</button>
+      </div>
+
       <div class="cat-row">
         <div class="cat-card">
           <div class="cat-head"><span class="ic">🎮</span><h4>Juegos interactivos</h4><span class="count">Próximamente</span></div>
@@ -446,6 +476,18 @@
         <div class="hab-card" style="--grad:linear-gradient(135deg, var(--purple), var(--pink));"><span class="tag">Representar</span><h4>Tablas y gráficos</h4><p>Expresar patrones y relaciones mediante tablas, gráficos y expresiones algebraicas.</p></div>
         <div class="hab-card" style="--grad:linear-gradient(135deg, var(--purple), var(--pink));"><span class="tag">Modelar</span><h4>Regularidades</h4><p>Generalizar regularidades numéricas y geométricas a partir de la observación de patrones.</p></div>
         <div class="hab-card" style="--grad:linear-gradient(135deg, var(--purple), var(--pink));"><span class="tag">Argumentar</span><h4>Reglas de formación</h4><p>Comunicar reglas de formación de patrones y justificar su validez.</p></div>
+      </div>
+
+      <div class="grados-row" style="--grad:linear-gradient(135deg, var(--purple), var(--pink));">
+        <span class="grados-label">Filtrar por curso</span>
+        <button type="button" class="grado-btn" data-grado="1" aria-pressed="false" title="1° Básico">1°</button>
+        <button type="button" class="grado-btn" data-grado="2" aria-pressed="false" title="2° Básico">2°</button>
+        <button type="button" class="grado-btn" data-grado="3" aria-pressed="false" title="3° Básico">3°</button>
+        <button type="button" class="grado-btn" data-grado="4" aria-pressed="false" title="4° Básico">4°</button>
+        <button type="button" class="grado-btn" data-grado="5" aria-pressed="false" title="5° Básico">5°</button>
+        <button type="button" class="grado-btn" data-grado="6" aria-pressed="false" title="6° Básico">6°</button>
+        <button type="button" class="grado-btn" data-grado="7" aria-pressed="false" title="7° Básico">7°</button>
+        <button type="button" class="grado-btn" data-grado="8" aria-pressed="false" title="8° Básico">8°</button>
       </div>
 
       <div class="cat-row">
@@ -486,14 +528,29 @@
         <div class="hab-card" style="--grad:linear-gradient(135deg, var(--orange), var(--red));"><span class="tag">Argumentar</span><h4>Justificación</h4><p>Justificar propiedades geométricas y transformaciones con vocabulario técnico.</p></div>
       </div>
 
+      <div class="grados-row" style="--grad:linear-gradient(135deg, var(--orange), var(--red));">
+        <span class="grados-label">Filtrar por curso</span>
+        <button type="button" class="grado-btn" data-grado="1" aria-pressed="false" title="1° Básico">1°</button>
+        <button type="button" class="grado-btn" data-grado="2" aria-pressed="false" title="2° Básico">2°</button>
+        <button type="button" class="grado-btn" data-grado="3" aria-pressed="false" title="3° Básico">3°</button>
+        <button type="button" class="grado-btn" data-grado="4" aria-pressed="false" title="4° Básico">4°</button>
+        <button type="button" class="grado-btn" data-grado="5" aria-pressed="false" title="5° Básico">5°</button>
+        <button type="button" class="grado-btn" data-grado="6" aria-pressed="false" title="6° Básico">6°</button>
+        <button type="button" class="grado-btn" data-grado="7" aria-pressed="false" title="7° Básico">7°</button>
+        <button type="button" class="grado-btn" data-grado="8" aria-pressed="false" title="8° Básico">8°</button>
+      </div>
+
       <div class="cat-row">
         <div class="cat-card">
           <div class="cat-head"><span class="ic">🎮</span><h4>Juegos interactivos</h4><span class="count">1 disponible</span></div>
-          <a class="recurso-card" href="juegos/geometria/angulos.html" style="--grad:linear-gradient(135deg, var(--orange), var(--red));">
-            <span class="r-ic">📐</span>
-            <span class="r-info"><b>Ángulos — Explora y Mide</b><span>Tipos, medición, triángulo y transportador interactivos</span></span>
-            <span class="r-go">Jugar →</span>
-          </a>
+          <div class="recursos-list">
+            <a class="recurso-card" href="juegos/geometria/angulos.html" data-cursos="5,6,7" style="--grad:linear-gradient(135deg, var(--orange), var(--red));">
+              <span class="r-ic">📐</span>
+              <span class="r-info"><b>Ángulos — Explora y Mide</b><span>Tipos, medición, triángulo y transportador interactivos · 5° a 7° Básico</span></span>
+              <span class="r-go">Jugar →</span>
+            </a>
+          </div>
+          <div class="placeholder-card sin-resultado" hidden><b>Sin recursos para este curso</b>El juego de Ángulos está disponible para 5° a 7° Básico. Prueba con otro nivel.</div>
         </div>
         <div class="cat-card">
           <div class="cat-head"><span class="ic">📘</span><h4>Guías de aprendizaje</h4><span class="count">Próximamente</span></div>
@@ -526,6 +583,18 @@
         <div class="hab-card" style="--grad:linear-gradient(135deg, var(--green), var(--teal));"><span class="tag">Representar</span><h4>Instrumentos y unidades</h4><p>Seleccionar y utilizar instrumentos y unidades de medida adecuadas a cada magnitud.</p></div>
         <div class="hab-card" style="--grad:linear-gradient(135deg, var(--green), var(--teal));"><span class="tag">Modelar</span><h4>Fórmulas</h4><p>Relacionar magnitudes y establecer fórmulas para el cálculo de perímetro, área y volumen.</p></div>
         <div class="hab-card" style="--grad:linear-gradient(135deg, var(--green), var(--teal));"><span class="tag">Argumentar</span><h4>Comunicación de resultados</h4><p>Comunicar resultados de mediciones utilizando unidades y notación correctas.</p></div>
+      </div>
+
+      <div class="grados-row" style="--grad:linear-gradient(135deg, var(--green), var(--teal));">
+        <span class="grados-label">Filtrar por curso</span>
+        <button type="button" class="grado-btn" data-grado="1" aria-pressed="false" title="1° Básico">1°</button>
+        <button type="button" class="grado-btn" data-grado="2" aria-pressed="false" title="2° Básico">2°</button>
+        <button type="button" class="grado-btn" data-grado="3" aria-pressed="false" title="3° Básico">3°</button>
+        <button type="button" class="grado-btn" data-grado="4" aria-pressed="false" title="4° Básico">4°</button>
+        <button type="button" class="grado-btn" data-grado="5" aria-pressed="false" title="5° Básico">5°</button>
+        <button type="button" class="grado-btn" data-grado="6" aria-pressed="false" title="6° Básico">6°</button>
+        <button type="button" class="grado-btn" data-grado="7" aria-pressed="false" title="7° Básico">7°</button>
+        <button type="button" class="grado-btn" data-grado="8" aria-pressed="false" title="8° Básico">8°</button>
       </div>
 
       <div class="cat-row">
@@ -564,6 +633,18 @@
         <div class="hab-card" style="--grad:linear-gradient(135deg, var(--indigo), var(--yellow));"><span class="tag">Representar</span><h4>Tablas y gráficos</h4><p>Organizar y representar datos en tablas, pictogramas y gráficos de barras y circulares.</p></div>
         <div class="hab-card" style="--grad:linear-gradient(135deg, var(--indigo), var(--yellow));"><span class="tag">Modelar</span><h4>Incertidumbre</h4><p>Interpretar situaciones de incertidumbre mediante conceptos de probabilidad.</p></div>
         <div class="hab-card" style="--grad:linear-gradient(135deg, var(--indigo), var(--yellow));"><span class="tag">Argumentar</span><h4>Conclusiones</h4><p>Argumentar conclusiones a partir del análisis de datos y comunicar resultados con lenguaje estadístico.</p></div>
+      </div>
+
+      <div class="grados-row" style="--grad:linear-gradient(135deg, var(--indigo), var(--yellow));">
+        <span class="grados-label">Filtrar por curso</span>
+        <button type="button" class="grado-btn" data-grado="1" aria-pressed="false" title="1° Básico">1°</button>
+        <button type="button" class="grado-btn" data-grado="2" aria-pressed="false" title="2° Básico">2°</button>
+        <button type="button" class="grado-btn" data-grado="3" aria-pressed="false" title="3° Básico">3°</button>
+        <button type="button" class="grado-btn" data-grado="4" aria-pressed="false" title="4° Básico">4°</button>
+        <button type="button" class="grado-btn" data-grado="5" aria-pressed="false" title="5° Básico">5°</button>
+        <button type="button" class="grado-btn" data-grado="6" aria-pressed="false" title="6° Básico">6°</button>
+        <button type="button" class="grado-btn" data-grado="7" aria-pressed="false" title="7° Básico">7°</button>
+        <button type="button" class="grado-btn" data-grado="8" aria-pressed="false" title="8° Básico">8°</button>
       </div>
 
       <div class="cat-row">
@@ -662,6 +743,43 @@
   } else {
     document.querySelectorAll('.eje-card').forEach(function(el){ el.classList.add('in'); });
   }
+
+  /* Filtro por curso (1° a 8° Básico) dentro de cada eje */
+  document.querySelectorAll('.eje-section').forEach(function(section){
+    var botones = Array.prototype.slice.call(section.querySelectorAll('.grado-btn'));
+    if (!botones.length) return;
+    var recursos = Array.prototype.slice.call(section.querySelectorAll('.recurso-card[data-cursos]'));
+
+    function actualizarSinResultado(){
+      section.querySelectorAll('.recursos-list').forEach(function(lista){
+        var visibles = lista.querySelectorAll('.recurso-card:not(.oculto)').length;
+        var vacio = lista.parentElement.querySelector('.sin-resultado');
+        if (vacio) vacio.hidden = visibles > 0;
+      });
+    }
+
+    botones.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var yaActivo = btn.classList.contains('activo');
+        botones.forEach(function(b){ b.classList.remove('activo'); b.setAttribute('aria-pressed', 'false'); });
+
+        if (yaActivo){
+          recursos.forEach(function(r){ r.classList.remove('oculto'); });
+          actualizarSinResultado();
+          return;
+        }
+
+        btn.classList.add('activo');
+        btn.setAttribute('aria-pressed', 'true');
+        var grado = btn.dataset.grado;
+        recursos.forEach(function(r){
+          var cursos = (r.dataset.cursos || '').split(',').map(function(s){ return s.trim(); });
+          r.classList.toggle('oculto', cursos.indexOf(grado) === -1);
+        });
+        actualizarSinResultado();
+      });
+    });
+  });
 
   /* Back to top */
   var topBtn = document.getElementById('topBtn');
