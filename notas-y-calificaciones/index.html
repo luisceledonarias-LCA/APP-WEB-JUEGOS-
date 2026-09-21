@@ -1,0 +1,1135 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Libro de Clases y Calificaciones</title>
+<meta name="description" content="Libro de clases digital con cálculo automático de promedios, rúbricas generadas con IA, corrección agrupada estilo Gradescope, retroalimentación personalizada y alertas de bajo rendimiento.">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2F4E8C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Notas">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F3EA;
+    --surface:#FFFFFF;
+    --surface-2:#EEE7D8;
+    --surface-3:#E4DBC6;
+    --ink:#26243A;
+    --ink-soft:#5E5A72;
+    --ink-faint:#8B869C;
+    --border:#DCD3BC;
+    --accent:#2F4E8C;
+    --accent-ink:#1E3A70;
+    --accent-soft:#DCE3F4;
+    --purple:#6E4FA0;
+    --purple-ink:#4B3272;
+    --purple-soft:#E6DEF4;
+    --teal:#0D7A6E;
+    --teal-ink:#0A5850;
+    --teal-soft:#D9F0EC;
+    --warm:#C77F2E;
+    --warm-ink:#8A551A;
+    --warm-soft:#F3E1C4;
+    --fail:#B23A2E;
+    --fail-soft:#F3DBD5;
+    --fail-ink:#7A2A21;
+    --pass:#2F7A4F;
+    --pass-soft:#DAEFDF;
+    --pass-ink:#1F5636;
+    --gold:#9C7A22;
+    --gold-soft:#F1E6BE;
+    --shadow: 0 1px 2px rgba(38,36,58,.06), 0 8px 24px -12px rgba(38,36,58,.18);
+    --font-display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono:'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#181A2A; --surface:#20223A; --surface-2:#282B48; --surface-3:#333758;
+      --ink:#EEEBF4; --ink-soft:#B4B0C8; --ink-faint:#847FA0; --border:#3A3D62;
+      --accent:#8CA4E8; --accent-ink:#C4D2F4; --accent-soft:#2A3358;
+      --purple:#B79EE0; --purple-ink:#DACBF2; --purple-soft:#332A4E;
+      --teal:#6FCFC1; --teal-ink:#B6EBE2; --teal-soft:#1C3A36;
+      --warm:#E6AE6A; --warm-ink:#F4CE9E; --warm-soft:#3A3020;
+      --fail:#E88A7C; --fail-soft:#3E2426; --fail-ink:#F4B9AF;
+      --pass:#7ED2A0; --pass-soft:#1F3A2C; --pass-ink:#B6E9C9;
+      --gold:#E0C46E; --gold-soft:#3A3320;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#181A2A; --surface:#20223A; --surface-2:#282B48; --surface-3:#333758;
+    --ink:#EEEBF4; --ink-soft:#B4B0C8; --ink-faint:#847FA0; --border:#3A3D62;
+    --accent:#8CA4E8; --accent-ink:#C4D2F4; --accent-soft:#2A3358;
+    --purple:#B79EE0; --purple-ink:#DACBF2; --purple-soft:#332A4E;
+    --teal:#6FCFC1; --teal-ink:#B6EBE2; --teal-soft:#1C3A36;
+    --warm:#E6AE6A; --warm-ink:#F4CE9E; --warm-soft:#3A3020;
+    --fail:#E88A7C; --fail-soft:#3E2426; --fail-ink:#F4B9AF;
+    --pass:#7ED2A0; --pass-soft:#1F3A2C; --pass-ink:#B6E9C9;
+    --gold:#E0C46E; --gold-soft:#3A3320;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink); font-family:var(--font-body);
+    padding-inline: max(16px, env(safe-area-inset-left,0px)) max(16px, env(safe-area-inset-right,0px));
+    padding-block: max(20px, env(safe-area-inset-top,0px)) max(32px, env(safe-area-inset-bottom,0px));
+  }
+  h1,h2,h3{font-family:var(--font-display); text-wrap:balance; margin:0;}
+  .mono{font-family:var(--font-mono); font-variant-numeric:tabular-nums;}
+  a{color:var(--accent);}
+  ::selection{background:var(--accent-soft); color:var(--accent-ink);}
+  :focus-visible{outline:2.5px solid var(--accent); outline-offset:2px; border-radius:4px;}
+  .wrap{max-width:1180px; margin-inline:auto;}
+
+  .page-header{
+    display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px;
+    padding-block:6px 22px; border-bottom:2px solid var(--border); margin-bottom:18px;
+  }
+  .eyebrow{
+    font-family:var(--font-mono); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--accent-ink); background:var(--accent-soft); border-radius:999px;
+    padding:4px 11px; display:inline-block; margin-bottom:10px; font-weight:600;
+  }
+  .page-header h1{font-size:clamp(1.6rem, 1.1rem + 2vw, 2.3rem); font-weight:800; letter-spacing:-.01em;}
+  .page-header p{margin:6px 0 0; color:var(--ink-soft); font-size:.95rem; max-width:62ch;}
+  .header-actions{display:flex; flex-direction:column; align-items:flex-end; gap:8px;}
+
+  .btn{
+    font-family:var(--font-body); font-weight:600; font-size:.85rem; cursor:pointer;
+    border-radius:9px; padding:9px 14px; border:1.5px solid var(--border);
+    background:var(--surface-2); color:var(--ink); transition:.15s;
+  }
+  .btn:hover{border-color:var(--accent); color:var(--accent-ink);}
+  .btn-sm{padding:6px 11px; font-size:.78rem;}
+  .btn-block{width:100%; margin-top:10px;}
+  .btn-accent{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .btn-accent:hover{filter:brightness(1.08); color:#fff;}
+  .btn-danger{background:var(--fail-soft); border-color:var(--fail); color:var(--fail-ink);}
+  .btn[disabled]{opacity:.5; cursor:not-allowed;}
+
+  /* ---- Tabs ---- */
+  .tabs-wrap{
+    display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:20px;
+    scrollbar-width:none; border-bottom:1px solid var(--border);
+  }
+  .tabs-wrap::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    flex-shrink:0; display:flex; align-items:center; gap:7px; padding:9px 16px;
+    border-radius:11px 11px 0 0; border:1.5px solid transparent; border-bottom:none;
+    background:none; cursor:pointer; font-family:var(--font-body); font-size:.86rem; font-weight:600;
+    color:var(--ink-faint); white-space:nowrap; transition:.15s;
+  }
+  .tab-btn:hover{background:var(--surface-2); color:var(--ink);}
+  .tab-btn.active{background:var(--surface); border-color:var(--border); color:var(--tab-c, var(--accent));}
+
+  .panel{
+    background:var(--surface); border:1px solid var(--border); border-radius:16px;
+    box-shadow:var(--shadow); padding:20px; margin-bottom:20px;
+  }
+  .panel h2{font-size:1.05rem; font-weight:700; margin-bottom:4px;}
+  .panel > .sub{color:var(--ink-faint); font-size:.84rem; margin:0 0 16px; max-width:70ch; line-height:1.55;}
+  .panel-row{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:16px;}
+
+  .field{margin-bottom:12px;}
+  .field label{display:block; font-size:.78rem; font-weight:600; color:var(--ink-soft); margin-bottom:5px;}
+  .field label .hint{font-weight:400; color:var(--ink-faint); font-size:.72rem;}
+  .field input[type="text"], .field input[type="number"], .field select, .field textarea{
+    width:100%; font-family:var(--font-body); font-size:.9rem; padding:8px 10px;
+    border-radius:9px; border:1.5px solid var(--border); background:var(--surface); color:var(--ink);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{border-color:var(--accent);}
+  .field textarea{font-family:var(--font-mono); font-size:.85rem; resize:vertical;}
+  .field-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  @media (max-width:620px){ .field-grid{grid-template-columns:1fr;} }
+
+  .badge{
+    display:inline-flex; align-items:center; gap:6px; font-size:.74rem; font-weight:700;
+    letter-spacing:.02em; text-transform:uppercase; padding:4px 10px; border-radius:999px; white-space:nowrap;
+  }
+  .badge.insuficiente{background:var(--fail-soft); color:var(--fail-ink);}
+  .badge.suficiente{background:var(--warm-soft); color:var(--warm-ink);}
+  .badge.bueno{background:var(--accent-soft); color:var(--accent-ink);}
+  .badge.sobresaliente{background:var(--pass-soft); color:var(--pass-ink);}
+  .badge.sindatos{background:var(--surface-3); color:var(--ink-faint);}
+
+  .table-scroll{max-width:100%; overflow:auto; border:1px solid var(--border); border-radius:12px;}
+  table.data-table{width:100%; border-collapse:collapse; font-size:.85rem;}
+  table.data-table thead th{
+    position:sticky; top:0; background:var(--surface-3); color:var(--ink-soft); text-align:left;
+    font-size:.7rem; letter-spacing:.04em; text-transform:uppercase; padding:9px 10px;
+    border-bottom:1px solid var(--border); font-weight:700; white-space:nowrap;
+  }
+  table.data-table td{padding:6px 10px; border-bottom:1px solid var(--border); vertical-align:middle;}
+  table.data-table tbody tr:last-child td{border-bottom:none;}
+  table.data-table input[type="number"]{
+    width:72px; font-family:var(--font-mono); font-weight:700; text-align:center;
+    padding:5px 4px; border-radius:7px; border:1.5px solid var(--border); background:var(--surface); color:var(--ink);
+  }
+  table.data-table input[type="text"]{
+    font-family:var(--font-body); padding:5px 8px; border-radius:7px; border:1.5px solid var(--border);
+    background:var(--surface); color:var(--ink); min-width:110px;
+  }
+  td.nota-cell{font-family:var(--font-mono); font-weight:800; font-size:1rem;}
+  .row-del{background:none; border:none; cursor:pointer; color:var(--ink-faint); font-size:1rem; padding:2px 6px; border-radius:6px;}
+  .row-del:hover{background:var(--fail-soft); color:var(--fail-ink);}
+
+  .weight-warning{font-size:.78rem; color:var(--fail-ink); background:var(--fail-soft); border:1px solid var(--fail); border-radius:8px; padding:7px 10px; margin-top:8px; display:none;}
+  .weight-warning.show{display:block;}
+
+  .stat-strip{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;}
+  .stat-pill{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:11px;
+    padding:10px 16px; min-width:130px;
+  }
+  .stat-pill .n{font-family:var(--font-mono); font-weight:800; font-size:1.3rem; display:block;}
+  .stat-pill .l{font-size:.72rem; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.04em;}
+
+  .empty-msg{color:var(--ink-faint); font-size:.86rem; padding:14px 0;}
+
+  /* Rúbrica */
+  .rubric-table td{vertical-align:top;}
+  .rubric-table td[contenteditable="true"]{
+    min-width:200px; max-width:320px; font-size:.82rem; line-height:1.5; cursor:text;
+  }
+  .rubric-table td[contenteditable="true"]:focus{background:var(--accent-soft);}
+  .rubric-table th.crit-col{min-width:140px;}
+  .rubric-table td.crit-name{font-weight:700; background:var(--surface-2);}
+
+  /* Grupal */
+  .group-card{border:1.5px solid var(--border); border-radius:12px; padding:14px; margin-bottom:12px; background:var(--surface-2);}
+  .group-card .g-top{display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; align-items:baseline; margin-bottom:8px;}
+  .group-card .g-answer{font-family:var(--font-mono); font-size:.82rem; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:8px 10px; margin-bottom:8px; white-space:pre-wrap;}
+  .group-card .g-students{font-size:.78rem; color:var(--ink-soft); margin-bottom:8px;}
+  .group-card .g-inputs{display:flex; flex-wrap:wrap; gap:10px; align-items:center;}
+  .group-card .g-inputs input[type="number"]{width:80px;}
+  .group-card .g-inputs input[type="text"]{flex:1; min-width:180px;}
+  .time-saved-badge{
+    display:inline-flex; align-items:center; gap:6px; font-size:.85rem; font-weight:700; color:var(--pass-ink);
+    background:var(--pass-soft); padding:6px 14px; border-radius:999px; margin-bottom:14px;
+  }
+
+  /* Retro / Alertas */
+  .student-feedback-card{border:1.5px solid var(--border); border-radius:12px; padding:16px; margin-bottom:14px;}
+  .student-feedback-card .sf-head{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;}
+  .student-feedback-card .sf-head h3{font-size:.98rem; font-weight:700;}
+  .criterio-row{display:grid; grid-template-columns:1fr 200px; gap:10px; align-items:center; margin-bottom:8px;}
+  @media (max-width:560px){ .criterio-row{grid-template-columns:1fr;} }
+  .criterio-row label{font-size:.82rem; color:var(--ink-soft);}
+  .feedback-output{
+    width:100%; min-height:130px; font-family:var(--font-body); font-size:.87rem; line-height:1.6;
+    padding:10px 12px; border-radius:9px; border:1.5px solid var(--border); background:var(--surface); color:var(--ink); resize:vertical;
+  }
+
+  .alert-card{border:1.5px solid var(--border); border-left:5px solid var(--fail); border-radius:12px; padding:16px; margin-bottom:12px;}
+  .alert-card.riesgo-alto{border-left-color:var(--fail);}
+  .alert-card.riesgo-moderado{border-left-color:var(--warm);}
+  .alert-card .a-head{display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; align-items:center; margin-bottom:8px;}
+  .alert-card .a-nota{font-family:var(--font-mono); font-weight:800; font-size:1.4rem;}
+  .alert-card .a-detail{font-size:.85rem; color:var(--ink-soft); margin-bottom:10px;}
+
+  footer{margin-top:30px; text-align:center; font-size:.78rem; color:var(--ink-faint);}
+
+  @media print{
+    .tabs-wrap, .btn, .header-actions, #panel-rubrica .field, #panel-grupal .field, #panel-retro .field, #panel-alertas .field{display:none !important;}
+    body{background:#fff; color:#000; padding:0;}
+    section[hidden]{display:none !important;}
+    .panel{box-shadow:none; border:1px solid #999;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">Herramienta pedagógica · Automatización</span>
+      <h1>Libro de Clases y Calificaciones</h1>
+      <p>Cálculo automático de promedios ponderados, rúbricas generadas con IA, corrección agrupada estilo Gradescope (reduce hasta un 70&nbsp;% el tiempo de corrección), retroalimentación personalizada por estudiante y alertas automáticas de bajo rendimiento.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn-accent" id="installBtn" hidden>Instalar app</button>
+      <button type="button" class="btn" id="printBtn">Imprimir / exportar PDF</button>
+    </div>
+  </header>
+
+  <nav class="tabs-wrap" role="tablist" aria-label="Secciones del libro de clases">
+    <button class="tab-btn active" style="--tab-c:var(--accent)" data-tab="libro" role="tab" aria-selected="true">📊 Libro de clases</button>
+    <button class="tab-btn" style="--tab-c:var(--purple)" data-tab="rubrica" role="tab" aria-selected="false">🧩 Rúbricas con IA</button>
+    <button class="tab-btn" style="--tab-c:var(--teal)" data-tab="grupal" role="tab" aria-selected="false">👥 Corrección agrupada</button>
+    <button class="tab-btn" style="--tab-c:var(--warm)" data-tab="retro" role="tab" aria-selected="false">💬 Retroalimentación</button>
+    <button class="tab-btn" style="--tab-c:var(--fail)" data-tab="alertas" role="tab" aria-selected="false">🚨 Alertas de bajo rendimiento</button>
+  </nav>
+
+  <main>
+    <!-- ═══════════ LIBRO DE CLASES ═══════════ -->
+    <section id="panel-libro">
+      <div class="panel">
+        <div class="panel-row">
+          <div>
+            <h2>Datos del curso</h2>
+            <p class="sub">Identifique el curso y la asignatura. Estos datos se guardan automáticamente en este dispositivo.</p>
+          </div>
+        </div>
+        <div class="field-grid">
+          <div class="field"><label for="courseName">Curso</label><input type="text" id="courseName" placeholder="Ej: 6° Básico A"></div>
+          <div class="field"><label for="courseSubject">Asignatura</label>
+            <select id="courseSubject">
+              <option>Matemática</option>
+              <option>Religión</option>
+              <option>Música</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-row">
+          <div>
+            <h2>Instrumentos de evaluación</h2>
+            <p class="sub">Configure cada instrumento (prueba, tarea, proyecto) y su ponderación. El promedio se recalcula automáticamente al ingresar cada nota. La suma de ponderaciones debe ser 100&nbsp;%.</p>
+          </div>
+          <button type="button" class="btn btn-accent btn-sm" id="addInstrumentBtn">+ Agregar instrumento</button>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table" id="instrumentsTable">
+            <thead><tr><th>Instrumento</th><th>Ponderación %</th><th></th></tr></thead>
+            <tbody id="instrumentsBody"></tbody>
+          </table>
+        </div>
+        <div class="weight-warning" id="weightWarning"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-row">
+          <div>
+            <h2>Estudiantes</h2>
+            <p class="sub">Agregue los estudiantes del curso (uno por línea) y luego registre sus notas directamente en la tabla.</p>
+          </div>
+        </div>
+        <div class="field-grid" style="align-items:end">
+          <div class="field" style="margin-bottom:0"><label for="bulkStudents">Agregar estudiantes <span class="hint">uno por línea</span></label><textarea id="bulkStudents" rows="3" placeholder="Nombre Apellido&#10;Nombre Apellido"></textarea></div>
+          <button type="button" class="btn btn-accent btn-block" id="addStudentsBtn" style="margin-top:0">+ Agregar a la lista</button>
+        </div>
+
+        <div class="stat-strip" id="courseStats"></div>
+
+        <div class="table-scroll">
+          <table class="data-table" id="gradesTable">
+            <thead><tr id="gradesHeadRow"><th>Estudiante</th></tr></thead>
+            <tbody id="gradesBody"></tbody>
+          </table>
+        </div>
+        <p class="empty-msg" id="studentsEmpty" hidden>Aún no ha agregado estudiantes.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════ RÚBRICAS IA ═══════════ -->
+    <section id="panel-rubrica" hidden>
+      <div class="panel">
+        <h2>Generador de rúbricas con IA</h2>
+        <p class="sub">Describa el objetivo de aprendizaje, el tipo de tarea y el nivel del curso. El sistema genera en segundos una rúbrica completa con criterios, niveles de desempeño y descriptores, lista para editar y utilizar en la retroalimentación personalizada.</p>
+        <div class="field-grid">
+          <div class="field"><label for="rubOA">Objetivo de Aprendizaje (OA)</label><input type="text" id="rubOA" placeholder="Ej: Resolver problemas que involucren fracciones"></div>
+          <div class="field"><label for="rubNivel">Curso / nivel</label><input type="text" id="rubNivel" placeholder="Ej: 6° Básico"></div>
+        </div>
+        <div class="field-grid">
+          <div class="field"><label for="rubTipo">Tipo de tarea o instrumento</label>
+            <select id="rubTipo">
+              <option value="prueba-escrita">Prueba escrita</option>
+              <option value="trabajo-grupal">Trabajo grupal</option>
+              <option value="disertacion">Disertación / exposición oral</option>
+              <option value="ensayo">Ensayo / trabajo escrito</option>
+              <option value="proyecto">Proyecto</option>
+              <option value="interpretacion-musical">Interpretación musical</option>
+              <option value="analisis-religioso">Análisis de fuente religiosa</option>
+              <option value="personalizado">Personalizado (definir criterios)</option>
+            </select>
+          </div>
+          <div class="field"><label for="rubNiveles">Niveles de desempeño</label>
+            <select id="rubNiveles">
+              <option value="3">3 niveles</option>
+              <option value="4" selected>4 niveles</option>
+              <option value="5">5 niveles</option>
+            </select>
+          </div>
+        </div>
+        <div class="field" id="rubCustomWrap" hidden>
+          <label for="rubCustomCriteria">Criterios personalizados <span class="hint">uno por línea</span></label>
+          <textarea id="rubCustomCriteria" rows="4" placeholder="Comprensión del tema&#10;Uso de vocabulario técnico&#10;Claridad de la exposición"></textarea>
+        </div>
+        <button type="button" class="btn btn-accent" id="genRubricBtn">✨ Generar rúbrica con IA</button>
+      </div>
+
+      <div class="panel" id="rubricResultPanel" hidden>
+        <div class="panel-row">
+          <div><h2 id="rubricTitle">Rúbrica generada</h2><p class="sub">Los descriptores son editables: haga clic sobre cualquier celda para ajustar el texto antes de guardarla.</p></div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap">
+            <button type="button" class="btn btn-sm" id="copyRubricBtn">Copiar como texto</button>
+            <button type="button" class="btn btn-sm" id="downloadRubricBtn">Descargar .txt</button>
+            <button type="button" class="btn btn-accent btn-sm" id="saveRubricBtn">Guardar rúbrica</button>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table rubric-table" id="rubricTable"></table>
+        </div>
+        <p class="empty-msg" id="rubricSavedMsg" hidden>✔ Rúbrica guardada. Ya está disponible en la pestaña de Retroalimentación.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════ CORRECCIÓN AGRUPADA ═══════════ -->
+    <section id="panel-grupal" hidden>
+      <div class="panel">
+        <h2>Corrección agrupada estilo Gradescope</h2>
+        <p class="sub">Pegue las respuestas de todos los estudiantes a una misma pregunta. El sistema agrupa automáticamente las respuestas equivalentes: usted corrige cada grupo una sola vez —con nota y comentario— y se aplica a todos los estudiantes del grupo, reduciendo hasta un 70&nbsp;% el tiempo de corrección.</p>
+        <div class="field-grid">
+          <div class="field"><label for="itemName">Pregunta / ítem</label><input type="text" id="itemName" placeholder="Ej: Pregunta 3 - Ecuación de primer grado"></div>
+        </div>
+        <div class="field">
+          <label for="itemResponses">Respuestas de los estudiantes <span class="hint">formato: Nombre: respuesta — una por línea</span></label>
+          <textarea id="itemResponses" rows="8" placeholder="Ana Pérez: x = 5&#10;Juan Soto: x=5&#10;María Rojas: x = 3&#10;Pedro Díaz: x = 5"></textarea>
+        </div>
+        <button type="button" class="btn btn-accent" id="groupBtn">🔗 Agrupar respuestas automáticamente</button>
+      </div>
+
+      <div class="panel" id="groupResultPanel" hidden>
+        <div class="panel-row">
+          <div><h2>Grupos detectados</h2><p class="sub">Asigne nota (1,0–7,0) y comentario a cada grupo. Al aplicar, la calificación se registra para todos los estudiantes del grupo.</p></div>
+        </div>
+        <span class="time-saved-badge" id="timeSavedBadge"></span>
+        <div id="groupsList"></div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <button type="button" class="btn btn-accent" id="applyGroupsBtn">Aplicar calificaciones a los grupos</button>
+          <button type="button" class="btn" id="pushToLibroBtn">Registrar como instrumento en el Libro de Clases</button>
+        </div>
+        <p class="empty-msg" id="groupsAppliedMsg" hidden>✔ Calificaciones aplicadas a todos los estudiantes de cada grupo.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════ RETROALIMENTACIÓN ═══════════ -->
+    <section id="panel-retro" hidden>
+      <div class="panel">
+        <h2>Retroalimentación personalizada por estudiante</h2>
+        <p class="sub">Utiliza la rúbrica guardada: seleccione el nivel de desempeño logrado por cada estudiante en cada criterio y el sistema redacta una retroalimentación individual, formal y orientada a la mejora.</p>
+        <p class="empty-msg" id="retroNoRubric">Primero genere y guarde una rúbrica en la pestaña <b>Rúbricas con IA</b>.</p>
+        <button type="button" class="btn btn-accent" id="genAllFeedbackBtn" hidden>✨ Generar retroalimentación para todo el curso</button>
+      </div>
+      <div id="feedbackList"></div>
+    </section>
+
+    <!-- ═══════════ ALERTAS ═══════════ -->
+    <section id="panel-alertas" hidden>
+      <div class="panel">
+        <div class="panel-row">
+          <div>
+            <h2>Alertas automáticas de bajo rendimiento</h2>
+            <p class="sub">El sistema revisa el promedio de cada estudiante en el Libro de Clases y genera una alerta cuando cae bajo el umbral definido, sugiriendo el mensaje de aviso a los apoderados.</p>
+          </div>
+          <div class="field" style="margin-bottom:0; min-width:160px">
+            <label for="alertThreshold">Umbral de alerta</label>
+            <input type="number" id="alertThreshold" min="1" max="7" step="0.1" value="4.0">
+          </div>
+        </div>
+        <div class="stat-strip" id="alertStats"></div>
+      </div>
+      <div id="alertsList"></div>
+      <p class="empty-msg" id="alertsEmpty" hidden>No hay estudiantes bajo el umbral definido, o aún no se han registrado notas suficientes.</p>
+    </section>
+  </main>
+
+  <footer>Instrumento de gestión pedagógica de uso docente · los datos se almacenan únicamente en este dispositivo (localStorage).</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = 'notas-calificaciones-v1';
+
+  var LEVEL_LABELS = {
+    3: ['Inicial','En desarrollo','Logrado'],
+    4: ['Insuficiente','Suficiente','Bueno','Sobresaliente'],
+    5: ['Insuficiente','Suficiente','Bueno','Muy bueno','Sobresaliente']
+  };
+
+  var TIPOS_CRITERIOS = {
+    'prueba-escrita': ['Comprensión conceptual', 'Aplicación de procedimientos', 'Resolución de problemas', 'Comunicación y justificación'],
+    'trabajo-grupal': ['Colaboración y distribución de roles', 'Cumplimiento de la tarea asignada', 'Calidad del producto final', 'Presentación y comunicación'],
+    'disertacion': ['Dominio del contenido', 'Organización del discurso', 'Uso de recursos de apoyo', 'Expresión oral y dicción'],
+    'ensayo': ['Tesis y argumentación', 'Uso de evidencia y fuentes', 'Estructura y coherencia textual', 'Ortografía y redacción'],
+    'proyecto': ['Planificación del trabajo', 'Ejecución y evidencias', 'Creatividad e innovación', 'Reflexión y autoevaluación final'],
+    'interpretacion-musical': ['Afinación y ritmo', 'Técnica instrumental o vocal', 'Expresividad e interpretación', 'Trabajo en conjunto'],
+    'analisis-religioso': ['Comprensión de la fuente o texto', 'Relación entre fe y vida', 'Argumentación y fundamentación', 'Expresión escrita u oral']
+  };
+
+  var state = {
+    course: '', subject: 'Matemática',
+    instruments: [], students: [], scores: {},
+    rubric: null, feedback: {}, alertThreshold: 4.0,
+    groupWork: null
+  };
+  var counters = { instrument: 0, student: 0 };
+
+  function uid(prefix){ return prefix + '_' + (Date.now().toString(36)) + '_' + Math.random().toString(36).slice(2,7); }
+  function fmt1(n){ return (Math.round(n*10)/10).toLocaleString('es-CL', {minimumFractionDigits:1, maximumFractionDigits:1}); }
+  function clampNota(n){ if(isNaN(n)) return null; return Math.max(1, Math.min(7, n)); }
+  function normalizeText(s){
+    return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+  }
+
+  function descriptorFor(nombre, i, total, oa){
+    var tier = total > 1 ? i/(total-1) : 1;
+    var adverb, cierre;
+    if(tier === 0){ adverb = 'No evidencia'; cierre = 'requiriendo apoyo pedagógico directo y actividades de reforzamiento guiadas por el docente.'; }
+    else if(tier < 0.5){ adverb = 'Evidencia de forma parcial'; cierre = 'cometiendo errores que afectan el logro del objetivo y necesitando práctica adicional supervisada.'; }
+    else if(tier < 1){ adverb = 'Evidencia de forma consistente'; cierre = 'con errores menores que no afectan de manera sustantiva el logro del objetivo.'; }
+    else { adverb = 'Evidencia con dominio destacado'; cierre = 'demostrando autonomía, precisión y capacidad de transferencia a nuevas situaciones.'; }
+    var oaText = oa ? ' en función del objetivo "' + oa + '"' : '';
+    return adverb + ' ' + nombre.toLowerCase() + oaText + ', ' + cierre;
+  }
+
+  function semaforo(nota){
+    if(nota === null || nota === undefined) return {cls:'sindatos', label:'Sin datos'};
+    if(nota < 4.0) return {cls:'insuficiente', label:'Insuficiente'};
+    var span = (7.0 - 4.0) / 3;
+    var t1 = 4.0 + span, t2 = 4.0 + span*2;
+    if(nota < t1) return {cls:'suficiente', label:'Suficiente'};
+    if(nota < t2) return {cls:'bueno', label:'Bueno'};
+    return {cls:'sobresaliente', label:'Sobresaliente'};
+  }
+
+  function weightSum(){ return state.instruments.reduce(function(a,i){ return a + (parseFloat(i.weight)||0); }, 0); }
+
+  function studentAverage(studentId){
+    var recs = state.scores[studentId] || {};
+    var sumW = 0, sumWN = 0, any = false;
+    state.instruments.forEach(function(ins){
+      var v = recs[ins.id];
+      var w = parseFloat(ins.weight) || 0;
+      if(v !== undefined && v !== null && v !== '' && !isNaN(v)){
+        sumW += w; sumWN += w * parseFloat(v); any = true;
+      }
+    });
+    if(!any || sumW === 0) return null;
+    return Math.round((sumWN / sumW) * 10) / 10;
+  }
+
+  function lowInstrumentsFor(studentId){
+    var recs = state.scores[studentId] || {};
+    var out = [];
+    state.instruments.forEach(function(ins){
+      var v = recs[ins.id];
+      if(v !== undefined && v !== null && v !== '' && !isNaN(v) && parseFloat(v) < 4.0){
+        out.push(ins.name + ' (' + fmt1(parseFloat(v)) + ')');
+      }
+    });
+    return out;
+  }
+
+  function persist(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  }
+  function load(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      var saved = JSON.parse(raw);
+      if(saved && typeof saved === 'object'){
+        state = Object.assign(state, saved);
+        if(!state.instruments) state.instruments = [];
+        if(!state.students) state.students = [];
+        if(!state.scores) state.scores = {};
+        if(!state.feedback) state.feedback = {};
+        if(typeof state.alertThreshold !== 'number') state.alertThreshold = 4.0;
+      }
+    }catch(e){}
+  }
+
+  /* ============ TABS ============ */
+  var tabButtons = document.querySelectorAll('.tab-btn');
+  var panels = {
+    libro: document.getElementById('panel-libro'),
+    rubrica: document.getElementById('panel-rubrica'),
+    grupal: document.getElementById('panel-grupal'),
+    retro: document.getElementById('panel-retro'),
+    alertas: document.getElementById('panel-alertas')
+  };
+  tabButtons.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      tabButtons.forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+      btn.classList.add('active'); btn.setAttribute('aria-selected','true');
+      Object.keys(panels).forEach(function(k){ panels[k].hidden = (k !== btn.dataset.tab); });
+      if(btn.dataset.tab === 'retro') renderFeedbackTab();
+      if(btn.dataset.tab === 'alertas') renderAlertsTab();
+    });
+  });
+
+  /* ============ LIBRO DE CLASES ============ */
+  var els = {
+    courseName: document.getElementById('courseName'),
+    courseSubject: document.getElementById('courseSubject'),
+    instrumentsBody: document.getElementById('instrumentsBody'),
+    addInstrumentBtn: document.getElementById('addInstrumentBtn'),
+    weightWarning: document.getElementById('weightWarning'),
+    bulkStudents: document.getElementById('bulkStudents'),
+    addStudentsBtn: document.getElementById('addStudentsBtn'),
+    gradesHeadRow: document.getElementById('gradesHeadRow'),
+    gradesBody: document.getElementById('gradesBody'),
+    courseStats: document.getElementById('courseStats'),
+    studentsEmpty: document.getElementById('studentsEmpty')
+  };
+
+  function addInstrument(name, weight){
+    state.instruments.push({ id: uid('ins'), name: name || ('Instrumento ' + (state.instruments.length+1)), weight: weight != null ? weight : 0 });
+    renderLibro(); persist();
+  }
+  function removeInstrument(id){
+    state.instruments = state.instruments.filter(function(i){ return i.id !== id; });
+    state.students.forEach(function(s){ if(state.scores[s.id]) delete state.scores[s.id][id]; });
+    renderLibro(); persist();
+  }
+  function addStudents(names){
+    names.forEach(function(n){
+      n = n.trim(); if(!n) return;
+      var id = uid('st');
+      state.students.push({ id: id, name: n });
+      state.scores[id] = {};
+    });
+    renderLibro(); persist();
+  }
+  function removeStudent(id){
+    state.students = state.students.filter(function(s){ return s.id !== id; });
+    delete state.scores[id];
+    delete state.feedback[id];
+    renderLibro(); persist();
+  }
+
+  function renderLibro(){
+    els.courseName.value = state.course || '';
+    els.courseSubject.value = state.subject || 'Matemática';
+
+    els.instrumentsBody.innerHTML = state.instruments.map(function(ins){
+      return '<tr data-id="' + ins.id + '">' +
+        '<td><input type="text" class="ins-name" value="' + escapeAttr(ins.name) + '"></td>' +
+        '<td><input type="number" class="ins-weight" min="0" max="100" step="1" value="' + ins.weight + '"> %</td>' +
+        '<td><button type="button" class="row-del ins-del" title="Eliminar instrumento">✕</button></td>' +
+        '</tr>';
+    }).join('');
+
+    var sum = weightSum();
+    if(state.instruments.length && Math.abs(sum - 100) > 0.01){
+      els.weightWarning.textContent = 'La suma de las ponderaciones es ' + sum + ' %. Debe ajustarla a 100 % para que el promedio sea exacto.';
+      els.weightWarning.classList.add('show');
+    } else {
+      els.weightWarning.classList.remove('show');
+    }
+
+    els.gradesHeadRow.innerHTML = '<th>Estudiante</th>' +
+      state.instruments.map(function(ins){ return '<th>' + escapeHtml(ins.name) + '<br><span style="font-weight:400;text-transform:none">' + ins.weight + ' %</span></th>'; }).join('') +
+      '<th>Promedio</th><th>Estado</th><th></th>';
+
+    els.studentsEmpty.hidden = state.students.length > 0;
+
+    els.gradesBody.innerHTML = state.students.map(function(st){
+      var avg = studentAverage(st.id);
+      var sem = semaforo(avg);
+      var cells = state.instruments.map(function(ins){
+        var v = (state.scores[st.id] && state.scores[st.id][ins.id] != null) ? state.scores[st.id][ins.id] : '';
+        return '<td><input type="number" class="grade-input" min="1" max="7" step="0.1" data-student="' + st.id + '" data-instrument="' + ins.id + '" value="' + v + '"></td>';
+      }).join('');
+      return '<tr data-id="' + st.id + '">' +
+        '<td><input type="text" class="student-name" value="' + escapeAttr(st.name) + '"></td>' +
+        cells +
+        '<td class="nota-cell" style="color:' + noteColor(sem.cls) + '">' + (avg != null ? fmt1(avg) : '—') + '</td>' +
+        '<td><span class="badge ' + sem.cls + '">' + sem.label + '</span></td>' +
+        '<td><button type="button" class="row-del student-del" title="Eliminar estudiante">✕</button></td>' +
+        '</tr>';
+    }).join('');
+
+    renderCourseStats();
+  }
+
+  function renderCourseStats(){
+    var avgs = state.students.map(function(s){ return studentAverage(s.id); }).filter(function(a){ return a != null; });
+    var courseAvg = avgs.length ? Math.round((avgs.reduce(function(a,b){ return a+b; },0) / avgs.length) * 10) / 10 : null;
+    var aprob = avgs.length ? Math.round((avgs.filter(function(a){ return a >= 4.0; }).length / avgs.length) * 1000) / 10 : null;
+    var bajoUmbral = avgs.filter(function(a){ return a < (parseFloat(state.alertThreshold)||4.0); }).length;
+    els.courseStats.innerHTML =
+      '<div class="stat-pill"><span class="n">' + state.students.length + '</span><span class="l">Estudiantes</span></div>' +
+      '<div class="stat-pill"><span class="n">' + (courseAvg != null ? fmt1(courseAvg) : '—') + '</span><span class="l">Promedio curso</span></div>' +
+      '<div class="stat-pill"><span class="n">' + (aprob != null ? fmt1(aprob) + ' %' : '—') + '</span><span class="l">% de aprobación</span></div>' +
+      '<div class="stat-pill"><span class="n">' + bajoUmbral + '</span><span class="l">Bajo umbral de alerta</span></div>';
+  }
+
+  function updateStudentRow(sid){
+    var tr = els.gradesBody.querySelector('tr[data-id="' + sid + '"]');
+    if(!tr) return;
+    var avg = studentAverage(sid);
+    var sem = semaforo(avg);
+    var notaCell = tr.querySelector('.nota-cell');
+    notaCell.textContent = avg != null ? fmt1(avg) : '—';
+    notaCell.style.color = noteColor(sem.cls);
+    var badge = tr.querySelector('.badge');
+    badge.className = 'badge ' + sem.cls;
+    badge.textContent = sem.label;
+    renderCourseStats();
+  }
+
+  function noteColor(cls){
+    return cls === 'insuficiente' ? 'var(--fail)' : cls === 'sobresaliente' ? 'var(--pass)' : 'var(--ink)';
+  }
+  function escapeHtml(s){ return (s||'').replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+  function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
+
+  els.addInstrumentBtn.addEventListener('click', function(){ addInstrument('Nuevo instrumento', 0); });
+  els.addStudentsBtn.addEventListener('click', function(){
+    var names = els.bulkStudents.value.split('\n');
+    addStudents(names);
+    els.bulkStudents.value = '';
+  });
+  els.courseName.addEventListener('input', function(){ state.course = els.courseName.value; persist(); });
+  els.courseSubject.addEventListener('change', function(){ state.subject = els.courseSubject.value; persist(); });
+
+  els.instrumentsBody.addEventListener('input', function(e){
+    var tr = e.target.closest('tr'); if(!tr) return;
+    var ins = state.instruments.find(function(i){ return i.id === tr.dataset.id; }); if(!ins) return;
+    if(e.target.classList.contains('ins-name')) ins.name = e.target.value;
+    if(e.target.classList.contains('ins-weight')) ins.weight = parseFloat(e.target.value) || 0;
+    renderLibro(); persist();
+  });
+  els.instrumentsBody.addEventListener('click', function(e){
+    if(e.target.classList.contains('ins-del')){
+      var tr = e.target.closest('tr');
+      removeInstrument(tr.dataset.id);
+    }
+  });
+
+  els.gradesBody.addEventListener('input', function(e){
+    var tr = e.target.closest('tr'); if(!tr) return;
+    var sid = tr.dataset.id;
+    if(e.target.classList.contains('student-name')){
+      var st = state.students.find(function(s){ return s.id === sid; });
+      if(st) st.name = e.target.value;
+      persist();
+      return;
+    }
+    if(e.target.classList.contains('grade-input')){
+      var insId = e.target.dataset.instrument;
+      var raw = e.target.value;
+      var val = raw === '' ? null : clampNota(parseFloat(raw));
+      if(!state.scores[sid]) state.scores[sid] = {};
+      state.scores[sid][insId] = val;
+      updateStudentRow(sid);
+      persist();
+    }
+  });
+  els.gradesBody.addEventListener('focusout', function(e){
+    if(!e.target.classList.contains('grade-input')) return;
+    var tr = e.target.closest('tr'); if(!tr) return;
+    var sid = tr.dataset.id, insId = e.target.dataset.instrument;
+    var v = state.scores[sid] && state.scores[sid][insId];
+    e.target.value = (v === null || v === undefined) ? '' : v;
+  });
+  els.gradesBody.addEventListener('click', function(e){
+    if(e.target.classList.contains('student-del')){
+      var tr = e.target.closest('tr');
+      removeStudent(tr.dataset.id);
+    }
+  });
+
+  /* ============ RÚBRICAS IA ============ */
+  var rEls = {
+    oa: document.getElementById('rubOA'), nivel: document.getElementById('rubNivel'),
+    tipo: document.getElementById('rubTipo'), niveles: document.getElementById('rubNiveles'),
+    customWrap: document.getElementById('rubCustomWrap'), customCriteria: document.getElementById('rubCustomCriteria'),
+    genBtn: document.getElementById('genRubricBtn'), resultPanel: document.getElementById('rubricResultPanel'),
+    title: document.getElementById('rubricTitle'), table: document.getElementById('rubricTable'),
+    copyBtn: document.getElementById('copyRubricBtn'), downloadBtn: document.getElementById('downloadRubricBtn'),
+    saveBtn: document.getElementById('saveRubricBtn'), savedMsg: document.getElementById('rubricSavedMsg')
+  };
+  var draftRubric = null;
+
+  rEls.tipo.addEventListener('change', function(){ rEls.customWrap.hidden = rEls.tipo.value !== 'personalizado'; });
+
+  rEls.genBtn.addEventListener('click', function(){
+    var oa = rEls.oa.value.trim();
+    var nivel = rEls.nivel.value.trim();
+    var tipo = rEls.tipo.value;
+    var numNiveles = parseInt(rEls.niveles.value, 10);
+    var base = tipo === 'personalizado'
+      ? rEls.customCriteria.value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean)
+      : TIPOS_CRITERIOS[tipo];
+    if(!base || !base.length){
+      alert('Ingrese al menos un criterio personalizado.');
+      return;
+    }
+    var niveles = LEVEL_LABELS[numNiveles];
+    var criterios = base.map(function(nombre){
+      return { nombre: nombre, descriptores: niveles.map(function(_, i){ return descriptorFor(nombre, i, niveles.length, oa); }) };
+    });
+    draftRubric = { oa: oa, nivel: nivel, tipo: tipo, niveles: niveles, criterios: criterios };
+    renderRubricTable(draftRubric);
+    rEls.title.textContent = 'Rúbrica' + (oa ? ' — ' + oa : '') + (nivel ? ' (' + nivel + ')' : '');
+    rEls.resultPanel.hidden = false;
+    rEls.savedMsg.hidden = true;
+    rEls.resultPanel.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  function renderRubricTable(r){
+    var head = '<thead><tr><th class="crit-col">Criterio</th>' + r.niveles.map(function(l){ return '<th>' + escapeHtml(l) + '</th>'; }).join('') + '</tr></thead>';
+    var body = '<tbody>' + r.criterios.map(function(c, ci){
+      return '<tr><td class="crit-name">' + escapeHtml(c.nombre) + '</td>' +
+        c.descriptores.map(function(d, li){
+          return '<td contenteditable="true" data-ci="' + ci + '" data-li="' + li + '">' + escapeHtml(d) + '</td>';
+        }).join('') + '</tr>';
+    }).join('') + '</tbody>';
+    rEls.table.innerHTML = head + body;
+  }
+
+  rEls.table.addEventListener('input', function(e){
+    var td = e.target.closest('td[contenteditable]'); if(!td || !draftRubric) return;
+    var ci = parseInt(td.dataset.ci,10), li = parseInt(td.dataset.li,10);
+    draftRubric.criterios[ci].descriptores[li] = td.textContent;
+  });
+
+  function rubricAsText(r){
+    var out = 'RÚBRICA' + (r.oa ? ' — ' + r.oa : '') + (r.nivel ? ' (' + r.nivel + ')' : '') + '\n\n';
+    r.criterios.forEach(function(c){
+      out += c.nombre + ':\n';
+      r.niveles.forEach(function(l, i){ out += '  · ' + l + ': ' + c.descriptores[i] + '\n'; });
+      out += '\n';
+    });
+    return out;
+  }
+  rEls.copyBtn.addEventListener('click', function(){
+    if(!draftRubric) return;
+    navigator.clipboard.writeText(rubricAsText(draftRubric)).catch(function(){});
+  });
+  rEls.downloadBtn.addEventListener('click', function(){
+    if(!draftRubric) return;
+    var blob = new Blob([rubricAsText(draftRubric)], {type:'text/plain;charset=utf-8'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'rubrica' + (draftRubric.oa ? '-' + normalizeText(draftRubric.oa).replace(/\s+/g,'-') : '') + '.txt';
+    a.click();
+  });
+  rEls.saveBtn.addEventListener('click', function(){
+    if(!draftRubric) return;
+    state.rubric = JSON.parse(JSON.stringify(draftRubric));
+    persist();
+    rEls.savedMsg.hidden = false;
+  });
+
+  /* ============ CORRECCIÓN AGRUPADA ============ */
+  var gEls = {
+    itemName: document.getElementById('itemName'), responses: document.getElementById('itemResponses'),
+    groupBtn: document.getElementById('groupBtn'), resultPanel: document.getElementById('groupResultPanel'),
+    timeSavedBadge: document.getElementById('timeSavedBadge'), groupsList: document.getElementById('groupsList'),
+    applyBtn: document.getElementById('applyGroupsBtn'), pushBtn: document.getElementById('pushToLibroBtn'),
+    appliedMsg: document.getElementById('groupsAppliedMsg')
+  };
+  var currentGroups = null;
+
+  gEls.groupBtn.addEventListener('click', function(){
+    var lines = gEls.responses.value.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
+    var entries = lines.map(function(line){
+      var idx = line.indexOf(':');
+      if(idx === -1) idx = line.indexOf(' - ');
+      var name = idx > -1 ? line.slice(0, idx).trim() : line;
+      var answer = idx > -1 ? line.slice(idx + 1).trim() : '';
+      return { name: name, answer: answer };
+    }).filter(function(e){ return e.name; });
+
+    if(!entries.length){
+      alert('Ingrese al menos una respuesta con el formato "Nombre: respuesta".');
+      return;
+    }
+
+    var groupsMap = {};
+    entries.forEach(function(e){
+      var key = normalizeText(e.answer);
+      if(!groupsMap[key]) groupsMap[key] = { key: key, sample: e.answer, students: [], nota: '', comentario: '' };
+      groupsMap[key].students.push(e.name);
+    });
+    currentGroups = Object.keys(groupsMap).map(function(k){ return groupsMap[k]; })
+      .sort(function(a,b){ return b.students.length - a.students.length; });
+
+    renderGroups(entries.length);
+    gEls.resultPanel.hidden = false;
+    gEls.appliedMsg.hidden = true;
+    gEls.resultPanel.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  function renderGroups(totalEntries){
+    var pctReduccion = Math.round((1 - currentGroups.length / totalEntries) * 1000) / 10;
+    gEls.timeSavedBadge.textContent = '⏱ ' + currentGroups.length + ' grupo(s) para ' + totalEntries + ' respuesta(s) → hasta ' + Math.min(70, Math.max(0, pctReduccion)) + ' % menos correcciones individuales';
+    gEls.groupsList.innerHTML = currentGroups.map(function(g, gi){
+      return '<div class="group-card" data-gi="' + gi + '">' +
+        '<div class="g-top"><b>Grupo ' + (gi+1) + '</b><span style="font-size:.78rem;color:var(--ink-faint)">' + g.students.length + ' estudiante(s)</span></div>' +
+        '<div class="g-answer">' + escapeHtml(g.sample || '(sin respuesta)') + '</div>' +
+        '<div class="g-students">' + escapeHtml(g.students.join(', ')) + '</div>' +
+        '<div class="g-inputs">' +
+          '<input type="number" class="g-nota" min="1" max="7" step="0.1" placeholder="Nota" value="' + g.nota + '">' +
+          '<input type="text" class="g-comentario" placeholder="Comentario para todo el grupo" value="' + escapeAttr(g.comentario) + '">' +
+        '</div></div>';
+    }).join('');
+  }
+
+  gEls.groupsList.addEventListener('input', function(e){
+    var card = e.target.closest('.group-card'); if(!card || !currentGroups) return;
+    var g = currentGroups[parseInt(card.dataset.gi,10)];
+    if(e.target.classList.contains('g-nota')) g.nota = e.target.value;
+    if(e.target.classList.contains('g-comentario')) g.comentario = e.target.value;
+  });
+
+  gEls.applyBtn.addEventListener('click', function(){
+    if(!currentGroups) return;
+    state.groupWork = { itemName: gEls.itemName.value.trim() || 'Ítem sin nombre', groups: JSON.parse(JSON.stringify(currentGroups)) };
+    persist();
+    gEls.appliedMsg.hidden = false;
+  });
+
+  gEls.pushBtn.addEventListener('click', function(){
+    if(!currentGroups) { alert('Primero agrupe las respuestas.'); return; }
+    var missingNota = currentGroups.some(function(g){ return g.nota === '' || g.nota === null || isNaN(parseFloat(g.nota)); });
+    if(missingNota){ alert('Asigne una nota (1,0–7,0) a todos los grupos antes de registrar en el Libro de Clases.'); return; }
+    var name = gEls.itemName.value.trim() || 'Ítem sin nombre';
+    var weight = parseFloat(prompt('Ponderación (%) para este instrumento en el Libro de Clases:', '20')) || 0;
+    var insId = uid('ins');
+    state.instruments.push({ id: insId, name: name, weight: weight });
+    currentGroups.forEach(function(g){
+      g.students.forEach(function(studentName){
+        var st = state.students.find(function(s){ return normalizeText(s.name) === normalizeText(studentName); });
+        if(!st){
+          st = { id: uid('st'), name: studentName };
+          state.students.push(st);
+          state.scores[st.id] = {};
+        }
+        if(!state.scores[st.id]) state.scores[st.id] = {};
+        state.scores[st.id][insId] = clampNota(parseFloat(g.nota));
+      });
+    });
+    persist();
+    renderLibro();
+    alert('Instrumento "' + name + '" registrado en el Libro de Clases con las notas de cada grupo.');
+  });
+
+  /* ============ RETROALIMENTACIÓN ============ */
+  var fEls = {
+    noRubric: document.getElementById('retroNoRubric'),
+    genAllBtn: document.getElementById('genAllFeedbackBtn'),
+    list: document.getElementById('feedbackList')
+  };
+
+  function buildFeedback(student, promedio, rubric, levels){
+    var sem = semaforo(promedio);
+    var parts = [];
+    parts.push('Estimado/a ' + student.name + ':');
+    if(promedio != null){
+      parts.push('Tu promedio actual en la asignatura es ' + fmt1(promedio) + ', lo que corresponde a un desempeño ' + sem.label.toLowerCase() + '.');
+    }
+    var cuerpo = rubric.criterios.map(function(c, i){
+      var li = (levels[i] !== undefined && levels[i] !== null) ? levels[i] : Math.floor((rubric.niveles.length-1)/2);
+      var nivelLabel = rubric.niveles[li];
+      var isTop = li === rubric.niveles.length - 1;
+      var isBottom = li === 0;
+      var frase = 'En ' + c.nombre.toLowerCase() + ' tu desempeño fue "' + nivelLabel + '".';
+      if(isBottom) frase += ' Te sugerimos reforzar este aspecto con apoyo pedagógico adicional y práctica guiada en las próximas clases.';
+      else if(!isTop) frase += ' Puedes fortalecerlo revisando los criterios de mayor exigencia y practicando de forma autónoma.';
+      else frase += ' ¡Felicitaciones, continúa demostrando este nivel de logro!';
+      return frase;
+    }).join(' ');
+    parts.push(cuerpo);
+    parts.push('Confío en tu capacidad de seguir progresando. Cualquier duda, conversemos en clases.');
+    return parts.filter(Boolean).join('\n\n');
+  }
+
+  function renderFeedbackTab(){
+    if(!state.rubric){
+      fEls.noRubric.hidden = false;
+      fEls.genAllBtn.hidden = true;
+      fEls.list.innerHTML = '';
+      return;
+    }
+    fEls.noRubric.hidden = true;
+    fEls.genAllBtn.hidden = state.students.length === 0;
+
+    if(!state.students.length){
+      fEls.list.innerHTML = '<p class="empty-msg">Agregue estudiantes en la pestaña Libro de Clases para generar retroalimentación.</p>';
+      return;
+    }
+
+    fEls.list.innerHTML = state.students.map(function(st){
+      var levels = state.feedback[st.id] || {};
+      var criteriaHtml = state.rubric.criterios.map(function(c, ci){
+        var sel = levels[ci] !== undefined ? levels[ci] : '';
+        var opts = state.rubric.niveles.map(function(l, li){
+          return '<option value="' + li + '"' + (String(sel) === String(li) ? ' selected' : '') + '>' + escapeHtml(l) + '</option>';
+        }).join('');
+        return '<div class="criterio-row"><label>' + escapeHtml(c.nombre) + '</label>' +
+          '<select class="fb-level" data-student="' + st.id + '" data-ci="' + ci + '"><option value="">— seleccionar —</option>' + opts + '</select></div>';
+      }).join('');
+      var promedio = studentAverage(st.id);
+      return '<div class="panel student-feedback-card" data-id="' + st.id + '">' +
+        '<div class="sf-head"><h3>' + escapeHtml(st.name) + '</h3><span class="badge ' + semaforo(promedio).cls + '">Promedio: ' + (promedio != null ? fmt1(promedio) : 'sin datos') + '</span></div>' +
+        criteriaHtml +
+        '<div style="display:flex; gap:8px; margin:10px 0; flex-wrap:wrap">' +
+          '<button type="button" class="btn btn-accent btn-sm fb-gen">✨ Generar retroalimentación</button>' +
+          '<button type="button" class="btn btn-sm fb-copy">Copiar</button>' +
+        '</div>' +
+        '<textarea class="feedback-output" placeholder="La retroalimentación generada aparecerá aquí."></textarea>' +
+        '</div>';
+    }).join('');
+  }
+
+  fEls.list.addEventListener('change', function(e){
+    if(!e.target.classList.contains('fb-level')) return;
+    var sid = e.target.dataset.student, ci = e.target.dataset.ci;
+    if(!state.feedback[sid]) state.feedback[sid] = {};
+    state.feedback[sid][ci] = e.target.value === '' ? null : parseInt(e.target.value, 10);
+    persist();
+  });
+
+  fEls.list.addEventListener('click', function(e){
+    var card = e.target.closest('.student-feedback-card'); if(!card) return;
+    var sid = card.dataset.id;
+    var st = state.students.find(function(s){ return s.id === sid; });
+    if(e.target.classList.contains('fb-gen')){
+      var levels = state.feedback[sid] || {};
+      var txt = buildFeedback(st, studentAverage(sid), state.rubric, levels);
+      card.querySelector('.feedback-output').value = txt;
+    }
+    if(e.target.classList.contains('fb-copy')){
+      var ta = card.querySelector('.feedback-output');
+      navigator.clipboard.writeText(ta.value).catch(function(){});
+    }
+  });
+
+  fEls.genAllBtn.addEventListener('click', function(){
+    document.querySelectorAll('.student-feedback-card').forEach(function(card){
+      var sid = card.dataset.id;
+      var st = state.students.find(function(s){ return s.id === sid; });
+      var levels = state.feedback[sid] || {};
+      card.querySelector('.feedback-output').value = buildFeedback(st, studentAverage(sid), state.rubric, levels);
+    });
+  });
+
+  /* ============ ALERTAS ============ */
+  var aEls = {
+    threshold: document.getElementById('alertThreshold'),
+    stats: document.getElementById('alertStats'),
+    list: document.getElementById('alertsList'),
+    empty: document.getElementById('alertsEmpty')
+  };
+
+  function buildAlertMessage(student, promedio, lowInstruments){
+    var lista = lowInstruments.length ? ' Las evaluaciones con menor logro son: ' + lowInstruments.join(', ') + '.' : '';
+    return 'Estimado/a apoderado/a de ' + student.name + ':\n\n' +
+      'Le informamos que el/la estudiante presenta actualmente un promedio de ' + fmt1(promedio) + ' en la asignatura, bajo el mínimo de aprobación.' + lista + '\n\n' +
+      'Proponemos coordinar una reunión de apoyo y reforzar hábitos de estudio en el hogar durante las próximas semanas. Quedamos atentos/as a su disposición para conversar.\n\n' +
+      'Atentamente,\nDocente de la asignatura';
+  }
+
+  function renderAlertsTab(){
+    aEls.threshold.value = state.alertThreshold;
+    var threshold = parseFloat(state.alertThreshold) || 4.0;
+    var rows = state.students.map(function(st){
+      return { st: st, avg: studentAverage(st.id) };
+    }).filter(function(r){ return r.avg != null && r.avg < threshold; })
+      .sort(function(a,b){ return a.avg - b.avg; });
+
+    aEls.stats.innerHTML =
+      '<div class="stat-pill"><span class="n">' + rows.length + '</span><span class="l">Estudiantes en alerta</span></div>' +
+      '<div class="stat-pill"><span class="n">' + fmt1(threshold) + '</span><span class="l">Umbral definido</span></div>';
+
+    aEls.empty.hidden = rows.length > 0;
+    aEls.list.innerHTML = rows.map(function(r){
+      var riesgo = r.avg < 3.5 ? 'riesgo-alto' : 'riesgo-moderado';
+      var low = lowInstrumentsFor(r.st.id);
+      return '<div class="alert-card ' + riesgo + '" data-id="' + r.st.id + '">' +
+        '<div class="a-head"><h3 style="font-size:.98rem;font-weight:700">' + escapeHtml(r.st.name) + '</h3><span class="a-nota" style="color:var(--fail)">' + fmt1(r.avg) + '</span></div>' +
+        '<div class="a-detail">' + (low.length ? 'Instrumentos bajo 4,0: ' + escapeHtml(low.join(', ')) : 'Promedio general bajo el umbral definido.') + '</div>' +
+        '<div style="display:flex; gap:8px; flex-wrap:wrap">' +
+          '<button type="button" class="btn btn-sm alert-gen">Generar mensaje para apoderado</button>' +
+          '<button type="button" class="btn btn-sm alert-copy">Copiar mensaje</button>' +
+        '</div>' +
+        '<textarea class="feedback-output alert-output" style="margin-top:10px" placeholder="El mensaje generado aparecerá aquí."></textarea>' +
+        '</div>';
+    }).join('');
+  }
+
+  aEls.threshold.addEventListener('input', function(){
+    state.alertThreshold = parseFloat(aEls.threshold.value) || 4.0;
+    persist();
+    renderAlertsTab();
+    renderLibro();
+  });
+
+  aEls.list.addEventListener('click', function(e){
+    var card = e.target.closest('.alert-card'); if(!card) return;
+    var sid = card.dataset.id;
+    var st = state.students.find(function(s){ return s.id === sid; });
+    if(e.target.classList.contains('alert-gen')){
+      var avg = studentAverage(sid);
+      var low = lowInstrumentsFor(sid);
+      card.querySelector('.alert-output').value = buildAlertMessage(st, avg, low);
+    }
+    if(e.target.classList.contains('alert-copy')){
+      var ta = card.querySelector('.alert-output');
+      navigator.clipboard.writeText(ta.value).catch(function(){});
+    }
+  });
+
+  document.getElementById('printBtn').addEventListener('click', function(){ window.print(); });
+
+  /* ============ INIT ============ */
+  load();
+  if(!state.instruments.length){
+    state.instruments = [
+      { id: uid('ins'), name: 'Prueba', weight: 40 },
+      { id: uid('ins'), name: 'Tarea', weight: 30 },
+      { id: uid('ins'), name: 'Proyecto', weight: 30 }
+    ];
+  }
+  renderLibro();
+  if(state.rubric) draftRubric = null;
+
+  var installBtn = document.getElementById('installBtn');
+  var deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    installBtn.hidden = false;
+  });
+  installBtn.addEventListener('click', function(){
+    if(!deferredInstallPrompt) return;
+    installBtn.hidden = true;
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.finally(function(){ deferredInstallPrompt = null; });
+  });
+  window.addEventListener('appinstalled', function(){ installBtn.hidden = true; });
+
+  if('serviceWorker' in navigator && location.protocol !== 'file:'){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    });
+  }
+})();
+</script>
+</body>
+</html>
