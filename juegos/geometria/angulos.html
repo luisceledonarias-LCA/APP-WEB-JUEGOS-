@@ -110,6 +110,7 @@
 
   .btn { display:inline-block; padding: 11px 24px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; transition:transform .15s, opacity .15s; }
   .btn:hover { transform: translateY(-2px); opacity:.92; }
+  .btn:disabled { opacity:.5; cursor:default; transform:none; }
   .btn-primario { background: var(--azul); color:#fff; }
   .btn-acento { background: var(--dorado); color: var(--azul); }
   .acciones { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px; }
@@ -427,7 +428,8 @@
           var acierto = eleccion === item.r;
           botones.forEach(function(b){
             var esCorrecta = (b.dataset.val === 'true') === item.r;
-            b.classList.add(esCorrecta ? 'correcta' : (b === btn ? 'incorrecta' : ''));
+            if (esCorrecta) b.classList.add('correcta');
+            else if (b === btn) b.classList.add('incorrecta');
           });
           var fb = div.querySelector('.vf-feedback');
           fb.textContent = (acierto ? '✔ ' : '✘ ') + item.feedback;
@@ -468,7 +470,7 @@
     return { a1: norm360(a1), a2: norm360(a2), medida: diferenciaMinima(a1, a2) };
   }
 
-  function dibujarTriangulo(){
+  function dibujarTriangulo(evaluarRetos){
     var A = triangulo.A, B = triangulo.B, C = triangulo.C;
     var eA = anguloEntreVertices(A, B, C);
     var eB = anguloEntreVertices(B, A, C);
@@ -476,7 +478,8 @@
 
     var angA = Math.round(eA.medida * 10) / 10;
     var angB = Math.round(eB.medida * 10) / 10;
-    var angC = Math.round((180 - angA - angB) * 10) / 10;
+    var angC = Math.round(eC.medida * 10) / 10;
+    var sumaReal = eA.medida + eB.medida + eC.medida;
 
     var arcR = 30;
     svgTri.innerHTML =
@@ -485,31 +488,51 @@
       '<path d="' + arcoEntreAngulos(B.x, B.y, arcR, eB.a1, eB.a2) + '" fill="none" stroke="#E8792E" stroke-width="3"/>' +
       '<path d="' + arcoEntreAngulos(C.x, C.y, arcR, eC.a1, eC.a2) + '" fill="none" stroke="#E8792E" stroke-width="3"/>';
 
-    function etiqueta(V, texto, dx, dy){
-      return '<text x="' + (V.x+dx) + '" y="' + (V.y+dy) + '" font-size="15" font-weight="800" fill="#1B3A6B" text-anchor="middle">' + texto + '</text>';
+    // Dirección de la bisectriz interior de cada vértice: las etiquetas de medida
+    // se ubican hacia adentro del triángulo y la letra del vértice hacia afuera,
+    // así no se superponen con los lados cualquiera sea la forma.
+    function bisectriz(V, P1, P2){
+      var u1x = P1.x - V.x, u1y = P1.y - V.y, l1 = Math.hypot(u1x, u1y) || 1;
+      var u2x = P2.x - V.x, u2y = P2.y - V.y, l2 = Math.hypot(u2x, u2y) || 1;
+      var bx = u1x/l1 + u2x/l2, by = u1y/l1 + u2y/l2, lb = Math.hypot(bx, by) || 1;
+      return { x: bx/lb, y: by/lb };
     }
+    function etiqueta(V, dir, dist, texto, tam){
+      var x = Math.min(392, Math.max(8, V.x + dir.x * dist));
+      var y = Math.min(314, Math.max(14, V.y + dir.y * dist));
+      return '<text x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" font-size="' + tam + '" font-weight="800" fill="#1B3A6B" text-anchor="middle" dominant-baseline="middle">' + texto + '</text>';
+    }
+    // En ángulos estrechos la medida se aleja del vértice para no tocar los lados.
+    function distMedida(grados){ return Math.min(110, Math.max(50, 26 / Math.sin(grados * Math.PI / 360))); }
+    var bA = bisectriz(A, B, C), bB = bisectriz(B, A, C), bC = bisectriz(C, A, B);
     svgTri.innerHTML +=
-      etiqueta(A, 'A', 0, A.y < 60 ? 22 : -14) +
-      etiqueta(B, 'B', B.x < 60 ? 18 : -18, 20) +
-      etiqueta(C, 'C', C.x > 340 ? -18 : 18, 20) +
-      etiqueta(A, angA.toFixed(1)+'°', 0, A.y < 90 ? 40 : -30) +
-      etiqueta(B, angB.toFixed(1)+'°', B.x < 90 ? 34 : -34, -6) +
-      etiqueta(C, angC.toFixed(1)+'°', C.x > 330 ? -34 : 34, -6);
+      etiqueta(A, {x:-bA.x, y:-bA.y}, 28, 'A', 16) +
+      etiqueta(B, {x:-bB.x, y:-bB.y}, 28, 'B', 16) +
+      etiqueta(C, {x:-bC.x, y:-bC.y}, 28, 'C', 16) +
+      etiqueta(A, bA, distMedida(angA), angA.toFixed(1)+'°', 14) +
+      etiqueta(B, bB, distMedida(angB), angB.toFixed(1)+'°', 14) +
+      etiqueta(C, bC, distMedida(angC), angC.toFixed(1)+'°', 14);
 
     ['A','B','C'].forEach(function(id){
       var p = triangulo[id];
       var h = svgNS('circle', { cx:p.x, cy:p.y, r:15, fill:'#C9A84C', stroke:'#1B3A6B', 'stroke-width':3, class:'handle' });
       h.dataset.vertice = id;
       svgTri.appendChild(h);
-      h.addEventListener('pointerdown', iniciarArrastreVertice);
     });
 
     resumenAngulos.innerHTML =
       '<div class="chip-angulo"><div class="val">' + angA.toFixed(1) + '°</div><div class="lbl">Ángulo A</div></div>' +
       '<div class="chip-angulo"><div class="val">' + angB.toFixed(1) + '°</div><div class="lbl">Ángulo B</div></div>' +
       '<div class="chip-angulo"><div class="val">' + angC.toFixed(1) + '°</div><div class="lbl">Ángulo C</div></div>' +
-      '<div class="chip-suma"><div class="val">' + (angA+angB+angC).toFixed(1) + '°</div><div class="lbl">✓ Suma interior</div></div>';
+      '<div class="chip-suma"><div class="val">' + sumaReal.toFixed(1) + '°</div><div class="lbl">✓ Suma interior</div></div>';
 
+    // Los retos solo se evalúan cuando el estudiante mueve el triángulo,
+    // no con la figura inicial.
+    if (evaluarRetos) evaluarRetosTriangulo(angA, angB, angC);
+    renderRetosTriangulo();
+  }
+
+  function evaluarRetosTriangulo(angA, angB, angC){
     var angulos = [angA, angB, angC];
     var max = Math.max.apply(null, angulos);
     if (Math.abs(max - 90) <= 2) retosTriLogrados.recto = true;
@@ -517,7 +540,6 @@
     if (angulos.every(function(a){ return a < 88; })) retosTriLogrados.acutangulo = true;
     var parIgual = Math.abs(angA-angB) <= 2 || Math.abs(angB-angC) <= 2 || Math.abs(angA-angC) <= 2;
     if (parIgual) retosTriLogrados.isosceles = true;
-    renderRetosTriangulo();
   }
 
   function renderRetosTriangulo(){
@@ -531,12 +553,20 @@
     });
   }
 
+  // El SVG se redibuja en cada movimiento, por eso la captura del puntero se hace
+  // sobre el propio <svg> (que nunca se reemplaza) y no sobre la manija.
   var arrastreActivo = null;
-  function iniciarArrastreVertice(evt){
-    arrastreActivo = evt.currentTarget.dataset.vertice;
-    evt.currentTarget.setPointerCapture(evt.pointerId);
+  svgTri.addEventListener('pointerdown', function(evt){
+    var vertice = evt.target.dataset && evt.target.dataset.vertice;
+    if (!vertice) return;
+    arrastreActivo = vertice;
+    svgTri.setPointerCapture(evt.pointerId);
     evt.preventDefault();
-  }
+  });
+  function soltarVertice(){ arrastreActivo = null; }
+  svgTri.addEventListener('pointerup', soltarVertice);
+  svgTri.addEventListener('pointercancel', soltarVertice);
+  svgTri.addEventListener('lostpointercapture', soltarVertice);
   svgTri.addEventListener('pointermove', function(evt){
     if (!arrastreActivo) return;
     var p = svgPoint(svgTri, evt);
@@ -548,16 +578,16 @@
     var A = triangulo.A, B = triangulo.B, C = triangulo.C;
     var area = Math.abs((B.x-A.x)*(C.y-A.y) - (C.x-A.x)*(B.y-A.y)) / 2;
     if (area < 900) { triangulo[arrastreActivo] = previo; return; }
-    dibujarTriangulo();
+    dibujarTriangulo(true);
   });
-  window.addEventListener('pointerup', function(){ arrastreActivo = null; });
 
   document.getElementById('reiniciarTriangulo').addEventListener('click', function(){
     triangulo = { A:{x:200,y:60}, B:{x:80,y:260}, C:{x:320,y:260} };
-    dibujarTriangulo();
+    retosTriLogrados = {};
+    dibujarTriangulo(false);
   });
 
-  dibujarTriangulo();
+  dibujarTriangulo(false);
 
   /* ============ SECCIÓN 5: TRANSPORTADOR INTERACTIVO ============ */
   var svgT = document.getElementById('svgTransportador');
@@ -606,17 +636,23 @@
     svgT.innerHTML = partes.join('');
 
     var manija = svgNS('circle', { cx:pArm.x.toFixed(1), cy:pArm.y.toFixed(1), r:16, fill:'#E8792E', stroke:'#1B3A6B', 'stroke-width':3, class:'handle' });
+    manija.dataset.manija = '1';
     svgT.appendChild(manija);
-    manija.addEventListener('pointerdown', function(evt){
-      arrastrandoBrazo = true;
-      manija.setPointerCapture(evt.pointerId);
-      evt.preventDefault();
-    });
 
     document.getElementById('lecturaActual').textContent = Math.round(anguloActual) + '°';
   }
 
   var arrastrandoBrazo = false;
+  svgT.addEventListener('pointerdown', function(evt){
+    if (!(evt.target.dataset && evt.target.dataset.manija)) return;
+    arrastrandoBrazo = true;
+    svgT.setPointerCapture(evt.pointerId);
+    evt.preventDefault();
+  });
+  function soltarBrazo(){ arrastrandoBrazo = false; }
+  svgT.addEventListener('pointerup', soltarBrazo);
+  svgT.addEventListener('pointercancel', soltarBrazo);
+  svgT.addEventListener('lostpointercapture', soltarBrazo);
   svgT.addEventListener('pointermove', function(evt){
     if (!arrastrandoBrazo) return;
     var p = svgPoint(svgT, evt);
@@ -627,58 +663,73 @@
     } else {
       theta = dx >= 0 ? 0 : 180;
     }
-    anguloActual = Math.max(0, Math.min(180, theta));
+    // Se trabaja en grados enteros: lo que se lee en pantalla es lo que se evalúa.
+    anguloActual = Math.round(Math.max(0, Math.min(180, theta)));
     dibujarTransportador();
   });
-  window.addEventListener('pointerup', function(){ arrastrandoBrazo = false; });
 
   dibujarTransportador();
 
   /* ---- Retos del transportador ---- */
   var RETOS_T = [30, 45, 90, 120, 15, 150, 75, 165];
-  var retoIndex = 0, retoScore = 0;
+  // Puntaje = retos logrados al primer intento (se puede reintentar, pero ese reto ya no suma).
+  var retoIndex = 0, retoScore = 0, intentoFallido = false, esperando = false;
   var retoContador = document.getElementById('retoContador');
   var retoObjetivoValor = document.getElementById('retoObjetivoValor');
   var retoFeedback = document.getElementById('retoFeedback');
   var retosPuntos = document.getElementById('retosPuntos');
-  var retosEstado = RETOS_T.map(function(){ return null; }); // null=pendiente, true=logrado
+  var btnComprobar = document.getElementById('comprobarReto');
+  var retosEstado = RETOS_T.map(function(){ return null; }); // null=pendiente, 'primero'|'reintento'=logrado
+
+  function renderPuntosRetos(){
+    retosPuntos.innerHTML = '';
+    RETOS_T.forEach(function(v, i){
+      var span = document.createElement('span');
+      span.className = 'punto-reto' + (i === retoIndex && !retosEstado[i] ? ' actual' : '') + (retosEstado[i] ? ' hecho' : '');
+      span.textContent = retosEstado[i] ? '✓' : (i+1);
+      span.title = retosEstado[i] === 'reintento' ? 'Logrado tras reintentar' : '';
+      retosPuntos.appendChild(span);
+    });
+  }
 
   function renderRetoActual(){
     retoContador.textContent = 'Reto ' + (retoIndex+1) + ' de ' + RETOS_T.length;
     retoObjetivoValor.textContent = RETOS_T[retoIndex] + '°';
     retoFeedback.className = 'reto-feedback';
     retoFeedback.textContent = '';
-    retosPuntos.innerHTML = '';
-    RETOS_T.forEach(function(v, i){
-      var span = document.createElement('span');
-      span.className = 'punto-reto' + (i === retoIndex ? ' actual' : '') + (retosEstado[i] ? ' hecho' : '');
-      span.textContent = retosEstado[i] ? '✓' : (i+1);
-      retosPuntos.appendChild(span);
-    });
+    renderPuntosRetos();
   }
   renderRetoActual();
 
-  document.getElementById('comprobarReto').addEventListener('click', function(){
+  btnComprobar.addEventListener('click', function(){
+    if (esperando) return;
     var objetivo = RETOS_T[retoIndex];
     var diff = Math.abs(anguloActual - objetivo);
-    if (diff <= 3){
-      retosEstado[retoIndex] = true;
-      retoScore++;
+    if (diff <= 2){
+      retosEstado[retoIndex] = intentoFallido ? 'reintento' : 'primero';
+      if (!intentoFallido) retoScore++;
+      esperando = true;
+      btnComprobar.disabled = true;
       retoFeedback.className = 'reto-feedback correcto';
-      retoFeedback.textContent = '✔ ¡Correcto! Formaste un ángulo de aproximadamente ' + objetivo + '°.';
+      retoFeedback.textContent = '✔ ¡Correcto! Formaste un ángulo de ' + anguloActual + '°.';
+      renderPuntosRetos();
       setTimeout(function(){
+        esperando = false;
+        intentoFallido = false;
         if (retoIndex < RETOS_T.length - 1){
           retoIndex++;
+          btnComprobar.disabled = false;
           renderRetoActual();
         } else {
           mostrarFinalTransportador();
         }
-      }, 900);
+      }, 1300);
     } else {
+      intentoFallido = true;
+      var pista = anguloActual < objetivo ? 'Abre más el brazo' : 'Cierra un poco el brazo';
       retoFeedback.className = 'reto-feedback incorrecto';
-      retoFeedback.textContent = '✘ Tu ángulo mide aproximadamente ' + Math.round(anguloActual) + '°. Ajusta el brazo para acercarte a ' + objetivo + '°.';
+      retoFeedback.textContent = '✘ Tu ángulo mide ' + anguloActual + '°. ' + pista + ' para llegar a ' + objetivo + '°.';
     }
-    renderRetoActual();
   });
 
   function mostrarFinalTransportador(){
@@ -686,18 +737,19 @@
     var emoji, texto;
     if (porcentaje >= 90) { emoji='🏆'; texto='¡Excelente! Dominas la medición de ángulos.'; }
     else if (porcentaje >= 70) { emoji='⭐'; texto='¡Muy bien! Sigue practicando.'; }
-    else if (porcentaje >= 50) { emoji='📚'; texto='Buen esfuerzo. Repasa los retos fallidos.'; }
+    else if (porcentaje >= 50) { emoji='📚'; texto='Buen esfuerzo. Repasa los retos en que necesitaste reintentar.'; }
     else { emoji='💪'; texto='¡No te rindas! Vuelve a intentarlo.'; }
     document.getElementById('puntajeFinalT').textContent = retoScore + ' / ' + RETOS_T.length;
     document.getElementById('clasificacionT').textContent = emoji + ' ' + texto;
-    document.getElementById('mensajeFinalT').textContent = 'Retos de medición completados.';
+    document.getElementById('mensajeFinalT').textContent = 'Retos logrados al primer intento.';
     document.getElementById('panelFinalTransportador').style.display = 'block';
     if (porcentaje >= 70) lanzarConfetti();
   }
 
   document.getElementById('reiniciarRetosT').addEventListener('click', function(){
-    retoIndex = 0; retoScore = 0;
+    retoIndex = 0; retoScore = 0; intentoFallido = false; esperando = false;
     retosEstado = RETOS_T.map(function(){ return null; });
+    btnComprobar.disabled = false;
     document.getElementById('panelFinalTransportador').style.display = 'none';
     renderRetoActual();
   });
