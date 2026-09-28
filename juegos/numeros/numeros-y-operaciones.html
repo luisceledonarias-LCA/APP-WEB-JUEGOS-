@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Números Grandes y Fracciones — Desafío Numérico</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --azul: #1B3A6B;
+    --azul-2: #274E8C;
+    --dorado: #C9A84C;
+    --verde: #27AE60;
+    --rojo: #E74C3C;
+    --naranja: #E8792E;
+    --fondo: #F0F4F8;
+    --blanco: #FFFFFF;
+    --gris-linea: #C7D0DD;
+    --sombra: 0 4px 15px rgba(0,0,0,0.12);
+    --radio: 12px;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--fondo); color: #1F2733; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  @media (prefers-reduced-motion: reduce) { *{ animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+  header { background: linear-gradient(135deg, var(--azul), var(--azul-2)); color: var(--blanco); padding: 18px 20px; text-align: center; }
+  header h1 { font-size: 1.55rem; letter-spacing: -.01em; }
+  header .subtitulo { font-size: .92rem; opacity: .85; margin-top: 4px; }
+  header .badge { display: inline-block; background: var(--dorado); color: var(--azul); font-weight: 700; padding: 4px 14px; border-radius: 20px; font-size: .85rem; margin-top: 8px; }
+
+  nav.menu-tabs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 16px 12px; background: var(--blanco); border-bottom: 1px solid var(--gris-linea); position: sticky; top: 0; z-index: 20; }
+  .tab { display: flex; align-items: center; gap: 7px; padding: 10px 16px; border-radius: 999px; border: 2px solid var(--gris-linea); background: var(--blanco); color: var(--azul); font-size: .85rem; font-weight: 700; cursor: pointer; transition: .18s; }
+  .tab .num { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:var(--fondo); font-size:.72rem; }
+  .tab:hover { border-color: var(--azul-2); }
+  .tab.activa { background: var(--dorado); border-color: var(--dorado); color: var(--azul); }
+  .tab.activa .num { background: var(--azul); color: var(--dorado); }
+
+  main { max-width: 920px; margin: 0 auto; padding: 24px 16px 60px; }
+  .seccion { display: none; }
+  .seccion.activa { display: block; animation: fadeIn .35s ease; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  .card { background: var(--blanco); border-radius: var(--radio); padding: 26px; box-shadow: var(--sombra); margin-bottom: 18px; }
+  .card h2 { color: var(--azul); font-size: 1.3rem; margin-bottom: 6px; }
+  .card .kicker { color: var(--naranja); font-weight: 700; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; display:block; }
+  .card p { line-height: 1.65; font-size: 1.02rem; color: #33404F; }
+  .card p + p { margin-top: 12px; }
+  .card ul { margin: 12px 0 0 20px; line-height: 1.8; }
+
+  .def-box { background: #EEF2F9; border-left: 5px solid var(--azul); border-radius: 8px; padding: 16px 18px; margin-top: 16px; }
+  .def-box strong { color: var(--azul); }
+
+  .tabla-valores { width:100%; border-collapse:collapse; margin-top:14px; font-size:.85rem; }
+  .tabla-valores th, .tabla-valores td { border:1px solid var(--gris-linea); padding:8px 4px; text-align:center; }
+  .tabla-valores th { background:var(--fondo); color:var(--azul); font-weight:700; }
+
+  .instr { background:#FFF6E6; border-left: 5px solid var(--dorado); border-radius: 8px; padding: 12px 16px; font-size: .92rem; margin-bottom: 16px; color:#5A4A1E; }
+
+  .numero-grande { text-align:center; font-size:2.1rem; font-weight:800; color:var(--azul); letter-spacing:.02em; margin:18px 0; font-variant-numeric:tabular-nums; word-break:break-all; }
+  .digito-destacado { color:var(--naranja); background:#FFF3EA; border-radius:6px; padding:0 4px; }
+
+  .opciones-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-top:16px; }
+  .btn-opcion { display:block; width:100%; text-align:left; padding:13px 16px; border-radius:10px; border:2px solid var(--gris-linea); background:var(--blanco); font-size:1rem; font-weight:600; cursor:pointer; transition:.18s; }
+  .btn-opcion:hover { border-color: var(--azul); background:#EEF2F9; }
+  .btn-opcion.correcta { background:#E8F8F0; border-color:var(--verde); color:#1A6B3A; }
+  .btn-opcion.incorrecta { background:#FDEEEE; border-color:var(--rojo); color:#922B1A; }
+
+  .feedback { padding: 14px 18px; border-radius: 10px; margin-top: 16px; font-size: 1rem; font-weight: 600; display: none; }
+  .feedback.correcto { display:block; background: #E8F8F0; color: #1A6B3A; border-left: 5px solid var(--verde); }
+  .feedback.incorrecto { display:block; background: #FDEEEE; color: #922B1A; border-left: 5px solid var(--rojo); }
+
+  .puntaje-linea { text-align:center; font-weight:700; color:var(--azul); margin-top:14px; }
+  .acciones { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px; }
+  .btn { display:inline-block; padding: 11px 24px; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; transition:transform .15s, opacity .15s; }
+  .btn:hover { transform: translateY(-2px); opacity:.92; }
+  .btn-primario { background: var(--azul); color:#fff; }
+  .btn-acento { background: var(--dorado); color: var(--azul); }
+
+  .campo-calculo { text-align:center; margin:20px 0; }
+  .enunciado-calculo { font-size:1.4rem; font-weight:800; color:var(--azul); margin-bottom:16px; }
+  .campo-numerico { font-size:1.2rem; font-weight:700; text-align:center; padding:10px 14px; border-radius:8px; border:2px solid var(--gris-linea); width:160px; font-variant-numeric:tabular-nums; }
+  .campo-numerico:focus { outline:none; border-color:var(--azul); }
+  .contador-progreso { text-align:center; font-size:.85rem; color:#667; font-weight:700; margin-bottom:6px; }
+
+  .fraccion-comparacion { display:flex; justify-content:center; align-items:flex-end; gap:26px; margin:20px 0; flex-wrap:wrap; }
+  .fraccion-bloque { text-align:center; }
+  .fraccion-bloque .etiqueta { font-weight:800; color:var(--azul); font-size:1.15rem; margin-bottom:8px; }
+  .fraccion-visual { display:flex; gap:2px; width:200px; }
+  .fraccion-visual .seg { flex:1; height:36px; border:1.5px solid var(--gris-linea); background:#fff; border-radius:2px; }
+  .fraccion-visual .seg.lleno { background: var(--naranja); border-color:var(--naranja); }
+  .fraccion-numero { margin-top:8px; font-weight:700; color:#33404F; font-size:1.05rem; }
+  .signo-comparacion { font-size:2rem; font-weight:800; color:var(--dorado); align-self:center; }
+
+  .botones-relacion { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+  .btn-relacion { padding:12px 26px; border-radius:10px; border:2px solid var(--gris-linea); background:var(--blanco); font-size:1.3rem; font-weight:800; color:var(--azul); cursor:pointer; transition:.18s; min-width:76px; }
+  .btn-relacion:hover { border-color:var(--azul); }
+  .btn-relacion.correcta { background:#E8F8F0; border-color:var(--verde); color:#1A6B3A; }
+  .btn-relacion.incorrecta { background:#FDEEEE; border-color:var(--rojo); color:#922B1A; }
+
+  .vf-item { border: 2px solid var(--gris-linea); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+  .vf-item .enunciado { font-weight: 600; font-size: 1rem; margin-bottom: 10px; }
+  .vf-botones { display: flex; gap: 10px; }
+  .vf-btn { flex:1; padding: 9px 0; border-radius: 8px; border: 2px solid var(--gris-linea); background: var(--blanco); font-weight: 700; cursor: pointer; font-size: .95rem; transition: .15s; }
+  .vf-btn:hover { border-color: var(--azul); }
+  .vf-btn.correcta { background:#E8F8F0; border-color:var(--verde); color:#1A6B3A; }
+  .vf-btn.incorrecta { background:#FDEEEE; border-color:var(--rojo); color:#922B1A; }
+  .vf-feedback { margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: .9rem; display: none; }
+  .vf-feedback.correcto { display:block; background:#E8F8F0; color:#1A6B3A; border-left:4px solid var(--verde); }
+  .vf-feedback.incorrecto { display:block; background:#FDEEEE; color:#922B1A; border-left:4px solid var(--rojo); }
+  .vf-score { text-align:center; font-weight:700; color:var(--azul); margin-top: 4px; }
+
+  .final-panel { text-align:center; padding: 20px; }
+  .puntaje-grande { font-size: 3rem; font-weight:800; color: var(--azul); }
+  .clasificacion { font-size: 1.3rem; margin: 6px 0 4px; }
+
+  .confetti-container { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index: 999; overflow:hidden; }
+  .confetti-pieza { position:absolute; width:9px; height:9px; border-radius:2px; animation: caer 2.4s ease-in forwards; }
+  @keyframes caer { 0%{opacity:1; transform:translateY(-20px) rotate(0deg);} 100%{opacity:0; transform:translateY(100vh) rotate(720deg);} }
+
+  footer { text-align:center; padding: 22px; color:#8A94A3; font-size:.8rem; }
+
+  @media (max-width: 480px) {
+    header h1 { font-size: 1.2rem; }
+    .card { padding: 18px; }
+    .tab { font-size: .78rem; padding: 8px 12px; }
+    .numero-grande { font-size:1.5rem; }
+    .fraccion-comparacion { gap:14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔢 Números Grandes y Fracciones — Desafío Numérico</h1>
+  <div class="subtitulo">Colegio Nuestra Señora del Carmen · 5° Básico</div>
+  <span class="badge">Números y Operaciones</span>
+</header>
+
+<nav class="menu-tabs" id="menuTabs">
+  <button class="tab activa" data-seccion="s1"><span class="num">1</span> Valor posicional</button>
+  <button class="tab" data-seccion="s2"><span class="num">2</span> Cálculo mental</button>
+  <button class="tab" data-seccion="s3"><span class="num">3</span> Fracciones</button>
+  <button class="tab" data-seccion="s4"><span class="num">4</span> Suma y resta de fracciones</button>
+  <button class="tab" data-seccion="s5"><span class="num">5</span> Números decimales</button>
+</nav>
+
+<main>
+
+  <!-- ========== SECCIÓN 1: VALOR POSICIONAL ========== -->
+  <section class="seccion activa" id="s1">
+    <div class="card">
+      <span class="kicker">Concepto</span>
+      <h2>Valor posicional de números naturales</h2>
+      <p>En el sistema de numeración decimal, cada dígito de un número tiene un <strong>valor posicional</strong> que depende del lugar que ocupa. Los números de 5° básico pueden tener más de 6 dígitos y son menores que 1.000 millones.</p>
+      <div class="def-box">
+        <strong>Órdenes de magnitud (de derecha a izquierda)</strong>
+        <table class="tabla-valores">
+          <tr><th>CM</th><th>DM</th><th>UM</th><th>CMil</th><th>DMil</th><th>UMil</th><th>C</th><th>D</th><th>U</th></tr>
+          <tr><td>Centena de millón</td><td>Decena de millón</td><td>Unidad de millón</td><td>Centena de mil</td><td>Decena de mil</td><td>Unidad de mil</td><td>Centena</td><td>Decena</td><td>Unidad</td></tr>
+        </table>
+      </div>
+      <p style="margin-top:16px"><strong>Importante:</strong> un número puede escribirse en <em>forma estándar</em> (836.204) o en <em>forma expandida</em> (800.000 + 30.000 + 6.000 + 200 + 4), lo que permite componer y descomponer cantidades.</p>
+    </div>
+
+    <div class="card">
+      <span class="kicker">Desafío interactivo</span>
+      <h2>¿Cuál es el valor posicional?</h2>
+      <div class="instr">👆 Observa el número y determina el valor posicional del dígito destacado en naranjo.</div>
+      <div class="numero-grande" id="numeroDestacado"></div>
+      <div class="opciones-grid" id="opcionesValorPos"></div>
+      <div class="feedback" id="feedbackValorPos"></div>
+      <div class="puntaje-linea" id="puntajeValorPos">Aciertos: 0 / 0</div>
+      <div class="acciones"><button class="btn btn-acento" id="nuevoDesafioValorPos">🔄 Nuevo número</button></div>
+    </div>
+  </section>
+
+  <!-- ========== SECCIÓN 2: CÁLCULO MENTAL ========== -->
+  <section class="seccion" id="s2">
+    <div class="card">
+      <span class="kicker">Estrategias</span>
+      <h2>Cálculo mental y las cuatro operaciones</h2>
+      <p>Para calcular con rapidez y precisión se pueden aplicar distintas estrategias: <strong>descomponer</strong> un factor en decenas y unidades, usar el <strong>doble y la mitad</strong>, o resolver primero lo que está entre <strong>paréntesis</strong>.</p>
+      <ul>
+        <li>En la multiplicación y la división: estimar el resultado antes de calcular.</li>
+        <li>En expresiones combinadas: se resuelve primero el paréntesis.</li>
+        <li>En problemas con dinero: identificar la operación adecuada según el contexto.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <span class="kicker">Práctica</span>
+      <h2>Resuelve los cálculos</h2>
+      <div class="contador-progreso" id="progresoCalculo">Cálculo 1 de 10</div>
+      <div class="campo-calculo">
+        <div class="enunciado-calculo" id="enunciadoCalculo"></div>
+        <input type="number" class="campo-numerico" id="respuestaCalculo" placeholder="Tu respuesta" inputmode="numeric">
+      </div>
+      <div class="acciones" style="margin-top:0;">
+        <button class="btn btn-acento" id="comprobarCalculo">✅ Comprobar</button>
+        <button class="btn btn-primario" id="siguienteCalculo" style="display:none;">Siguiente →</button>
+      </div>
+      <div class="feedback" id="feedbackCalculo"></div>
+      <div class="puntaje-linea" id="puntajeCalculo">Puntaje: 0 / 10</div>
+
+      <div class="card final-panel" id="panelFinalCalculo" style="display:none; margin-top:16px; box-shadow:none; border:2px solid var(--gris-linea);">
+        <div class="puntaje-grande" id="puntajeFinalCalculo"></div>
+        <div class="clasificacion" id="clasificacionCalculo"></div>
+        <button class="btn btn-primario" id="reiniciarCalculo">🔄 Repetir práctica</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECCIÓN 3: FRACCIONES PROPIAS E IMPROPIAS ========== -->
+  <section class="seccion" id="s3">
+    <div class="card">
+      <span class="kicker">Concepto</span>
+      <h2>Fracciones propias e impropias</h2>
+      <p>Una <strong>fracción propia</strong> tiene el numerador menor que el denominador y representa una cantidad menor que un entero (ej: 3/4). Una <strong>fracción impropia</strong> tiene el numerador mayor o igual que el denominador y representa una cantidad igual o mayor que un entero (ej: 5/4 = 1 y 1/4).</p>
+      <div class="def-box">
+        <strong>Fracciones equivalentes</strong>
+        <p style="margin-top:6px">Dos fracciones son equivalentes cuando representan la misma cantidad, aunque tengan distinto numerador y denominador. Se obtienen <strong>amplificando</strong> (multiplicando numerador y denominador por un mismo número) o <strong>simplificando</strong> (dividiendo ambos por un divisor común).</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="kicker">Desafío interactivo</span>
+      <h2>Compara las fracciones</h2>
+      <div class="instr">👆 Observa las dos barras y determina la relación correcta entre las fracciones A y B.</div>
+      <div class="contador-progreso" id="progresoFraccion">Comparación 1 de 8</div>
+      <div class="fraccion-comparacion" id="visualFracciones"></div>
+      <div class="botones-relacion" id="botonesRelacion">
+        <button class="btn-relacion" data-rel=">">A &gt; B</button>
+        <button class="btn-relacion" data-rel="=">A = B</button>
+        <button class="btn-relacion" data-rel="<">A &lt; B</button>
+      </div>
+      <div class="feedback" id="feedbackFraccion"></div>
+      <div class="puntaje-linea" id="puntajeFraccion">Puntaje: 0 / 8</div>
+
+      <div class="card final-panel" id="panelFinalFraccion" style="display:none; margin-top:16px; box-shadow:none; border:2px solid var(--gris-linea);">
+        <div class="puntaje-grande" id="puntajeFinalFraccion"></div>
+        <div class="clasificacion" id="clasificacionFraccion"></div>
+        <button class="btn btn-primario" id="reiniciarFraccion">🔄 Repetir desafío</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECCIÓN 4: SUMA Y RESTA DE FRACCIONES ========== -->
+  <section class="seccion" id="s4">
+    <div class="card">
+      <span class="kicker">Procedimiento</span>
+      <h2>Suma y resta de fracciones</h2>
+      <p>Para sumar o restar fracciones con <strong>distinto denominador</strong>, primero se transforman en fracciones equivalentes con <strong>igual denominador</strong>, amplificando una o ambas fracciones. Luego se suman o restan los numeradores, manteniendo el denominador común.</p>
+      <div class="def-box">
+        <strong>Ejemplo resuelto</strong>
+        <p style="margin-top:6px">1/4 + 1/2 → se amplifica 1/2 a 2/4 (multiplicando por 2) → 1/4 + 2/4 = <strong>3/4</strong>.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="kicker">Práctica</span>
+      <h2>Resuelve la operación</h2>
+      <div id="listaSumaResta"></div>
+      <div class="vf-score" id="puntajeSumaResta">Puntaje: 0 / 0 respondidas</div>
+      <div class="acciones"><button class="btn btn-primario" id="reiniciarSumaResta">🔄 Reiniciar práctica</button></div>
+    </div>
+  </section>
+
+  <!-- ========== SECCIÓN 5: NÚMEROS DECIMALES ========== -->
+  <section class="seccion" id="s5">
+    <div class="card">
+      <span class="kicker">Concepto</span>
+      <h2>Números decimales</h2>
+      <p>Los números decimales representan cantidades menores que la unidad usando la <strong>coma decimal</strong>. Cada lugar después de la coma tiene un valor posicional: <strong>décimos</strong>, <strong>centésimos</strong> y <strong>milésimos</strong>.</p>
+      <div class="def-box">
+        <strong>Relación entre fracción y decimal</strong>
+        <p style="margin-top:6px">Una fracción con denominador 10, 100 o 1000 puede escribirse como decimal: 7/10 = 0,7 — 45/100 = 0,45 — 3/1000 = 0,003. Para comparar decimales se igualan las cifras decimales (0,5 = 0,50) y se comparan de izquierda a derecha.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="kicker">Práctica rápida</span>
+      <h2>Verdadero o falso</h2>
+      <div id="vfListaDecimales"></div>
+      <div class="vf-score" id="vfScoreDecimales">Aciertos: 0 / 0</div>
+      <div class="acciones"><button class="btn btn-primario" id="vfReiniciarDecimales">🔄 Reiniciar práctica</button></div>
+    </div>
+  </section>
+
+</main>
+
+<div class="confetti-container" id="confetti"></div>
+<footer>Profesor: Luis Celedón A. &nbsp;|&nbsp; RBD 5678-2 &nbsp;|&nbsp; 2026</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ NAVEGACIÓN ENTRE SECCIONES ============ */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  var secciones = Array.prototype.slice.call(document.querySelectorAll('.seccion'));
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      tabs.forEach(function(t){ t.classList.remove('activa'); });
+      secciones.forEach(function(s){ s.classList.remove('activa'); });
+      tab.classList.add('activa');
+      document.getElementById(tab.dataset.seccion).classList.add('activa');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  function lanzarConfetti(){
+    var colores = ['#1B3A6B','#C9A84C','#27AE60','#E74C3C','#E8792E'];
+    var c = document.getElementById('confetti');
+    for (var i = 0; i < 70; i++){
+      var p = document.createElement('div');
+      p.className = 'confetti-pieza';
+      p.style.cssText = 'left:' + (Math.random()*100) + '%; background:' + colores[Math.floor(Math.random()*colores.length)] + '; animation-delay:' + (Math.random()*1.2) + 's; animation-duration:' + (2+Math.random()) + 's';
+      c.appendChild(p);
+    }
+    setTimeout(function(){ c.innerHTML = ''; }, 4500);
+  }
+
+  function clasificar(porcentaje){
+    if (porcentaje >= 90) return { emoji:'🏆', texto:'¡Excelente! Dominas el tema.' };
+    if (porcentaje >= 70) return { emoji:'⭐', texto:'¡Muy bien! Sigue practicando.' };
+    if (porcentaje >= 50) return { emoji:'📚', texto:'Buen esfuerzo. Repasa los errores.' };
+    return { emoji:'💪', texto:'¡No te rindas! Vuelve a intentarlo.' };
+  }
+
+  /* ============ SECCIÓN 1: VALOR POSICIONAL ============ */
+  var PLACES = ['Unidad','Decena','Centena','Unidad de mil','Decena de mil','Centena de mil','Unidad de millón','Decena de millón','Centena de millón'];
+  var numeroDestacadoEl = document.getElementById('numeroDestacado');
+  var opcionesValorPosEl = document.getElementById('opcionesValorPos');
+  var feedbackValorPosEl = document.getElementById('feedbackValorPos');
+  var puntajeValorPosEl = document.getElementById('puntajeValorPos');
+  var vpAciertos = 0, vpIntentos = 0;
+
+  function formatearConDestaque(numStr, idxDestacado){
+    var chars = numStr.split('');
+    var n = chars.length;
+    var html = '';
+    for (var i = 0; i < n; i++){
+      if (i === idxDestacado){ html += '<span class="digito-destacado">' + chars[i] + '</span>'; }
+      else { html += chars[i]; }
+      var restante = n - 1 - i;
+      if (restante > 0 && restante % 3 === 0){ html += '.'; }
+    }
+    return html;
+  }
+
+  function mezclar(arr){
+    for (var i = arr.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function nuevoDesafioValorPos(){
+    var digitos = 7 + Math.floor(Math.random() * 3); // 7, 8 o 9 dígitos
+    var numStr = '';
+    for (var i = 0; i < digitos; i++){
+      numStr += (i === 0) ? (1 + Math.floor(Math.random() * 9)) : Math.floor(Math.random() * 10);
+    }
+    var idx = Math.floor(Math.random() * digitos);
+    var posDesdeDerecha = digitos - 1 - idx;
+    var nombreCorrecto = PLACES[posDesdeDerecha];
+
+    numeroDestacadoEl.innerHTML = formatearConDestaque(numStr, idx);
+
+    var otrasOpciones = PLACES.filter(function(p){ return p !== nombreCorrecto; });
+    mezclar(otrasOpciones);
+    var opciones = mezclar([nombreCorrecto].concat(otrasOpciones.slice(0, 3)));
+
+    opcionesValorPosEl.innerHTML = '';
+    feedbackValorPosEl.className = 'feedback';
+    feedbackValorPosEl.textContent = '';
+    opciones.forEach(function(nombre){
+      var btn = document.createElement('button');
+      btn.className = 'btn-opcion';
+      btn.textContent = nombre;
+      btn.addEventListener('click', function(){
+        if (opcionesValorPosEl.dataset.resuelto) return;
+        opcionesValorPosEl.dataset.resuelto = '1';
+        var acierto = nombre === nombreCorrecto;
+        Array.prototype.slice.call(opcionesValorPosEl.children).forEach(function(b){
+          if (b.textContent === nombreCorrecto) b.classList.add('correcta');
+          else if (b === btn) b.classList.add('incorrecta');
+        });
+        vpIntentos++;
+        if (acierto) vpAciertos++;
+        feedbackValorPosEl.textContent = (acierto ? '✔ ¡Correcto! ' : '✘ No es correcto. ') + 'El dígito destacado corresponde a: ' + nombreCorrecto + '.';
+        feedbackValorPosEl.className = 'feedback ' + (acierto ? 'correcto' : 'incorrecto');
+        puntajeValorPosEl.textContent = 'Aciertos: ' + vpAciertos + ' / ' + vpIntentos;
+      });
+      opcionesValorPosEl.appendChild(btn);
+    });
+    delete opcionesValorPosEl.dataset.resuelto;
+  }
+  document.getElementById('nuevoDesafioValorPos').addEventListener('click', nuevoDesafioValorPos);
+  nuevoDesafioValorPos();
+
+  /* ============ SECCIÓN 2: CÁLCULO MENTAL ============ */
+  var PROBLEMAS_CALCULO = [
+    { enunciado:'34 × 26 = ?', respuesta:884, ayuda:'Descompón: 34 × 20 = 680 y 34 × 6 = 204; súmalos: 680 + 204 = 884.' },
+    { enunciado:'468 ÷ 4 = ?', respuesta:117, ayuda:'Divide por partes: 400 ÷ 4 = 100 y 68 ÷ 4 = 17; súmalos: 100 + 17 = 117.' },
+    { enunciado:'(15 + 9) × 3 = ?', respuesta:72, ayuda:'Resuelve primero el paréntesis: 15 + 9 = 24; luego 24 × 3 = 72.' },
+    { enunciado:'27 × 4, usando el doble dos veces = ?', respuesta:108, ayuda:'27 × 2 = 54; 54 × 2 = 108. Duplicar dos veces equivale a multiplicar por 4.' },
+    { enunciado:'720 ÷ 8 = ?', respuesta:90, ayuda:'72 ÷ 8 = 9; como 720 tiene un cero más que 72, el resultado es 90.' },
+    { enunciado:'56 × 12 = ?', respuesta:672, ayuda:'56 × 10 = 560 y 56 × 2 = 112; súmalos: 560 + 112 = 672.' },
+    { enunciado:'(48 − 20) ÷ 4 = ?', respuesta:7, ayuda:'Resuelve primero el paréntesis: 48 − 20 = 28; luego 28 ÷ 4 = 7.' },
+    { enunciado:'Compraste 3 cuadernos a $1.250 cada uno. ¿Cuánto pagaste en total?', respuesta:3750, ayuda:'Multiplica el precio unitario por la cantidad: 3 × 1.250 = 3.750.' },
+    { enunciado:'936 ÷ 3 = ?', respuesta:312, ayuda:'Divide por partes: 900 ÷ 3 = 300 y 36 ÷ 3 = 12; súmalos: 300 + 12 = 312.' },
+    { enunciado:'19 × 19 = ?', respuesta:361, ayuda:'19 × 20 = 380; réstale 19: 380 − 19 = 361.' }
+  ];
+  var calcIndice = 0, calcPuntaje = 0;
+  var progresoCalculoEl = document.getElementById('progresoCalculo');
+  var enunciadoCalculoEl = document.getElementById('enunciadoCalculo');
+  var respuestaCalculoEl = document.getElementById('respuestaCalculo');
+  var feedbackCalculoEl = document.getElementById('feedbackCalculo');
+  var puntajeCalculoEl = document.getElementById('puntajeCalculo');
+  var comprobarCalculoBtn = document.getElementById('comprobarCalculo');
+  var siguienteCalculoBtn = document.getElementById('siguienteCalculo');
+
+  function mostrarCalculo(){
+    var item = PROBLEMAS_CALCULO[calcIndice];
+    progresoCalculoEl.textContent = 'Cálculo ' + (calcIndice + 1) + ' de ' + PROBLEMAS_CALCULO.length;
+    enunciadoCalculoEl.textContent = item.enunciado;
+    respuestaCalculoEl.value = '';
+    respuestaCalculoEl.disabled = false;
+    feedbackCalculoEl.className = 'feedback';
+    feedbackCalculoEl.textContent = '';
+    comprobarCalculoBtn.style.display = 'inline-block';
+    siguienteCalculoBtn.style.display = 'none';
+    respuestaCalculoEl.focus();
+  }
+
+  comprobarCalculoBtn.addEventListener('click', function(){
+    var item = PROBLEMAS_CALCULO[calcIndice];
+    var valor = parseInt(respuestaCalculoEl.value, 10);
+    var acierto = valor === item.respuesta;
+    if (acierto) calcPuntaje++;
+    feedbackCalculoEl.textContent = (acierto ? '✔ ¡Correcto! ' : '✘ La respuesta correcta es ' + item.respuesta + '. ') + item.ayuda;
+    feedbackCalculoEl.className = 'feedback ' + (acierto ? 'correcto' : 'incorrecto');
+    puntajeCalculoEl.textContent = 'Puntaje: ' + calcPuntaje + ' / ' + PROBLEMAS_CALCULO.length;
+    respuestaCalculoEl.disabled = true;
+    comprobarCalculoBtn.style.display = 'none';
+    siguienteCalculoBtn.style.display = 'inline-block';
+  });
+
+  siguienteCalculoBtn.addEventListener('click', function(){
+    calcIndice++;
+    if (calcIndice < PROBLEMAS_CALCULO.length){
+      mostrarCalculo();
+    } else {
+      var porcentaje = Math.round((calcPuntaje / PROBLEMAS_CALCULO.length) * 100);
+      var c = clasificar(porcentaje);
+      document.getElementById('puntajeFinalCalculo').textContent = calcPuntaje + ' / ' + PROBLEMAS_CALCULO.length;
+      document.getElementById('clasificacionCalculo').textContent = c.emoji + ' ' + c.texto;
+      document.getElementById('panelFinalCalculo').style.display = 'block';
+      document.querySelector('#s2 .card:nth-child(2) .campo-calculo').style.display = 'none';
+      document.querySelector('#s2 .card:nth-child(2) .acciones').style.display = 'none';
+      feedbackCalculoEl.className = 'feedback';
+      if (porcentaje >= 70) lanzarConfetti();
+    }
+  });
+
+  document.getElementById('reiniciarCalculo').addEventListener('click', function(){
+    calcIndice = 0; calcPuntaje = 0;
+    document.getElementById('panelFinalCalculo').style.display = 'none';
+    document.querySelector('#s2 .card:nth-child(2) .campo-calculo').style.display = 'block';
+    document.querySelector('#s2 .card:nth-child(2) .acciones').style.display = 'flex';
+    puntajeCalculoEl.textContent = 'Puntaje: 0 / ' + PROBLEMAS_CALCULO.length;
+    mostrarCalculo();
+  });
+
+  mostrarCalculo();
+
+  /* ============ SECCIÓN 3: FRACCIONES PROPIAS E IMPROPIAS ============ */
+  var COMPARACIONES = [
+    { a:{n:3,d:4}, b:{n:1,d:2}, rel:'>', exp:'3/4 equivale a 6/8 y 1/2 equivale a 4/8. Como 6/8 > 4/8, entonces 3/4 > 1/2.' },
+    { a:{n:2,d:3}, b:{n:5,d:6}, rel:'<', exp:'2/3 equivale a 4/6, y 4/6 < 5/6. Por lo tanto, 2/3 < 5/6.' },
+    { a:{n:4,d:8}, b:{n:1,d:2}, rel:'=', exp:'4/8 se simplifica dividiendo por 4: 4/8 = 1/2. Son fracciones equivalentes.' },
+    { a:{n:5,d:4}, b:{n:1,d:1}, rel:'>', exp:'5/4 es una fracción impropia mayor que un entero (4/4 = 1). Por lo tanto, 5/4 > 1.' },
+    { a:{n:2,d:5}, b:{n:3,d:10}, rel:'>', exp:'2/5 equivale a 4/10, y 4/10 > 3/10. Por lo tanto, 2/5 > 3/10.' },
+    { a:{n:7,d:12}, b:{n:1,d:2}, rel:'>', exp:'1/2 equivale a 6/12, y 7/12 > 6/12. Por lo tanto, 7/12 > 1/2.' },
+    { a:{n:9,d:6}, b:{n:3,d:2}, rel:'=', exp:'9/6 se simplifica dividiendo por 3: 9/6 = 3/2. Son fracciones equivalentes.' },
+    { a:{n:3,d:8}, b:{n:5,d:8}, rel:'<', exp:'Con igual denominador se compara el numerador: 3 < 5. Por lo tanto, 3/8 < 5/8.' }
+  ];
+  var fraccionIndice = 0, fraccionPuntaje = 0;
+  var progresoFraccionEl = document.getElementById('progresoFraccion');
+  var visualFraccionesEl = document.getElementById('visualFracciones');
+  var botonesRelacionEl = document.getElementById('botonesRelacion');
+  var feedbackFraccionEl = document.getElementById('feedbackFraccion');
+  var puntajeFraccionEl = document.getElementById('puntajeFraccion');
+
+  function bloqueFraccion(etiqueta, frac){
+    var segs = '';
+    for (var i = 0; i < frac.d; i++){
+      segs += '<div class="seg' + (i < frac.n ? ' lleno' : '') + '"></div>';
+    }
+    return '<div class="fraccion-bloque"><div class="etiqueta">' + etiqueta + '</div>' +
+      '<div class="fraccion-visual">' + segs + '</div>' +
+      '<div class="fraccion-numero">' + frac.n + '/' + frac.d + '</div></div>';
+  }
+
+  function mostrarComparacion(){
+    var item = COMPARACIONES[fraccionIndice];
+    progresoFraccionEl.textContent = 'Comparación ' + (fraccionIndice + 1) + ' de ' + COMPARACIONES.length;
+    visualFraccionesEl.innerHTML = bloqueFraccion('A', item.a) + '<div class="signo-comparacion">?</div>' + bloqueFraccion('B', item.b);
+    feedbackFraccionEl.className = 'feedback';
+    feedbackFraccionEl.textContent = '';
+    Array.prototype.slice.call(botonesRelacionEl.children).forEach(function(b){
+      b.classList.remove('correcta', 'incorrecta');
+      b.disabled = false;
+    });
+    delete botonesRelacionEl.dataset.resuelto;
+  }
+
+  Array.prototype.slice.call(botonesRelacionEl.children).forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if (botonesRelacionEl.dataset.resuelto) return;
+      botonesRelacionEl.dataset.resuelto = '1';
+      var item = COMPARACIONES[fraccionIndice];
+      var acierto = btn.dataset.rel === item.rel;
+      Array.prototype.slice.call(botonesRelacionEl.children).forEach(function(b){
+        b.disabled = true;
+        if (b.dataset.rel === item.rel) b.classList.add('correcta');
+        else if (b === btn) b.classList.add('incorrecta');
+      });
+      if (acierto) fraccionPuntaje++;
+      feedbackFraccionEl.textContent = (acierto ? '✔ ¡Correcto! ' : '✘ No es correcto. ') + item.exp;
+      feedbackFraccionEl.className = 'feedback ' + (acierto ? 'correcto' : 'incorrecto');
+      puntajeFraccionEl.textContent = 'Puntaje: ' + fraccionPuntaje + ' / ' + COMPARACIONES.length;
+
+      setTimeout(function(){
+        fraccionIndice++;
+        if (fraccionIndice < COMPARACIONES.length){
+          mostrarComparacion();
+        } else {
+          var porcentaje = Math.round((fraccionPuntaje / COMPARACIONES.length) * 100);
+          var c = clasificar(porcentaje);
+          document.getElementById('puntajeFinalFraccion').textContent = fraccionPuntaje + ' / ' + COMPARACIONES.length;
+          document.getElementById('clasificacionFraccion').textContent = c.emoji + ' ' + c.texto;
+          document.getElementById('panelFinalFraccion').style.display = 'block';
+          document.getElementById('progresoFraccion').style.display = 'none';
+          visualFraccionesEl.style.display = 'none';
+          botonesRelacionEl.style.display = 'none';
+          feedbackFraccionEl.className = 'feedback';
+          if (porcentaje >= 70) lanzarConfetti();
+        }
+      }, 1400);
+    });
+  });
+
+  document.getElementById('reiniciarFraccion').addEventListener('click', function(){
+    fraccionIndice = 0; fraccionPuntaje = 0;
+    document.getElementById('panelFinalFraccion').style.display = 'none';
+    document.getElementById('progresoFraccion').style.display = 'block';
+    visualFraccionesEl.style.display = 'flex';
+    botonesRelacionEl.style.display = 'flex';
+    puntajeFraccionEl.textContent = 'Puntaje: 0 / ' + COMPARACIONES.length;
+    mostrarComparacion();
+  });
+
+  mostrarComparacion();
+
+  /* ============ SECCIÓN 4: SUMA Y RESTA DE FRACCIONES ============ */
+  var SUMAS_RESTAS = [
+    { enunciado:'1/4 + 1/2 = ?', opciones:['3/4','2/6','1/6','5/8'], correcta:0, exp:'Amplifica 1/2 a 2/4: 1/4 + 2/4 = 3/4.' },
+    { enunciado:'2/3 − 1/6 = ?', opciones:['1/2','1/3','5/6','1/6'], correcta:0, exp:'Amplifica 2/3 a 4/6: 4/6 − 1/6 = 3/6 = 1/2.' },
+    { enunciado:'3/5 + 1/10 = ?', opciones:['4/10','7/10','4/15','8/15'], correcta:1, exp:'Amplifica 3/5 a 6/10: 6/10 + 1/10 = 7/10.' },
+    { enunciado:'5/6 − 1/3 = ?', opciones:['1/2','2/3','5/6','1/6'], correcta:0, exp:'Amplifica 1/3 a 2/6: 5/6 − 2/6 = 3/6 = 1/2.' },
+    { enunciado:'1/2 + 1/4 + 1/8 = ?', opciones:['7/8','3/4','5/8','1'], correcta:0, exp:'Amplifica todo a octavos: 4/8 + 2/8 + 1/8 = 7/8.' },
+    { enunciado:'7/10 − 2/5 = ?', opciones:['1/5','3/10','1/2','2/5'], correcta:1, exp:'Amplifica 2/5 a 4/10: 7/10 − 4/10 = 3/10.' },
+    { enunciado:'3/4 + 3/4 = ?', opciones:['1 1/2','6/8','3/8','9/4'], correcta:0, exp:'3/4 + 3/4 = 6/4, que como número mixto es 1 2/4 = 1 1/2.' },
+    { enunciado:'9/12 − 1/4 = ?', opciones:['1/2','2/3','1/3','3/4'], correcta:0, exp:'Amplifica 1/4 a 3/12: 9/12 − 3/12 = 6/12 = 1/2.' }
+  ];
+  var listaSumaRestaEl = document.getElementById('listaSumaResta');
+  var puntajeSumaRestaEl = document.getElementById('puntajeSumaResta');
+  var srAciertos = 0, srRespondidas = 0;
+
+  function renderSumaResta(){
+    listaSumaRestaEl.innerHTML = '';
+    srAciertos = 0; srRespondidas = 0;
+    SUMAS_RESTAS.forEach(function(item, i){
+      var div = document.createElement('div');
+      div.className = 'vf-item';
+      var opcionesHtml = item.opciones.map(function(op, j){
+        return '<button class="vf-btn" data-idx="' + j + '" style="flex:1 1 40%">' + op + '</button>';
+      }).join('');
+      div.innerHTML =
+        '<div class="enunciado">' + (i + 1) + '. ' + item.enunciado + '</div>' +
+        '<div class="vf-botones" style="flex-wrap:wrap">' + opcionesHtml + '</div>' +
+        '<div class="vf-feedback"></div>';
+      var botones = div.querySelectorAll('.vf-btn');
+      botones.forEach(function(btn){
+        btn.addEventListener('click', function(){
+          if (div.dataset.resuelto) return;
+          div.dataset.resuelto = '1';
+          var idx = parseInt(btn.dataset.idx, 10);
+          var acierto = idx === item.correcta;
+          botones.forEach(function(b, j){
+            if (j === item.correcta) b.classList.add('correcta');
+            else if (b === btn) b.classList.add('incorrecta');
+          });
+          var fb = div.querySelector('.vf-feedback');
+          fb.textContent = (acierto ? '✔ ' : '✘ ') + item.exp;
+          fb.className = 'vf-feedback ' + (acierto ? 'correcto' : 'incorrecto');
+          srRespondidas++;
+          if (acierto) srAciertos++;
+          puntajeSumaRestaEl.textContent = 'Puntaje: ' + srAciertos + ' / ' + srRespondidas + ' respondidas (' + SUMAS_RESTAS.length + ' en total)';
+        });
+      });
+      listaSumaRestaEl.appendChild(div);
+    });
+    puntajeSumaRestaEl.textContent = 'Puntaje: 0 / 0 respondidas (' + SUMAS_RESTAS.length + ' en total)';
+  }
+  renderSumaResta();
+  document.getElementById('reiniciarSumaResta').addEventListener('click', renderSumaResta);
+
+  /* ============ SECCIÓN 5: NÚMEROS DECIMALES ============ */
+  var DECIMALES_VF = [
+    { enunciado:'0,7 es igual a 7/10.', r:true, feedback:'Correcto. El dígito en el lugar de los décimos representa décimos; 0,7 = 7/10.' },
+    { enunciado:'0,45 es mayor que 0,5.', r:false, feedback:'Falso. 0,45 < 0,5, porque 0,50 tiene 5 décimos y 0,45 tiene solo 4 décimos.' },
+    { enunciado:'3/4 equivale a 0,75.', r:true, feedback:'Correcto. 3/4 = 75/100 = 0,75.' },
+    { enunciado:'0,3 + 0,25 = 0,55.', r:true, feedback:'Correcto. 0,30 + 0,25 = 0,55.' },
+    { enunciado:'El dígito de las milésimas en 2,468 es el 6.', r:false, feedback:'Falso. El 6 está en el lugar de las centésimas; el 8 está en el lugar de las milésimas.' },
+    { enunciado:'1/5 equivale a 0,2.', r:true, feedback:'Correcto. 1/5 = 2/10 = 0,2.' },
+    { enunciado:'0,9 es menor que 0,90.', r:false, feedback:'Falso. 0,9 y 0,90 representan la misma cantidad: nueve décimos.' },
+    { enunciado:'1,05 es mayor que 1,5.', r:false, feedback:'Falso. 1,5 tiene 5 décimos (equivalente a 1,50), que es mayor que 1,05.' }
+  ];
+  var vfListaDecimalesEl = document.getElementById('vfListaDecimales');
+  var vfScoreDecimalesEl = document.getElementById('vfScoreDecimales');
+  var vfdAciertos = 0, vfdRespondidas = 0;
+
+  function renderVFDecimales(){
+    vfListaDecimalesEl.innerHTML = '';
+    vfdAciertos = 0; vfdRespondidas = 0;
+    DECIMALES_VF.forEach(function(item, i){
+      var div = document.createElement('div');
+      div.className = 'vf-item';
+      div.innerHTML =
+        '<div class="enunciado">' + (i + 1) + '. ' + item.enunciado + '</div>' +
+        '<div class="vf-botones">' +
+          '<button class="vf-btn" data-val="true">Verdadero</button>' +
+          '<button class="vf-btn" data-val="false">Falso</button>' +
+        '</div>' +
+        '<div class="vf-feedback"></div>';
+      var botones = div.querySelectorAll('.vf-btn');
+      botones.forEach(function(btn){
+        btn.addEventListener('click', function(){
+          if (div.dataset.resuelto) return;
+          div.dataset.resuelto = '1';
+          var eleccion = btn.dataset.val === 'true';
+          var acierto = eleccion === item.r;
+          botones.forEach(function(b){
+            var esCorrecta = (b.dataset.val === 'true') === item.r;
+            b.classList.add(esCorrecta ? 'correcta' : (b === btn ? 'incorrecta' : ''));
+          });
+          var fb = div.querySelector('.vf-feedback');
+          fb.textContent = (acierto ? '✔ ' : '✘ ') + item.feedback;
+          fb.className = 'vf-feedback ' + (acierto ? 'correcto' : 'incorrecto');
+          vfdRespondidas++;
+          if (acierto) vfdAciertos++;
+          vfScoreDecimalesEl.textContent = 'Aciertos: ' + vfdAciertos + ' / ' + vfdRespondidas + ' respondidas (' + DECIMALES_VF.length + ' en total)';
+        });
+      });
+      vfListaDecimalesEl.appendChild(div);
+    });
+    vfScoreDecimalesEl.textContent = 'Aciertos: 0 / 0 respondidas (' + DECIMALES_VF.length + ' en total)';
+  }
+  renderVFDecimales();
+  document.getElementById('vfReiniciarDecimales').addEventListener('click', renderVFDecimales);
+
+})();
+</script>
+</body>
+</html>
