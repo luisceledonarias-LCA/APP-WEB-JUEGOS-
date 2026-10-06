@@ -1,0 +1,19 @@
+{
+  "name": "Misión 3D — Áreas y Volúmenes",
+  "short_name": "Misión 3D",
+  "description": "Juego por niveles de área y volumen de prismas rectos y cilindros, teorema de Pitágoras e isometrías en el plano cartesiano. 8° Básico.",
+  "id": "/juegos/medicion/areas-volumenes/",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0B0F2A",
+  "theme_color": "#0B0F2A",
+  "orientation": "any",
+  "lang": "es-CL",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
