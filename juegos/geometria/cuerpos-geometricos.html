@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuerpos Geométricos 3D</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --azul: #1B3A6B;
+    --azul-2: #274E8C;
+    --dorado: #C9A84C;
+    --verde: #27AE60;
+    --rojo: #E74C3C;
+    --naranja: #E8792E;
+    --morado: #8E44AD;
+    --celeste: #2E86DE;
+    --fondo: #F0F4F8;
+    --blanco: #FFFFFF;
+    --texto: #1F2733;
+    --texto-2: #3A4757;
+    --gris-linea: #C7D0DD;
+    --sombra: 0 4px 15px rgba(0,0,0,0.12);
+    --radio: 14px;
+    color-scheme: light;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--fondo); color: var(--texto); min-height: 100vh; font-size: 17px; -webkit-font-smoothing: antialiased; }
+  @media (prefers-reduced-motion: reduce) { .confetti-pieza { animation-duration: .01ms !important; } }
+
+  /* ===== HEADER ===== */
+  header { position: relative; overflow: hidden; background: linear-gradient(135deg, var(--azul), var(--azul-2) 60%, #3B66B0); color: var(--blanco); padding: 22px 20px 20px; text-align: center; }
+  header h1 { font-size: 1.9rem; letter-spacing: -.01em; position: relative; z-index: 1; }
+  header .subtitulo { font-size: 1rem; opacity: .9; margin-top: 4px; position: relative; z-index: 1; }
+  header .badge { display: inline-block; background: var(--dorado); color: var(--azul); font-weight: 700; padding: 5px 16px; border-radius: 20px; font-size: .92rem; margin-top: 10px; position: relative; z-index: 1; }
+  .flota { position: absolute; font-size: 2rem; opacity: .22; animation: flotar 7s ease-in-out infinite; }
+  @keyframes flotar { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-14px) rotate(18deg); } }
+
+  /* ===== NAV ===== */
+  nav.menu-tabs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 14px 12px; background: var(--blanco); border-bottom: 1px solid var(--gris-linea); position: sticky; top: 0; z-index: 30; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+  .tab { display: flex; align-items: center; gap: 8px; padding: 10px 16px; min-height: 44px; border-radius: 999px; border: 2px solid var(--gris-linea); background: var(--blanco); color: var(--azul); font-size: .95rem; font-weight: 700; cursor: pointer; transition: .18s; font-family: inherit; }
+  .tab .num { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--fondo); font-size: .8rem; }
+  .tab:hover { border-color: var(--azul-2); transform: translateY(-1px); }
+  .tab.activa { background: var(--dorado); border-color: var(--dorado); color: var(--azul); }
+  .tab.activa .num { background: var(--azul); color: var(--dorado); }
+
+  .marcador { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 10px 12px 0; }
+  .marcador span { background: var(--blanco); border: 2px solid var(--dorado); border-radius: 999px; padding: 6px 16px; font-weight: 700; color: var(--azul); font-size: .98rem; }
+
+  main { max-width: 1060px; margin: 0 auto; padding: 22px 16px 60px; }
+  .seccion { display: none; }
+  .seccion.activa { display: block; animation: fadeIn .4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ===== CARDS ===== */
+  .card { background: var(--blanco); border-radius: var(--radio); padding: 26px; box-shadow: var(--sombra); margin-bottom: 20px; }
+  .card h2 { color: var(--azul); font-size: 1.55rem; margin-bottom: 8px; }
+  .card h3 { color: var(--azul); font-size: 1.2rem; margin-bottom: 6px; }
+  .kicker { color: var(--naranja); font-weight: 800; font-size: .85rem; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 6px; display: block; }
+  .card p { line-height: 1.65; font-size: 1.08rem; color: var(--texto-2); }
+  .card p + p { margin-top: 10px; }
+  .def-box { background: #EEF2F9; border-left: 6px solid var(--azul); border-radius: 10px; padding: 16px 18px; margin-top: 14px; font-size: 1.1rem; line-height: 1.6; }
+  .def-box strong { color: var(--azul); }
+  .def-box.dorada { background: #FBF5E6; border-left-color: var(--dorado); }
+  .def-box.verde { background: #E9F7EF; border-left-color: var(--verde); }
+  .nota { background: #FFF8E1; border: 2px dashed var(--dorado); border-radius: 12px; padding: 14px 16px; margin-top: 16px; font-size: 1.02rem; line-height: 1.55; }
+
+  .grid-2 { display: grid; grid-template-columns: 1.15fr 1fr; gap: 22px; align-items: start; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 820px) { .grid-2 { grid-template-columns: 1fr; } .grid-3 { grid-template-columns: 1fr; } }
+
+  /* ===== BOTONES ===== */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; padding: 10px 22px; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: transform .15s, box-shadow .15s, opacity .15s; font-family: inherit; }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,.15); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-primario { background: var(--azul); color: var(--blanco); }
+  .btn-acento { background: var(--dorado); color: var(--azul); }
+  .btn-verde { background: var(--verde); color: var(--blanco); }
+  .btn-borde { background: var(--blanco); color: var(--azul); border: 2px solid var(--azul); }
+  .btn-sm { min-height: 40px; padding: 7px 14px; font-size: .95rem; }
+  .btn.on { background: var(--azul); color: var(--dorado); border-color: var(--azul); }
+  .fila-btn { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+  /* ===== ESCENARIO 3D ===== */
+  .escenario { position: relative; background: radial-gradient(ellipse at 50% 35%, #FFFFFF 0%, #E4ECF7 70%, #D3DFEF 100%); border-radius: var(--radio); border: 2px solid #DCE4F0; overflow: hidden; }
+  .escenario canvas { display: block; width: 100%; height: 380px; cursor: grab; touch-action: none; }
+  .escenario canvas:active { cursor: grabbing; }
+  .escenario .ayuda { position: absolute; left: 10px; bottom: 8px; font-size: .82rem; color: #5A6B82; background: rgba(255,255,255,.8); padding: 3px 10px; border-radius: 999px; pointer-events: none; }
+  .escenario .contador { position: absolute; right: 10px; top: 10px; background: var(--azul); color: var(--dorado); font-weight: 800; font-size: 1.15rem; padding: 6px 14px; border-radius: 999px; display: none; box-shadow: var(--sombra); }
+  .escenario .contador.visible { display: block; animation: pop .35s ease; }
+  .escenario .nombre-cuerpo { position: absolute; left: 10px; top: 10px; background: rgba(255,255,255,.92); color: var(--azul); font-weight: 800; font-size: 1.05rem; padding: 6px 14px; border-radius: 999px; box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+  @keyframes pop { 0% { transform: scale(.6); opacity: 0; } 70% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+
+  /* ===== ELEMENTOS ===== */
+  .elem-card { border: 3px solid var(--gris-linea); border-radius: var(--radio); padding: 16px; transition: .2s; background: var(--blanco); }
+  .elem-card:hover { transform: translateY(-3px); box-shadow: var(--sombra); }
+  .elem-card .ic { font-size: 2rem; }
+  .elem-card h3 { font-size: 1.25rem; margin: 4px 0; }
+  .elem-card p { font-size: 1rem; }
+  .elem-card.cara { border-color: #3498DB; }
+  .elem-card.arista { border-color: var(--naranja); }
+  .elem-card.vertice { border-color: var(--dorado); }
+
+  .ejemplos { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 16px; }
+  .ejemplo { text-align: center; background: var(--fondo); border-radius: 12px; padding: 12px 8px; font-size: .98rem; font-weight: 600; color: var(--azul); transition: .2s; }
+  .ejemplo:hover { transform: scale(1.06) rotate(-2deg); background: #FBF5E6; }
+  .ejemplo .e { font-size: 2.4rem; display: block; animation: rebote 2.4s ease-in-out infinite; }
+  .ejemplo:nth-child(2n) .e { animation-delay: .4s; }
+  .ejemplo:nth-child(3n) .e { animation-delay: .8s; }
+  @keyframes rebote { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  .ejemplo small { display: block; color: var(--texto-2); font-weight: 400; font-size: .85rem; }
+
+  .clasif { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+  @media (max-width: 700px) { .clasif { grid-template-columns: 1fr; } }
+  .clasif > div { border-radius: var(--radio); padding: 18px; color: var(--blanco); }
+  .clasif h3 { color: var(--blanco) !important; font-size: 1.3rem; }
+  .clasif p { color: rgba(255,255,255,.95) !important; font-size: 1.02rem !important; }
+  .clasif ul { margin: 8px 0 0 20px; line-height: 1.7; font-size: 1.02rem; }
+  .poli-box { background: linear-gradient(135deg, #2E86DE, #1B3A6B); }
+  .redo-box { background: linear-gradient(135deg, #E8792E, #C0392B); }
+
+  /* ===== SELECTOR DE CUERPOS ===== */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 8px 14px; border-radius: 999px; border: 2px solid var(--gris-linea); background: var(--blanco); font-weight: 700; color: var(--azul); cursor: pointer; font-size: .95rem; transition: .15s; font-family: inherit; }
+  .chip:hover { border-color: var(--azul-2); }
+  .chip.activa { background: var(--azul); color: var(--blanco); border-color: var(--azul); }
+  .chip .ok { color: var(--verde); font-size: 1rem; }
+  .chip.activa .ok { color: #7DF0A8; }
+
+  /* ===== FORMULARIOS ===== */
+  .campo { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--fondo); border-radius: 12px; padding: 10px 14px; margin-top: 10px; font-size: 1.12rem; font-weight: 700; color: var(--azul); }
+  .campo .lbl { display: flex; align-items: center; gap: 8px; }
+  .campo .punto { width: 16px; height: 16px; border-radius: 50%; display: inline-block; }
+  input.num { width: 96px; height: 50px; font-size: 1.4rem; font-weight: 800; text-align: center; border: 3px solid var(--gris-linea); border-radius: 10px; color: var(--azul); font-family: inherit; background: var(--blanco); }
+  input.num:focus { outline: none; border-color: var(--dorado); box-shadow: 0 0 0 4px rgba(201,168,76,.25); }
+  input.num.bien { border-color: var(--verde); background: #E8F8F0; }
+  input.num.mal { border-color: var(--rojo); background: #FDEEEE; animation: sacudir .4s; }
+  @keyframes sacudir { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+  .feedback { padding: 14px 18px; border-radius: 12px; margin-top: 14px; font-size: 1.08rem; font-weight: 600; line-height: 1.5; display: none; }
+  .feedback.visible { display: block; animation: fadeIn .3s ease; }
+  .feedback.correcto { background: #E8F8F0; color: #1A6B3A; border-left: 6px solid var(--verde); }
+  .feedback.incorrecto { background: #FDEEEE; color: #922B1A; border-left: 6px solid var(--rojo); }
+  .feedback.info { background: #EEF2F9; color: var(--azul); border-left: 6px solid var(--azul); }
+
+  /* ===== TABLA ===== */
+  .tabla-wrap { overflow-x: auto; margin-top: 12px; }
+  table.tabla { width: 100%; border-collapse: collapse; font-size: 1.02rem; min-width: 560px; }
+  .tabla th { background: var(--azul); color: var(--blanco); padding: 10px 8px; font-size: .95rem; }
+  .tabla th:first-child { border-top-left-radius: 10px; } .tabla th:last-child { border-top-right-radius: 10px; }
+  .tabla td { padding: 9px 8px; text-align: center; border-bottom: 1px solid #E3E8EF; }
+  .tabla td:first-child { text-align: left; font-weight: 700; color: var(--azul); }
+  .tabla tr:nth-child(even) td { background: #F7F9FC; }
+  .tabla td.vacio { color: #B0B9C6; font-weight: 800; }
+  .tabla td.lleno { color: var(--verde); font-weight: 800; animation: pop .4s ease; }
+
+  /* ===== JUEGO CLASIFICA / QUIZ REDES ===== */
+  .mini-escenario { background: radial-gradient(ellipse at 50% 40%, #fff, #E4ECF7 75%); border-radius: var(--radio); border: 2px solid #DCE4F0; }
+  .mini-escenario canvas { display: block; width: 100%; height: 280px; }
+  .opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .btn-opcion { min-height: 56px; padding: 12px; border-radius: 12px; border: 3px solid #DDE3EC; background: var(--blanco); font-size: 1.1rem; font-weight: 700; color: var(--azul); cursor: pointer; transition: .15s; font-family: inherit; }
+  .btn-opcion:hover:not(:disabled) { border-color: var(--azul); background: #EEF2F9; transform: translateY(-2px); }
+  .btn-opcion.correcta { border-color: var(--verde); background: #E8F8F0; color: #1A6B3A; }
+  .btn-opcion.incorrecta { border-color: var(--rojo); background: #FDEEEE; color: #922B1A; }
+  .btn-opcion:disabled { cursor: default; }
+  .progreso-barra { height: 10px; background: #DDE3EC; border-radius: 6px; overflow: hidden; margin: 10px 0 16px; }
+  .progreso-fill { height: 100%; background: linear-gradient(90deg, var(--dorado), var(--naranja)); border-radius: 6px; transition: width .5s ease; }
+  .progreso-texto { display: flex; justify-content: space-between; font-size: .95rem; color: #5A6B82; font-weight: 600; }
+
+  /* ===== EJERCICIOS ===== */
+  .subtabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .subtab { flex: 1; min-width: 180px; min-height: 54px; border-radius: 12px; border: 3px solid var(--gris-linea); background: var(--blanco); font-size: 1.1rem; font-weight: 800; color: var(--azul); cursor: pointer; font-family: inherit; transition: .15s; }
+  .subtab.activa.area { background: linear-gradient(135deg, #2E86DE, #1B3A6B); color: #fff; border-color: #1B3A6B; }
+  .subtab.activa.peri { background: linear-gradient(135deg, #E8792E, #C0392B); color: #fff; border-color: #C0392B; }
+  .puntos-nav { display: flex; gap: 8px; justify-content: center; margin-bottom: 14px; flex-wrap: wrap; }
+  .pnav { width: 44px; height: 44px; border-radius: 50%; border: 3px solid var(--gris-linea); background: var(--blanco); font-weight: 800; color: var(--azul); cursor: pointer; font-size: 1rem; font-family: inherit; transition: .15s; }
+  .pnav.actual { border-color: var(--dorado); background: var(--dorado); transform: scale(1.12); }
+  .pnav.hecho { border-color: var(--verde); background: #E8F8F0; color: var(--verde); }
+  .pnav.fallado { border-color: var(--rojo); background: #FDEEEE; color: var(--rojo); }
+  .ej-card { border-radius: var(--radio); border: 3px solid #DCE4F0; padding: 20px; background: var(--blanco); }
+  .ej-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .ej-head .icono { font-size: 2.6rem; animation: rebote 2.4s ease-in-out infinite; }
+  .ej-head h3 { font-size: 1.3rem; color: var(--azul); }
+  .ej-head .tag { display: inline-block; font-size: .8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; color: #fff; margin-bottom: 4px; }
+  .enunciado { font-size: 1.2rem; line-height: 1.6; color: var(--texto); margin: 6px 0 12px; }
+  .fig-box { background: #FAFBFD; border-radius: 12px; border: 2px solid #E3E8EF; }
+  .fig-box svg { display: block; width: 100%; height: auto; max-height: 360px; }
+  .sol-text { min-height: 34px; text-align: center; font-size: 1.25rem; font-weight: 800; color: var(--azul); padding: 8px; }
+  .respuesta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; font-size: 1.15rem; font-weight: 700; color: var(--azul); }
+  .respuesta input.num { width: 130px; }
+  .estrellas { font-size: 1.3rem; letter-spacing: 2px; }
+
+  /* ===== CONSTRUCTOR ===== */
+  .slider-fila { display: flex; align-items: center; gap: 12px; margin-top: 10px; font-weight: 700; color: var(--azul); font-size: 1.08rem; }
+  .slider-fila input[type=range] { flex: 1; accent-color: var(--dorado); height: 30px; }
+  .slider-fila output { min-width: 64px; text-align: center; background: var(--azul); color: var(--dorado); border-radius: 8px; padding: 4px 8px; }
+  .formula { font-size: 1.2rem; font-weight: 800; padding: 12px; border-radius: 10px; margin-top: 10px; text-align: center; }
+  .formula.p { background: #FDF0E6; color: #B3541E; }
+  .formula.a { background: #E8F1FB; color: #1B4F8C; }
+
+  /* ===== RESULTADOS ===== */
+  .puntaje-grande { font-size: 4rem; font-weight: 900; color: var(--azul); text-align: center; line-height: 1.1; }
+  .clasificacion { font-size: 1.7rem; text-align: center; margin: 10px 0; font-weight: 800; color: var(--azul); }
+  .res-fila { display: grid; grid-template-columns: 1fr 2fr 90px; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #E3E8EF; font-weight: 700; color: var(--azul); }
+  .res-barra { height: 16px; background: #E3E8EF; border-radius: 999px; overflow: hidden; }
+  .res-barra div { height: 100%; border-radius: 999px; transition: width 1s ease; }
+  @media (max-width: 560px) { .res-fila { grid-template-columns: 1fr; gap: 4px; } }
+
+  .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 999; overflow: hidden; }
+  .confetti-pieza { position: absolute; top: -20px; width: 11px; height: 11px; border-radius: 2px; animation: caer 2.6s ease-in forwards; }
+  @keyframes caer { 0% { opacity: 1; transform: translateY(-20px) rotate(0deg); } 100% { opacity: 0; transform: translateY(100vh) rotate(720deg); } }
+
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(120px); background: var(--azul); color: #fff; padding: 14px 24px; border-radius: 14px; font-weight: 800; font-size: 1.15rem; box-shadow: 0 8px 24px rgba(0,0,0,.25); z-index: 1000; transition: transform .35s cubic-bezier(.2,1.4,.4,1); }
+  .toast.visible { transform: translateX(-50%) translateY(0); }
+
+  footer { text-align: center; padding: 22px; color: #6B7686; font-size: .9rem; }
+
+  @media (max-width: 520px) {
+    body { font-size: 16px; }
+    header h1 { font-size: 1.4rem; }
+    .card { padding: 18px; }
+    .tab { font-size: .85rem; padding: 8px 12px; }
+    .escenario canvas { height: 320px; }
+    .opciones { grid-template-columns: 1fr; }
+    .enunciado { font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="flota" style="left:4%;top:18%">🎲</span>
+  <span class="flota" style="left:14%;top:58%;animation-delay:1s">🔺</span>
+  <span class="flota" style="right:6%;top:16%;animation-delay:2s">🥫</span>
+  <span class="flota" style="right:16%;top:56%;animation-delay:.5s">🍦</span>
+  <h1>🧊 Cuerpos Geométricos 3D</h1>
+  <div class="subtitulo">Colegio Nuestra Señora del Carmen · 4° Año Básico · Matemática</div>
+  <span class="badge">Caras, vértices y aristas · Redes · Área y perímetro</span>
+</header>
+
+<nav class="menu-tabs" id="menuTabs">
+  <button class="tab activa" data-seccion="s1"><span class="num">1</span> Concepto</button>
+  <button class="tab" data-seccion="s2"><span class="num">2</span> Explora y completa</button>
+  <button class="tab" data-seccion="s3"><span class="num">3</span> Redes</button>
+  <button class="tab" data-seccion="s4"><span class="num">4</span> Área y perímetro</button>
+  <button class="tab" data-seccion="s5"><span class="num">5</span> Vida real</button>
+  <button class="tab" data-seccion="s6"><span class="num">🏆</span> Resultados</button>
+</nav>
+<div class="marcador"><span id="marcadorTotal">⭐ 0 estrellas</span></div>
+
+<main>
+
+<!-- =================================================== -->
+<!-- SECCIÓN 1: CONCEPTO                                 -->
+<!-- =================================================== -->
+<section class="seccion activa" id="s1">
+  <div class="card">
+    <span class="kicker">Paso 1 · Comprender el concepto</span>
+    <h2>¿Qué es un cuerpo geométrico?</h2>
+    <p>Observa a tu alrededor: una caja, una lata, una pelota. Todos estos objetos ocupan un lugar en el espacio y tienen <strong>tres dimensiones</strong>: largo, ancho y alto.</p>
+    <div class="def-box"><strong>📌 Definición:</strong> Un <strong>cuerpo geométrico</strong> es una figura de tres dimensiones (3D) que ocupa un lugar en el espacio y está limitada por superficies planas, curvas o ambas.</div>
+    <div class="ejemplos">
+      <div class="ejemplo"><span class="e">🎲</span>Dado<small>Cubo</small></div>
+      <div class="ejemplo"><span class="e">📦</span>Caja<small>Paralelepípedo</small></div>
+      <div class="ejemplo"><span class="e">🧀</span>Trozo de queso<small>Prisma triangular</small></div>
+      <div class="ejemplo"><span class="e">🔺</span>Pirámide de Egipto<small>Pirámide cuadrada</small></div>
+      <div class="ejemplo"><span class="e">🥫</span>Lata<small>Cilindro</small></div>
+      <div class="ejemplo"><span class="e">🍦</span>Barquillo<small>Cono</small></div>
+      <div class="ejemplo"><span class="e">⚽</span>Pelota<small>Esfera</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="kicker">Paso 2 · Elementos de un cuerpo geométrico</span>
+    <h2>Caras, aristas y vértices</h2>
+    <p>Los cuerpos geométricos que tienen todas sus caras planas se llaman <strong>poliedros</strong>. Todo poliedro tiene tres elementos. Presiona cada botón para verlos iluminados en el cuerpo y <strong>arrastra el cuerpo</strong> para girarlo.</p>
+    <div class="grid-2" style="margin-top:16px">
+      <div>
+        <div class="chips" id="chipsConcepto"></div>
+        <div class="escenario">
+          <canvas id="cvConcepto"></canvas>
+          <span class="nombre-cuerpo" id="nombreConcepto">Cubo</span>
+          <span class="contador" id="contConcepto"></span>
+          <span class="ayuda">🖐️ Arrastra para girar</span>
+        </div>
+      </div>
+      <div>
+        <div class="elem-card cara">
+          <div class="ic">🟦</div>
+          <h3>Cara</h3>
+          <p>Es cada una de las <strong>superficies planas</strong> que limitan al cuerpo. Las caras de un poliedro son polígonos: triángulos, cuadrados, rectángulos, pentágonos, etc.</p>
+          <div class="fila-btn"><button class="btn btn-sm btn-borde" data-modo="caras">🎨 Ver caras</button><button class="btn btn-sm btn-acento" data-contar="caras">🔢 Contar caras</button></div>
+        </div>
+        <div class="elem-card arista" style="margin-top:12px">
+          <div class="ic">📏</div>
+          <h3>Arista</h3>
+          <p>Es el <strong>segmento</strong> (línea recta) donde se juntan <strong>dos caras</strong>. Son los “bordes” del cuerpo.</p>
+          <div class="fila-btn"><button class="btn btn-sm btn-borde" data-modo="aristas">📏 Ver aristas</button><button class="btn btn-sm btn-acento" data-contar="aristas">🔢 Contar aristas</button></div>
+        </div>
+        <div class="elem-card vertice" style="margin-top:12px">
+          <div class="ic">🔵</div>
+          <h3>Vértice</h3>
+          <p>Es el <strong>punto</strong> donde se juntan <strong>tres o más aristas</strong>. Son las “esquinas” del cuerpo.</p>
+          <div class="fila-btn"><button class="btn btn-sm btn-borde" data-modo="vertices">🔵 Ver vértices</button><button class="btn btn-sm btn-acento" data-contar="vertices">🔢 Contar vértices</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="kicker">Paso 3 · Clasificación</span>
+    <h2>Poliedros y cuerpos redondos</h2>
+    <div class="clasif">
+      <div class="poli-box">
+        <h3>🔷 Poliedros</h3>
+        <p>Todas sus caras son <strong>planas</strong> (polígonos). No pueden rodar.</p>
+        <ul>
+          <li><strong>Prismas:</strong> tienen 2 bases iguales y paralelas; sus caras laterales son rectángulos.</li>
+          <li><strong>Pirámides:</strong> tienen 1 base; sus caras laterales son triángulos que se juntan en un vértice llamado <strong>cúspide</strong>.</li>
+        </ul>
+      </div>
+      <div class="redo-box">
+        <h3>🟠 Cuerpos redondos</h3>
+        <p>Tienen al menos una <strong>superficie curva</strong>. Pueden rodar.</p>
+        <ul>
+          <li><strong>Cilindro:</strong> 2 caras planas (círculos) y 1 superficie curva.</li>
+          <li><strong>Cono:</strong> 1 cara plana (círculo), 1 superficie curva y 1 vértice (cúspide).</li>
+          <li><strong>Esfera:</strong> solo 1 superficie curva.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="kicker">Actividad 1 · Juego</span>
+    <h2>🎯 ¡Clasifica el cuerpo!</h2>
+    <p>Observa el cuerpo que gira y decide si es un <strong>poliedro</strong> o un <strong>cuerpo redondo</strong>.</p>
+    <div class="progreso-texto" style="margin-top:12px"><span id="clasTexto">Cuerpo 1 de 13</span><span id="clasPuntos">⭐ 0</span></div>
+    <div class="progreso-barra"><div class="progreso-fill" id="clasBarra" style="width:0%"></div></div>
+    <div class="grid-2">
+      <div class="mini-escenario"><canvas id="cvClasif"></canvas></div>
+      <div>
+        <h3 id="clasNombre" style="font-size:1.5rem;color:var(--azul)">—</h3>
+        <p id="clasPista" style="margin-top:6px">¿A qué grupo pertenece?</p>
+        <div class="opciones" style="grid-template-columns:1fr">
+          <button class="btn-opcion" id="clasPoli">🔷 Poliedro</button>
+          <button class="btn-opcion" id="clasRedo">🟠 Cuerpo redondo</button>
+        </div>
+        <div class="feedback" id="clasFeedback"></div>
+        <div class="fila-btn"><button class="btn btn-primario" id="clasSig" style="display:none">Siguiente →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================== -->
+<!-- SECCIÓN 2: EXPLORA Y COMPLETA                       -->
+<!-- =================================================== -->
+<section class="seccion" id="s2">
+  <div class="card">
+    <span class="kicker">Actividad 2 · Explora y completa</span>
+    <h2>🔍 Cuenta caras, vértices y aristas</h2>
+    <p>Elige un cuerpo geométrico, gíralo, usa los botones de ayuda y <strong>completa</strong> cuántas caras, vértices y aristas tiene. Cada cuerpo resuelto completa la tabla final.</p>
+    <div class="chips" id="chipsExplora"></div>
+    <div class="grid-2">
+      <div>
+        <div class="escenario">
+          <canvas id="cvExplora"></canvas>
+          <span class="nombre-cuerpo" id="nombreExplora">Cubo</span>
+          <span class="contador" id="contExplora"></span>
+          <span class="ayuda">🖐️ Arrastra para girar</span>
+        </div>
+        <div class="fila-btn" id="modosExplora"></div>
+      </div>
+      <div>
+        <div class="def-box dorada" id="exploraInfo" style="margin-top:0"></div>
+        <div id="exploraCampos"></div>
+        <div class="fila-btn">
+          <button class="btn btn-verde" id="exploraComprobar">✔ Comprobar</button>
+          <button class="btn btn-borde" id="exploraSiguiente">Siguiente cuerpo →</button>
+        </div>
+        <div class="feedback" id="exploraFeedback"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="kicker">Tabla de resumen</span>
+    <h2>📋 Mi tabla de cuerpos geométricos</h2>
+    <p>Los casilleros se completan automáticamente cuando resuelves cada cuerpo.</p>
+    <div class="tabla-wrap"><table class="tabla" id="tablaPoliedros"></table></div>
+    <div class="nota">💡 <strong>¿Sabías que…?</strong> En todos los poliedros de esta tabla se cumple que <strong>Caras + Vértices − Aristas = 2</strong>. Esta relación se llama <strong>fórmula de Euler</strong>. Compruébalo en la última columna.</div>
+    <h3 style="margin-top:22px">Cuerpos redondos</h3>
+    <div class="tabla-wrap"><table class="tabla" id="tablaRedondos"></table></div>
+  </div>
+</section>
+
+<!-- =================================================== -->
+<!-- SECCIÓN 3: REDES                                    -->
+<!-- =================================================== -->
+<section class="seccion" id="s3">
+  <div class="card">
+    <span class="kicker">Paso 4 · Redes de cuerpos geométricos</span>
+    <h2>📦 Desarma y arma los cuerpos</h2>
+    <div class="def-box"><strong>📌 Definición:</strong> La <strong>red</strong> de un cuerpo geométrico es la figura plana (2D) que se obtiene al <strong>desarmar</strong> el cuerpo y extender todas sus caras sobre una superficie. Si se pliega la red, se vuelve a formar el cuerpo.</div>
+    <div class="chips" id="chipsRedes" style="margin-top:16px"></div>
+    <div class="grid-2">
+      <div>
+        <div class="escenario">
+          <canvas id="cvRedes"></canvas>
+          <span class="nombre-cuerpo" id="nombreRedes">Cubo</span>
+          <span class="ayuda">🖐️ Arrastra para girar</span>
+        </div>
+      </div>
+      <div>
+        <div class="fila-btn" style="margin-top:0">
+          <button class="btn btn-acento" id="btnDesarmar">📂 Desarmar</button>
+          <button class="btn btn-primario" id="btnArmar">📦 Armar</button>
+        </div>
+        <div class="slider-fila">
+          <span>Red</span>
+          <input type="range" id="sliderPliegue" min="0" max="100" value="100" aria-label="Nivel de plegado">
+          <span>Cuerpo</span>
+        </div>
+        <div class="fila-btn">
+          <button class="btn btn-sm btn-borde on" id="btnGiro">🔄 Giro automático</button>
+          <button class="btn btn-sm btn-borde" id="btnNumeros">🔢 Numerar caras</button>
+        </div>
+        <div class="def-box verde" id="redesInfo"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="kicker">Actividad 3 · Juego</span>
+    <h2>🧩 ¿De qué cuerpo es esta red?</h2>
+    <p>Observa la red y elige el cuerpo geométrico que se forma al plegarla. ¡Al responder, la red se armará sola!</p>
+    <div class="progreso-texto" style="margin-top:12px"><span id="qrTexto">Red 1 de 8</span><span id="qrPuntos">⭐ 0</span></div>
+    <div class="progreso-barra"><div class="progreso-fill" id="qrBarra" style="width:0%"></div></div>
+    <div class="grid-2">
+      <div class="mini-escenario"><canvas id="cvQuizRed"></canvas></div>
+      <div>
+        <div class="opciones" id="qrOpciones"></div>
+        <div class="feedback" id="qrFeedback"></div>
+        <div class="fila-btn"><button class="btn btn-primario" id="qrSig" style="display:none">Siguiente red →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================== -->
+<!-- SECCIÓN 4: ÁREA Y PERÍMETRO                         -->
+<!-- =================================================== -->
+<section class="seccion" id="s4">
+  <div class="card">
+    <span class="kicker">Paso 5 · Área y perímetro</span>
+    <h2>📏 Perímetro y 🟦 área de una figura plana</h2>
+    <p>Las caras de los cuerpos geométricos y sus redes son <strong>figuras planas</strong>. En ellas podemos medir dos cosas distintas: su <strong>contorno</strong> y su <strong>superficie</strong>.</p>
+    <div class="grid-2" style="margin-top:6px">
+      <div class="def-box" style="border-left-color:var(--naranja);background:#FDF0E6"><strong style="color:#B3541E">📏 Perímetro:</strong> es la <strong>medida del contorno</strong> de una figura plana. Se calcula <strong>sumando las medidas de todos sus lados</strong>. Se expresa en unidades de longitud: <strong>cm, m</strong>.</div>
+      <div class="def-box"><strong>🟦 Área:</strong> es la <strong>medida de la superficie</strong> de una figura plana: la cantidad de cuadrados de 1 unidad que la cubren. Se expresa en unidades cuadradas: <strong>cm², m²</strong>.</div>
+    </div>
+    <div class="nota">📐 En un <strong>rectángulo</strong>: el área se obtiene multiplicando <strong>largo × ancho</strong>, porque hay tantas filas de cuadrados como indica el ancho, y cada fila tiene tantos cuadrados como indica el largo.</div>
+  </div>
+
+  <div class="card">
+    <span class="kicker">Laboratorio · Construye tu rectángulo</span>
+    <h2>🧪 Rectángulo interactivo</h2>
+    <p>Mueve los controles para cambiar el largo y el ancho (cada cuadrado mide 1 cm de lado). Luego observa la animación del perímetro y del área.</p>
+    <div class="grid-2" style="margin-top:12px">
+      <div>
+        <div class="fig-box"><svg id="svgLab" viewBox="0 0 520 340"></svg></div>
+        <div class="sol-text" id="labTexto"></div>
+      </div>
+      <div>
+        <div class="slider-fila"><span>Largo</span><input type="range" id="labLargo" min="1" max="10" value="5"><output id="labLargoOut">5 cm</output></div>
+        <div class="slider-fila"><span>Ancho</span><input type="range" id="labAncho" min="1" max="6" value="3"><output id="labAnchoOut">3 cm</output></div>
+        <div class="fila-btn">
+          <button class="btn btn-acento" id="labPeri">🐜 Recorrer el contorno</button>
+          <button class="btn btn-primario" id="labArea">🟦 Cubrir con cuadrados</button>
+        </div>
+        <div class="formula p" id="labFormP"></div>
+        <div class="formula a" id="labFormA"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="kicker">Actividad 4 · Ejercicios de cálculo</span>
+    <h2>✏️ Calcula el área y el perímetro</h2>
+    <div class="subtabs">
+      <button class="subtab area activa" data-serie="area">🟦 Área · 5 ejercicios</button>
+      <button class="subtab peri" data-serie="perimetro">📏 Perímetro · 5 ejercicios</button>
+    </div>
+    <div id="serie-area"></div>
+    <div id="serie-perimetro" style="display:none"></div>
+  </div>
+</section>
+
+<!-- =================================================== -->
+<!-- SECCIÓN 5: VIDA REAL                                -->
+<!-- =================================================== -->
+<section class="seccion" id="s5">
+  <div class="card">
+    <span class="kicker">Paso 6 · Resolución de problemas</span>
+    <h2>🌎 Área y perímetro en la vida real</h2>
+    <p>Para resolver un problema, sigue estos pasos:</p>
+    <div class="grid-3" style="margin-top:12px">
+      <div class="def-box" style="margin-top:0">1️⃣ <strong>Comprende:</strong> lee con atención. ¿Te piden el <strong>contorno</strong> (perímetro) o la <strong>superficie</strong> (área)?</div>
+      <div class="def-box dorada" style="margin-top:0">2️⃣ <strong>Planifica y calcula:</strong> identifica las medidas y elige la operación: <strong>sumar lados</strong> o <strong>multiplicar largo × ancho</strong>.</div>
+      <div class="def-box verde" style="margin-top:0">3️⃣ <strong>Responde:</strong> revisa tu resultado y escribe la <strong>unidad</strong> correcta (m o m², cm o cm²).</div>
+    </div>
+  </div>
+  <div class="card">
+    <span class="kicker">Actividad 5 · Problemas</span>
+    <h2>🏡 Problemas de la vida cotidiana</h2>
+    <div class="subtabs">
+      <button class="subtab area activa" data-serie="realArea">🟦 Área · 5 problemas</button>
+      <button class="subtab peri" data-serie="realPerimetro">📏 Perímetro · 5 problemas</button>
+    </div>
+    <div id="serie-realArea"></div>
+    <div id="serie-realPerimetro" style="display:none"></div>
+  </div>
+</section>
+
+<!-- =================================================== -->
+<!-- SECCIÓN 6: RESULTADOS                               -->
+<!-- =================================================== -->
+<section class="seccion" id="s6">
+  <div class="card" style="text-align:center">
+    <span class="kicker">Resultados finales</span>
+    <div class="puntaje-grande" id="resPorc">0%</div>
+    <div class="clasificacion" id="resClasif"></div>
+    <p id="resEstrellas" style="font-size:1.15rem"></p>
+  </div>
+  <div class="card">
+    <h2>📊 Mi avance por actividad</h2>
+    <div id="resFilas"></div>
+    <div id="resRepaso" style="margin-top:16px"></div>
+    <div class="fila-btn" style="justify-content:center;margin-top:20px">
+      <button class="btn btn-primario" id="btnReiniciar">🔄 Jugar de nuevo</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="confetti-container" id="confetti"></div>
+<div class="toast" id="toast"></div>
+<footer>Profesor: Luis Celedón A. &nbsp;|&nbsp; RBD 5678-2 &nbsp;|&nbsp; 2026</footer>
+
+<script>
+'use strict';
+/* =========================================================
+   1. ÁLGEBRA 3D
+   ========================================================= */
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const esc = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const largo = a => Math.hypot(a[0], a[1], a[2]);
+const unit = a => { const l = largo(a) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+const I3 = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+function rotMat(u, ang) {
+  const [x, y, z] = u, c = Math.cos(ang), s = Math.sin(ang), t = 1 - c;
+  return [[t * x * x + c, t * x * y - s * z, t * x * z + s * y],
+          [t * x * y + s * z, t * y * y + c, t * y * z - s * x],
+          [t * x * z - s * y, t * y * z + s * x, t * z * z + c]];
+}
+const mulMV = (M, v) => [dot(M[0], v), dot(M[1], v), dot(M[2], v)];
+function mulMM(A, B) {
+  const R = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) R[i][j] = A[i][0] * B[0][j] + A[i][1] * B[1][j] + A[i][2] * B[2][j];
+  return R;
+}
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const suave = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+function rgbStr(c, k = 1, mezclaBlanco = 0, alfa = 1) {
+  const r = c.map(v => clamp(Math.round(lerp(v * k, 255, mezclaBlanco)), 0, 255));
+  return `rgba(${r[0]},${r[1]},${r[2]},${alfa})`;
+}
+
+/* =========================================================
+   2. CONSTRUCCIÓN DE CUERPOS
+   ========================================================= */
+const PALETA = ['#E74C3C', '#3498DB', '#F1C40F', '#2ECC71', '#9B59B6', '#E67E22', '#1ABC9C', '#EC407A', '#5C6BC0', '#26C6DA', '#FF7043', '#8BC34A'];
+const poligono = (n, r, rot = 0) => Array.from({ length: n }, (_, i) => { const a = rot + i * 2 * Math.PI / n; return [r * Math.cos(a), r * Math.sin(a)]; });
+
+function prisma(base, h) {
+  const n = base.length;
+  const v = base.map(p => [p[0], p[1], 0]).concat(base.map(p => [p[0], p[1], h]));
+  const caras = [{ idx: [...Array(n).keys()].reverse() }, { idx: [...Array(n).keys()].map(i => i + n) }];
+  for (let i = 0; i < n; i++) caras.push({ idx: [i, (i + 1) % n, (i + 1) % n + n, i + n] });
+  // red en franja: laterales encadenados, bases unidas a la lateral central
+  const m = Math.floor((n - 1) / 2), padre = new Array(n + 2).fill(-1);
+  padre[2 + m] = 0; padre[1] = 2 + m;
+  for (let i = m + 1; i < n; i++) padre[2 + i] = 2 + i - 1;
+  for (let i = m - 1; i >= 0; i--) padre[2 + i] = 2 + i + 1;
+  return { v, caras, padre };
+}
+function piramide(base, h, cadena = false) {
+  const n = base.length;
+  const v = base.map(p => [p[0], p[1], 0]).concat([[0, 0, h]]);
+  const caras = [{ idx: [...Array(n).keys()].reverse() }];
+  for (let i = 0; i < n; i++) caras.push({ idx: [i, (i + 1) % n, n] });
+  let padre = null;
+  if (cadena) { // red tipo cono: sector unido a la base en un punto
+    const m = Math.floor(n / 2); padre = new Array(n + 1).fill(-1);
+    padre[1 + m] = 0;
+    for (let i = m + 1; i < n; i++) padre[1 + i] = 1 + i - 1;
+    for (let i = m - 1; i >= 0; i--) padre[1 + i] = 1 + i + 1;
+  }
+  return { v, caras, padre };
+}
+function octaedro() {
+  const X = [1.5, 0, 0], x = [-1.5, 0, 0], Y = [0, 1.5, 0], y = [0, -1.5, 0], Z = [0, 0, 1.5], z = [0, 0, -1.5];
+  const v = [X, x, Y, y, Z, z], caras = [];
+  for (const sx of [0, 1]) for (const sy of [2, 3]) for (const sz of [4, 5]) {
+    const signo = (sx === 0 ? 1 : -1) * (sy === 2 ? 1 : -1) * (sz === 4 ? 1 : -1);
+    caras.push({ idx: signo > 0 ? [sx, sy, sz] : [sx, sz, sy] });
+  }
+  return { v, caras, padre: null };
+}
+function esfera(r) {
+  const NL = 12, NM = 20, v = [], caras = [];
+  for (let i = 0; i <= NL; i++) { const th = Math.PI * i / NL; for (let j = 0; j < NM; j++) { const ph = 2 * Math.PI * j / NM; v.push([r * Math.sin(th) * Math.cos(ph), r * Math.sin(th) * Math.sin(ph), r - r * Math.cos(th)]); } }
+  const id = (i, j) => i * NM + (j % NM);
+  for (let i = 0; i < NL; i++) for (let j = 0; j < NM; j++) {
+    const a = id(i, j), b = id(i, j + 1), c = id(i + 1, j + 1), d = id(i + 1, j);
+    if (i === 0) caras.push({ idx: [a, c, d], suave: true });
+    else if (i === NL - 1) caras.push({ idx: [a, b, d], suave: true });
+    else caras.push({ idx: [a, b, c, d], suave: true });
+  }
+  return { v, caras, padre: caras.map(() => -1), sinRed: true };
+}
+function normalNewell(pts) {
+  let n = [0, 0, 0];
+  for (let i = 0; i < pts.length; i++) { const a = pts[i], b = pts[(i + 1) % pts.length]; n[0] += (a[1] - b[1]) * (a[2] + b[2]); n[1] += (a[2] - b[2]) * (a[0] + b[0]); n[2] += (a[0] - b[0]) * (a[1] + b[1]); }
+  return unit(n);
+}
+function apoyarEnCara(s, fi) {
+  const n = normalNewell(s.caras[fi].idx.map(i => s.v[i])), objetivo = [0, 0, -1];
+  const d = dot(n, objetivo);
+  if (d < 0.9999) {
+    const eje = d < -0.9999 ? [1, 0, 0] : unit(cross(n, objetivo));
+    const R = rotMat(eje, Math.acos(clamp(d, -1, 1)));
+    s.v = s.v.map(p => mulMV(R, p));
+  }
+  const minZ = Math.min(...s.v.map(p => p[2]));
+  const cx = s.v.reduce((a, p) => a + p[0], 0) / s.v.length, cy = s.v.reduce((a, p) => a + p[1], 0) / s.v.length;
+  s.v = s.v.map(p => [p[0] - cx, p[1] - cy, p[2] - minZ]);
+}
+function preparar(s) {
+  apoyarEnCara(s, 0);
+  const F = s.caras.length;
+  s.normal = s.caras.map(c => normalNewell(c.idx.map(i => s.v[i])));
+  s.centro = s.caras.map(c => esc(c.idx.reduce((a, i) => add(a, s.v[i]), [0, 0, 0]), 1 / c.idx.length));
+  // aristas y vecinos
+  const mapa = new Map();
+  s.caras.forEach((c, fi) => c.idx.forEach((a, k) => {
+    const b = c.idx[(k + 1) % c.idx.length], key = a < b ? a + '-' + b : b + '-' + a;
+    if (!mapa.has(key)) mapa.set(key, { a: Math.min(a, b), b: Math.max(a, b), caras: [] });
+    mapa.get(key).caras.push(fi);
+  }));
+  s.mapaAristas = mapa;
+  s.aristas = [...mapa.values()].filter(e => !(e.caras.length === 2 && s.caras[e.caras[0]].suave && s.caras[e.caras[1]].suave));
+  const vecinos = s.caras.map(() => []);
+  for (const e of mapa.values()) if (e.caras.length === 2) { vecinos[e.caras[0]].push([e.caras[1], e]); vecinos[e.caras[1]].push([e.caras[0], e]); }
+  // árbol de despliegue (BFS si no viene definido)
+  if (!s.padre) {
+    s.padre = new Array(F).fill(null); s.padre[0] = -1; const cola = [0];
+    while (cola.length) { const f = cola.shift(); for (const [g] of vecinos[f]) if (s.padre[g] === null) { s.padre[g] = f; cola.push(g); } }
+  }
+  s.orden = []; const visit = new Array(F).fill(false);
+  const raices = s.padre.map((p, i) => p === -1 ? i : -1).filter(i => i >= 0), cola = [...raices];
+  raices.forEach(r => visit[r] = true);
+  while (cola.length) { const f = cola.shift(); s.orden.push(f); for (let g = 0; g < F; g++) if (!visit[g] && s.padre[g] === f) { visit[g] = true; cola.push(g); } }
+  s.eje = []; s.pivote = []; s.phi = [];
+  for (let c = 0; c < F; c++) {
+    const p = s.padre[c]; if (p < 0) continue;
+    const comun = s.caras[c].idx.filter(i => s.caras[p].idx.includes(i));
+    const a = s.v[comun[0]], b = s.v[comun[1]], u = unit(sub(b, a));
+    s.eje[c] = u; s.pivote[c] = a;
+    s.phi[c] = Math.atan2(dot(u, cross(s.normal[c], s.normal[p])), dot(s.normal[c], s.normal[p]));
+  }
+  // bordes visibles por cara: [k] -> 'si' | 'corte' | 'no'
+  const unidas = (f, g) => s.padre[f] === g || s.padre[g] === f;
+  s.bordes = s.caras.map((c, fi) => c.idx.map((a, k) => {
+    const b = c.idx[(k + 1) % c.idx.length], e = mapa.get(a < b ? a + '-' + b : b + '-' + a);
+    const g = e.caras.find(x => x !== fi);
+    if (s.sinRed) return 'no';
+    if (g === undefined) return 'si';
+    if (c.suave && s.caras[g].suave) return unidas(fi, g) ? 'no' : 'corte';
+    return 'si';
+  }));
+  // colores
+  let k = 0;
+  s.caras.forEach(c => { c.color = c.suave ? s.colorCurvo : PALETA[(k++ + (s.desfase || 0)) % PALETA.length]; c.rgb = hexRgb(c.color); });
+  return s;
+}
+
+const r2 = Math.SQRT2;
+const DEF = [
+  ['cubo', 'Cubo', '🎲', 'poliedro', () => prisma(poligono(4, r2 * 1.1, Math.PI / 4), 2.2), { caras: '6 cuadrados iguales', ejemplo: 'un dado o un cubo Rubik', red: 'La red del cubo está formada por <strong>6 cuadrados</strong> iguales.' }],
+  ['paralelepipedo', 'Paralelepípedo', '📦', 'poliedro', () => prisma([[1.6, 1], [-1.6, 1], [-1.6, -1], [1.6, -1]], 1.5), { caras: '6 rectángulos (las caras opuestas son iguales)', ejemplo: 'una caja de zapatos o un ladrillo', red: 'La red del paralelepípedo está formada por <strong>6 rectángulos</strong>, iguales de a pares.' }],
+  ['prisma3', 'Prisma triangular', '🧀', 'poliedro', () => prisma(poligono(3, 1.35, Math.PI / 2), 2.4), { caras: '2 triángulos (bases) y 3 rectángulos (caras laterales)', ejemplo: 'un trozo de queso o una carpa', red: 'La red del prisma triangular tiene <strong>2 triángulos y 3 rectángulos</strong>.' }],
+  ['prisma5', 'Prisma pentagonal', '⬟', 'poliedro', () => prisma(poligono(5, 1.25, Math.PI / 2), 2.1), { caras: '2 pentágonos (bases) y 5 rectángulos (caras laterales)', ejemplo: 'algunas cajas de regalo', red: 'La red del prisma pentagonal tiene <strong>2 pentágonos y 5 rectángulos</strong>.' }],
+  ['prisma6', 'Prisma hexagonal', '✏️', 'poliedro', () => prisma(poligono(6, 1.2, 0), 2.1), { caras: '2 hexágonos (bases) y 6 rectángulos (caras laterales)', ejemplo: 'un lápiz sin punta o una tuerca', red: 'La red del prisma hexagonal tiene <strong>2 hexágonos y 6 rectángulos</strong>.' }],
+  ['piramide3', 'Pirámide triangular', '🔻', 'poliedro', () => piramide(poligono(3, 1.6, Math.PI / 2), 1.6 * Math.sqrt(3) * Math.sqrt(2 / 3)), { caras: '4 triángulos (1 base y 3 caras laterales)', ejemplo: 'un dado de 4 caras', red: 'La red de la pirámide triangular está formada por <strong>4 triángulos</strong>.' }],
+  ['piramide4', 'Pirámide cuadrada', '🔺', 'poliedro', () => piramide(poligono(4, 1.55, Math.PI / 4), 2.2), { caras: '1 cuadrado (base) y 4 triángulos (caras laterales)', ejemplo: 'las pirámides de Egipto', red: 'La red de la pirámide cuadrada tiene <strong>1 cuadrado y 4 triángulos</strong>.' }],
+  ['piramide5', 'Pirámide pentagonal', '⛺', 'poliedro', () => piramide(poligono(5, 1.4, Math.PI / 2), 2.2), { caras: '1 pentágono (base) y 5 triángulos (caras laterales)', ejemplo: 'el techo de algunas torres', red: 'La red de la pirámide pentagonal tiene <strong>1 pentágono y 5 triángulos</strong>.' }],
+  ['piramide6', 'Pirámide hexagonal', '🏯', 'poliedro', () => piramide(poligono(6, 1.35, 0), 2.2), { caras: '1 hexágono (base) y 6 triángulos (caras laterales)', ejemplo: 'el techo de un kiosco', red: 'La red de la pirámide hexagonal tiene <strong>1 hexágono y 6 triángulos</strong>.' }],
+  ['octaedro', 'Octaedro', '💎', 'poliedro', () => octaedro(), { caras: '8 triángulos iguales', ejemplo: 'un dado de 8 caras o un cristal', red: 'La red del octaedro está formada por <strong>8 triángulos</strong> iguales.' }],
+  ['cilindro', 'Cilindro', '🥫', 'redondo', () => { const s = prisma(poligono(32, 1.15, 0), 2.4); s.caras.forEach((c, i) => { if (i > 1) c.suave = true; }); return s; }, { caras: '2 caras planas (círculos) y 1 superficie curva', ejemplo: 'una lata o una vela', red: 'La red del cilindro tiene <strong>2 círculos y 1 rectángulo</strong> (la superficie curva desenrollada).', planas: 2, curvas: 1, vert: 0, color: '#26A69A' }],
+  ['cono', 'Cono', '🍦', 'redondo', () => { const s = piramide(poligono(36, 1.2, 0), 2.6, true); s.caras.forEach((c, i) => { if (i > 0) c.suave = true; }); s.apice = 36; return s; }, { caras: '1 cara plana (círculo), 1 superficie curva y 1 vértice (cúspide)', ejemplo: 'un barquillo de helado o un gorro de cumpleaños', red: 'La red del cono tiene <strong>1 círculo y 1 sector circular</strong> (la superficie curva desenrollada).', planas: 1, curvas: 1, vert: 1, color: '#EF6C00' }],
+  ['esfera', 'Esfera', '⚽', 'redondo', () => esfera(1.5), { caras: 'solo 1 superficie curva; no tiene caras planas, aristas ni vértices', ejemplo: 'una pelota o una bolita', red: 'La esfera <strong>no tiene red</strong>: su superficie curva no se puede extender sobre un plano sin romperla o estirarla.', planas: 0, curvas: 1, vert: 0, color: '#AB47BC' }]
+];
+const SOLIDOS = {}, CLAVES = [];
+DEF.forEach(([clave, nombre, emoji, tipo, fn, info], i) => {
+  const s = fn(); Object.assign(s, { clave, nombre, emoji, tipo, info, colorCurvo: info.color || '#26A69A', desfase: i * 3 });
+  preparar(s);
+  if (tipo === 'poliedro') { s.C = s.caras.length; s.V = s.v.length; s.A = s.aristas.length; }
+  SOLIDOS[clave] = s; CLAVES.push(clave);
+});
+const POLIEDROS = CLAVES.filter(k => SOLIDOS[k].tipo === 'poliedro'), REDONDOS = CLAVES.filter(k => SOLIDOS[k].tipo === 'redondo');
+
+/* =========================================================
+   3. MOTOR DE DIBUJO 3D (Vista)
+   ========================================================= */
+const VISTAS = [];
+class Vista {
+  constructor(canvas, o = {}) {
+    this.cv = canvas; this.ctx = canvas.getContext('2d');
+    this.yaw = o.yaw ?? -0.75; this.pitchSolido = o.pitch ?? 0.42; this.pitchRed = o.pitchRed ?? 1.2;
+    this.pitchUsuario = 0; this.auto = o.auto ?? true; this.seguirPitch = !!o.seguirPitch;
+    this.pliegue = o.pliegue ?? 1; this.anim = null; this.modo = 'normal'; this.cuenta = null;
+    this.numeros = false; this.alCambiarPliegue = null; this.ajusteFijo = !!o.ajusteFijo;
+    this.arrastre = null;
+    canvas.addEventListener('pointerdown', e => { this.arrastre = { x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); });
+    canvas.addEventListener('pointermove', e => {
+      if (!this.arrastre) return;
+      this.yaw -= (e.clientX - this.arrastre.x) * 0.012;
+      this.pitchUsuario = clamp(this.pitchUsuario + (e.clientY - this.arrastre.y) * 0.01, -1.6, 1.6);
+      this.arrastre = { x: e.clientX, y: e.clientY };
+    });
+    const fin = () => { this.arrastre = null; };
+    canvas.addEventListener('pointerup', fin); canvas.addEventListener('pointercancel', fin);
+    VISTAS.push(this);
+  }
+  setSolido(clave) {
+    this.s = SOLIDOS[clave]; this.cuenta = null; this.pitchUsuario = 0;
+    if (this.ajusteFijo) this.Rfijo = Math.max(this.radio(0), this.radio(1));
+  }
+  setModo(m) { this.modo = m; this.cuenta = null; }
+  animarPliegue(destino, dur = 2400, alTerminar) { this.anim = { desde: this.pliegue, hasta: destino, t0: performance.now(), dur, alTerminar }; }
+  transformaciones(f) {
+    const s = this.s, M = new Array(s.caras.length);
+    for (const fi of s.orden) {
+      const p = s.padre[fi];
+      if (p < 0) { M[fi] = { R: I3, T: [0, 0, 0] }; continue; }
+      const R = rotMat(s.eje[fi], s.phi[fi] * (1 - f)), a = s.pivote[fi];
+      const Tc = sub(a, mulMV(R, a)), Mp = M[p];
+      M[fi] = { R: mulMM(Mp.R, R), T: add(mulMV(Mp.R, Tc), Mp.T) };
+    }
+    return M;
+  }
+  puntos(f) {
+    const M = this.transformaciones(f);
+    return { M, polys: this.s.caras.map((c, fi) => c.idx.map(i => add(mulMV(M[fi].R, this.s.v[i]), M[fi].T))) };
+  }
+  radio(f) {
+    const { polys } = this.puntos(f); const todos = polys.flat();
+    const c = this.centroDe(todos); return Math.max(...todos.map(p => largo(sub(p, c))));
+  }
+  centroDe(pts) {
+    let mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
+    for (const p of pts) for (let k = 0; k < 3; k++) { mn[k] = Math.min(mn[k], p[k]); mx[k] = Math.max(mx[k], p[k]); }
+    return esc(add(mn, mx), .5);
+  }
+  contar(tipo, alPaso) {
+    const s = this.s;
+    const total = tipo === 'caras' ? s.caras.length : tipo === 'aristas' ? s.aristas.length : s.v.length;
+    this.modo = tipo; this.cuenta = { tipo, n: 0, total, t: performance.now(), alPaso };
+  }
+  dibujar(ahora) {
+    const cv = this.cv, ctx = this.ctx, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const W = cv.clientWidth, H = cv.clientHeight;
+    if (!W || !H || !this.s) return;
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    const s = this.s;
+    if (this.anim) {
+      const k = clamp((ahora - this.anim.t0) / this.anim.dur, 0, 1);
+      this.pliegue = lerp(this.anim.desde, this.anim.hasta, suave(k));
+      if (this.alCambiarPliegue) this.alCambiarPliegue(this.pliegue);
+      if (k >= 1) { const cb = this.anim.alTerminar; this.anim = null; if (cb) cb(); }
+    }
+    if (this.cuenta && this.cuenta.n < this.cuenta.total && ahora - this.cuenta.t > (this.cuenta.n === 0 ? 150 : 520)) {
+      this.cuenta.n++; this.cuenta.t = ahora; if (this.cuenta.alPaso) this.cuenta.alPaso(this.cuenta.n, this.cuenta.total);
+    }
+    if (this.auto && !this.arrastre) this.yaw += 0.0055;
+    const f = s.sinRed ? 1 : this.pliegue;
+    const pitch = clamp((this.seguirPitch ? lerp(this.pitchRed, this.pitchSolido, suave(f)) : this.pitchSolido) + this.pitchUsuario, -1.5, 1.5);
+    const { M, polys } = this.puntos(f);
+    const todos = polys.flat(), centro = this.centroDe(todos);
+    const R = this.ajusteFijo ? this.Rfijo : Math.max(...todos.map(p => largo(sub(p, centro))));
+    const cam = [Math.cos(pitch) * Math.cos(this.yaw), Math.cos(pitch) * Math.sin(this.yaw), Math.sin(pitch)];
+    let der = cross(esc(cam, -1), [0, 0, 1]); der = largo(der) < 1e-6 ? [1, 0, 0] : unit(der);
+    const arr = cross(der, esc(cam, -1));
+    const D = R * 5, k = Math.min(W, H) * 0.43 / R;
+    const proy = p => { const d = sub(p, centro), z = dot(d, cam), fz = D / (D - z); return [W / 2 + dot(d, der) * k * fz, H / 2 - dot(d, arr) * k * fz, z]; };
+    const luz = unit(add(add(cam, esc(arr, .9)), esc(der, -.5)));
+    // sombra en el piso
+    ctx.save(); ctx.fillStyle = 'rgba(27,58,107,.10)'; ctx.beginPath();
+    const sp = proy([centro[0], centro[1], 0]); ctx.ellipse(sp[0], sp[1] + 6, R * k * .8, R * k * .8 * Math.abs(Math.sin(pitch)) * .5 + 6, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+
+    const P2 = polys.map(pl => pl.map(proy));
+    const frente = s.caras.map((c, fi) => dot(mulMV(M[fi].R, s.normal[fi]), cam) > 0);
+    const ordenF = s.caras.map((_, i) => i).sort((a, b) => {
+      const za = P2[a].reduce((x, p) => x + p[2], 0) / P2[a].length, zb = P2[b].reduce((x, p) => x + p[2], 0) / P2[b].length; return za - zb;
+    });
+    const modo = this.modo, palido = (modo === 'aristas' || modo === 'vertices' || modo === 'vertice');
+    const cuentaN = this.cuenta ? this.cuenta.n : Infinity;
+    for (const fi of ordenF) {
+      const c = s.caras[fi], pts = P2[fi];
+      const n = mulMV(M[fi].R, s.normal[fi]), nv = frente[fi] ? n : esc(n, -1);
+      const luzK = 0.62 + 0.42 * Math.max(0, dot(nv, luz));
+      let blanco = frente[fi] ? 0 : 0.45, alfa = 1;
+      if (palido) { blanco = 0.72; alfa = 0.9; }
+      if (modo === 'planas' && c.suave) { blanco = 0.8; }
+      if (modo === 'curva' && !c.suave) { blanco = 0.8; }
+      if (modo === 'caras' && this.cuenta && fi >= cuentaN) blanco = Math.max(blanco, .75);
+      ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
+      ctx.fillStyle = rgbStr(c.rgb, luzK, blanco, alfa); ctx.fill();
+      if (c.suave) { ctx.strokeStyle = rgbStr(c.rgb, luzK, blanco, alfa); ctx.lineWidth = 1.2; ctx.stroke(); }
+      ctx.strokeStyle = palido ? 'rgba(27,58,107,.25)' : 'rgba(20,35,60,.75)'; ctx.lineWidth = 1.8; ctx.lineJoin = 'round';
+      ctx.beginPath();
+      pts.forEach((p, i) => {
+        const tipo = s.bordes[fi][i]; if (tipo === 'no' || (tipo === 'corte' && f > 0.995)) return;
+        const q = pts[(i + 1) % pts.length]; ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]);
+      });
+      ctx.stroke();
+    }
+    // números de caras
+    if ((modo === 'caras' && this.cuenta) || this.numeros) {
+      s.caras.forEach((c, fi) => {
+        if (this.cuenta && fi >= cuentaN) return;
+        const cen = proy(add(mulMV(M[fi].R, s.centro[fi]), M[fi].T));
+        this.etiqueta(cen[0], cen[1], fi + 1, frente[fi] || f < 0.5 ? 1 : 0.35, '#1B3A6B', '#FFFFFF', this.cuenta && fi === cuentaN - 1);
+      });
+    }
+    // aristas resaltadas
+    if (modo === 'aristas' && f > 0.99) {
+      const lista = s.aristas.map((e, i) => ({ e, i, vis: e.caras.some(fc => frente[fc]) }));
+      for (const vis of [false, true]) lista.filter(o => o.vis === vis).forEach(({ e, i }) => {
+        if (this.cuenta && i >= cuentaN) return;
+        const a = proy(s.v[e.a]), b = proy(s.v[e.b]);
+        ctx.save(); ctx.lineCap = 'round';
+        ctx.strokeStyle = vis ? '#E8792E' : 'rgba(232,121,46,.55)'; ctx.lineWidth = vis ? 6 : 3; ctx.setLineDash(vis ? [] : [7, 6]);
+        if (vis) { ctx.shadowColor = 'rgba(232,121,46,.6)'; ctx.shadowBlur = 10; }
+        ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); ctx.restore();
+        if (this.cuenta) this.etiqueta((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, i + 1, vis ? 1 : .5, '#E8792E', '#FFFFFF', i === cuentaN - 1);
+      });
+    }
+    // vértices resaltados
+    const listaV = modo === 'vertices' ? s.v.map((_, i) => i) : (modo === 'vertice' && s.apice !== undefined ? [s.apice] : []);
+    if (listaV.length && f > 0.99) {
+      const visV = new Array(s.v.length).fill(false);
+      s.caras.forEach((c, fi) => { if (frente[fi]) c.idx.forEach(i => visV[i] = true); });
+      const pulso = 1 + 0.15 * Math.sin(ahora / 220);
+      listaV.slice().sort((a, b) => visV[a] - visV[b]).forEach(i => {
+        if (this.cuenta && i >= cuentaN) return;
+        const p = proy(s.v[i]), r = 9 * pulso;
+        ctx.save(); ctx.globalAlpha = visV[i] ? 1 : .45;
+        const g = ctx.createRadialGradient(p[0] - 3, p[1] - 3, 1, p[0], p[1], r);
+        g.addColorStop(0, '#FFF6C9'); g.addColorStop(.5, '#F1C40F'); g.addColorStop(1, '#C9A84C');
+        ctx.shadowColor = 'rgba(241,196,15,.9)'; ctx.shadowBlur = 14; ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, Math.PI * 2); ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = '#1B3A6B'; ctx.shadowBlur = 0; ctx.stroke(); ctx.restore();
+        if (this.cuenta) this.etiqueta(p[0] + 15, p[1] - 15, i + 1, visV[i] ? 1 : .5, '#1B3A6B', '#F1C40F', i === cuentaN - 1);
+      });
+    }
+  }
+  etiqueta(x, y, txt, alfa, fondo, color, destacar) {
+    const ctx = this.ctx; ctx.save(); ctx.globalAlpha = alfa;
+    const r = destacar ? 15 : 12;
+    ctx.fillStyle = fondo; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
+    ctx.fillStyle = color; ctx.font = `800 ${destacar ? 15 : 13}px 'Segoe UI', Arial, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(txt, x, y + 1); ctx.restore();
+  }
+}
+function bucle(t) { for (const v of VISTAS) if (v.cv.offsetParent !== null) v.dibujar(t); requestAnimationFrame(bucle); }
+
+/* =========================================================
+   4. ESTADO Y PUNTAJE
+   ========================================================= */
+const ESTADO = { clasif: {}, explora: {}, redes: {}, area: {}, perimetro: {}, realArea: {}, realPerimetro: {} };
+const MAXIMOS = { clasif: 13, explora: CLAVES.length * 2, redes: 8 * 2, area: 10, perimetro: 10, realArea: 10, realPerimetro: 10 };
+const NOMBRES_SEC = { clasif: '🎯 Clasifica el cuerpo', explora: '🔍 Caras, vértices y aristas', redes: '🧩 ¿De qué cuerpo es la red?', area: '🟦 Ejercicios de área', perimetro: '📏 Ejercicios de perímetro', realArea: '🏡 Problemas de área', realPerimetro: '🏃 Problemas de perímetro' };
+const puntosSec = k => Object.values(ESTADO[k]).reduce((a, b) => a + (b || 0), 0);
+function totalEstrellas() { return Object.keys(ESTADO).reduce((a, k) => a + puntosSec(k), 0); }
+function actualizarMarcador() { document.getElementById('marcadorTotal').textContent = `⭐ ${totalEstrellas()} estrellas`; }
+function toast(txt) { const t = document.getElementById('toast'); t.textContent = txt; t.classList.add('visible'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('visible'), 1800); }
+function confetti(n = 90) {
+  const colores = ['#1B3A6B', '#C9A84C', '#27AE60', '#E74C3C', '#3498DB', '#9B59B6', '#F1C40F'], c = document.getElementById('confetti');
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement('div'); p.className = 'confetti-pieza';
+    p.style.cssText = `left:${Math.random() * 100}%;background:${colores[i % colores.length]};animation-delay:${Math.random() * 1.2}s;animation-duration:${2 + Math.random() * 1.2}s;border-radius:${Math.random() > .5 ? '50%' : '2px'}`;
+    c.appendChild(p);
+  }
+  setTimeout(() => c.innerHTML = '', 4800);
+}
+const mezclar = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+function feedback(el, tipo, html) { el.className = 'feedback visible ' + tipo; el.innerHTML = html; }
+
+/* =========================================================
+   5. NAVEGACIÓN
+   ========================================================= */
+document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('activa')); tab.classList.add('activa');
+  document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
+  document.getElementById(tab.dataset.seccion).classList.add('activa');
+  if (tab.dataset.seccion === 's6') mostrarResultados();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}));
+
+/* =========================================================
+   6. SECCIÓN 1: CONCEPTO
+   ========================================================= */
+const vConcepto = new Vista(document.getElementById('cvConcepto'));
+function chipsDe(contenedor, claves, alElegir, marcarOk) {
+  const box = document.getElementById(contenedor); box.innerHTML = '';
+  claves.forEach((k, i) => {
+    const b = document.createElement('button'); b.className = 'chip' + (i === 0 ? ' activa' : ''); b.dataset.clave = k;
+    b.innerHTML = `<span>${SOLIDOS[k].emoji}</span>${SOLIDOS[k].nombre}${marcarOk ? '<span class="ok" hidden>✔</span>' : ''}`;
+    b.addEventListener('click', () => { box.querySelectorAll('.chip').forEach(c => c.classList.remove('activa')); b.classList.add('activa'); alElegir(k); });
+    box.appendChild(b);
+  });
+}
+const contConcepto = document.getElementById('contConcepto');
+const NOMBRE_ELEM = { caras: 'Caras', aristas: 'Aristas', vertices: 'Vértices' };
+chipsDe('chipsConcepto', ['cubo', 'prisma3', 'piramide4', 'paralelepipedo'], k => {
+  vConcepto.setSolido(k); vConcepto.setModo('normal'); contConcepto.classList.remove('visible');
+  document.getElementById('nombreConcepto').textContent = SOLIDOS[k].nombre;
+});
+vConcepto.setSolido('cubo');
+document.querySelectorAll('#s1 [data-modo]').forEach(b => b.addEventListener('click', () => {
+  vConcepto.setModo(b.dataset.modo); contConcepto.classList.remove('visible');
+}));
+document.querySelectorAll('#s1 [data-contar]').forEach(b => b.addEventListener('click', () => {
+  const tipo = b.dataset.contar;
+  contConcepto.classList.add('visible'); contConcepto.textContent = `${NOMBRE_ELEM[tipo]}: 0`;
+  vConcepto.contar(tipo, (n, total) => {
+    contConcepto.textContent = `${NOMBRE_ELEM[tipo]}: ${n}`;
+    if (n === total) { contConcepto.textContent = `✅ ${total} ${NOMBRE_ELEM[tipo].toLowerCase()}`; toast(`El ${vConcepto.s.nombre.toLowerCase()} tiene ${total} ${NOMBRE_ELEM[tipo].toLowerCase()}`); }
+  });
+}));
+
+// --- Juego clasifica ---
+const vClasif = new Vista(document.getElementById('cvClasif'), { pitch: .38 });
+let clasOrden = [], clasIdx = 0;
+function iniciarClasif() { clasOrden = mezclar(CLAVES); clasIdx = 0; ESTADO.clasif = {}; mostrarClasif(); }
+function mostrarClasif() {
+  const k = clasOrden[clasIdx], s = SOLIDOS[k];
+  vClasif.setSolido(k);
+  document.getElementById('clasNombre').textContent = `${s.emoji} ${s.nombre}`;
+  document.getElementById('clasTexto').textContent = `Cuerpo ${clasIdx + 1} de ${clasOrden.length}`;
+  document.getElementById('clasBarra').style.width = (clasIdx / clasOrden.length * 100) + '%';
+  document.getElementById('clasPuntos').textContent = `⭐ ${puntosSec('clasif')}`;
+  ['clasPoli', 'clasRedo'].forEach(id => { const b = document.getElementById(id); b.disabled = false; b.className = 'btn-opcion'; });
+  document.getElementById('clasFeedback').className = 'feedback';
+  document.getElementById('clasSig').style.display = 'none';
+}
+function responderClasif(tipo) {
+  const k = clasOrden[clasIdx], s = SOLIDOS[k], ok = s.tipo === tipo;
+  const bElegido = document.getElementById(tipo === 'poliedro' ? 'clasPoli' : 'clasRedo');
+  const bCorrecto = document.getElementById(s.tipo === 'poliedro' ? 'clasPoli' : 'clasRedo');
+  ['clasPoli', 'clasRedo'].forEach(id => document.getElementById(id).disabled = true);
+  bCorrecto.classList.add('correcta'); if (!ok) bElegido.classList.add('incorrecta');
+  ESTADO.clasif[k] = ok ? 1 : 0;
+  const motivo = s.tipo === 'poliedro' ? `todas sus caras son planas: ${s.info.caras}.` : `tiene superficie curva: ${s.info.caras}.`;
+  feedback(document.getElementById('clasFeedback'), ok ? 'correcto' : 'incorrecto', ok ? `🎉 ¡Correcto! El ${s.nombre.toLowerCase()} es un ${s.tipo === 'poliedro' ? 'poliedro' : 'cuerpo redondo'} porque ${motivo}` : `💡 El ${s.nombre.toLowerCase()} es un <strong>${s.tipo === 'poliedro' ? 'poliedro' : 'cuerpo redondo'}</strong>, porque ${motivo}`);
+  document.getElementById('clasPuntos').textContent = `⭐ ${puntosSec('clasif')}`;
+  actualizarMarcador();
+  const sig = document.getElementById('clasSig'); sig.style.display = 'inline-flex';
+  if (clasIdx === clasOrden.length - 1) { sig.textContent = '🔄 Jugar otra vez'; document.getElementById('clasBarra').style.width = '100%'; if (puntosSec('clasif') >= 10) confetti(); }
+  else sig.textContent = 'Siguiente →';
+}
+document.getElementById('clasPoli').onclick = () => responderClasif('poliedro');
+document.getElementById('clasRedo').onclick = () => responderClasif('redondo');
+document.getElementById('clasSig').onclick = () => { if (clasIdx === clasOrden.length - 1) iniciarClasif(); else { clasIdx++; mostrarClasif(); } };
+
+/* =========================================================
+   7. SECCIÓN 2: EXPLORA Y COMPLETA
+   ========================================================= */
+const vExplora = new Vista(document.getElementById('cvExplora'));
+const contExplora = document.getElementById('contExplora');
+let exploraClave = 'cubo';
+const intentosExplora = {};
+const CAMPOS_POLI = [['caras', 'Caras', '#3498DB'], ['vertices', 'Vértices', '#F1C40F'], ['aristas', 'Aristas', '#E8792E']];
+const CAMPOS_REDO = [['planas', 'Caras planas', '#3498DB'], ['curvas', 'Superficies curvas', '#AB47BC'], ['vert', 'Vértices', '#F1C40F']];
+function valoresCorrectos(s) { return s.tipo === 'poliedro' ? { caras: s.C, vertices: s.V, aristas: s.A } : { planas: s.info.planas, curvas: s.info.curvas, vert: s.info.vert }; }
+function elegirExplora(k) {
+  exploraClave = k; const s = SOLIDOS[k];
+  vExplora.setSolido(k); vExplora.setModo('normal'); contExplora.classList.remove('visible');
+  document.getElementById('nombreExplora').textContent = s.nombre;
+  document.getElementById('exploraInfo').innerHTML = `<strong>${s.emoji} ${s.nombre}</strong> · ${s.tipo === 'poliedro' ? 'Poliedro' : 'Cuerpo redondo'}<br><span style="font-size:1rem">Ejemplo en la vida diaria: ${s.info.ejemplo}.</span>`;
+  const modos = document.getElementById('modosExplora'); modos.innerHTML = '';
+  const botones = s.tipo === 'poliedro'
+    ? [['normal', '🎨 Normal'], ['caras', '🟦 Contar caras', 'caras'], ['vertices', '🔵 Contar vértices', 'vertices'], ['aristas', '📏 Contar aristas', 'aristas']]
+    : [['normal', '🎨 Normal'], ['planas', '🟦 Caras planas'], ['curva', '🌀 Superficie curva'], ['vertice', '🔵 Vértice']];
+  botones.forEach(([m, txt, contar]) => {
+    const b = document.createElement('button'); b.className = 'btn btn-sm btn-borde' + (m === 'normal' ? ' on' : ''); b.textContent = txt;
+    b.onclick = () => {
+      modos.querySelectorAll('.btn').forEach(x => x.classList.remove('on')); b.classList.add('on');
+      contExplora.classList.remove('visible');
+      if (contar) {
+        contExplora.classList.add('visible'); contExplora.textContent = `${NOMBRE_ELEM[contar]}: 0`;
+        vExplora.contar(contar, (n, t) => { contExplora.textContent = n === t ? `✅ ${t} ${NOMBRE_ELEM[contar].toLowerCase()}` : `${NOMBRE_ELEM[contar]}: ${n}`; });
+      } else {
+        vExplora.setModo(m);
+        if (m === 'vertice') { contExplora.classList.add('visible'); contExplora.textContent = s.apice !== undefined ? '1 vértice (cúspide)' : '0 vértices'; }
+        if (m === 'curva') { contExplora.classList.add('visible'); contExplora.textContent = '1 superficie curva'; }
+        if (m === 'planas') { contExplora.classList.add('visible'); contExplora.textContent = `${s.info.planas} cara${s.info.planas === 1 ? '' : 's'} plana${s.info.planas === 1 ? '' : 's'}`; }
+      }
+    };
+    modos.appendChild(b);
+  });
+  const campos = s.tipo === 'poliedro' ? CAMPOS_POLI : CAMPOS_REDO, resuelto = ESTADO.explora[k] !== undefined;
+  const correctos = valoresCorrectos(s);
+  document.getElementById('exploraCampos').innerHTML = campos.map(([id, txt, col]) => `
+    <label class="campo"><span class="lbl"><span class="punto" style="background:${col}"></span>${txt}</span>
+    <input class="num ${resuelto ? 'bien' : ''}" type="number" min="0" inputmode="numeric" data-campo="${id}" value="${resuelto ? correctos[id] : ''}" aria-label="${txt}"></label>`).join('');
+  document.getElementById('exploraFeedback').className = 'feedback';
+  if (resuelto) feedback(document.getElementById('exploraFeedback'), 'correcto', `✅ Ya resolviste este cuerpo. Sus caras son: ${s.info.caras}.`);
+}
+document.getElementById('exploraComprobar').onclick = () => {
+  const s = SOLIDOS[exploraClave], correctos = valoresCorrectos(s);
+  let todoBien = true, vacios = false; const errores = [];
+  document.querySelectorAll('#exploraCampos input').forEach(inp => {
+    const campo = inp.dataset.campo; inp.classList.remove('bien', 'mal');
+    if (inp.value === '') { vacios = true; return; }
+    void inp.offsetWidth;
+    if (+inp.value === correctos[campo]) inp.classList.add('bien'); else { inp.classList.add('mal'); todoBien = false; errores.push(campo); }
+  });
+  const fb = document.getElementById('exploraFeedback');
+  if (vacios) { feedback(fb, 'info', '✏️ Completa todos los casilleros antes de comprobar.'); return; }
+  intentosExplora[exploraClave] = (intentosExplora[exploraClave] || 0) + 1;
+  if (todoBien) {
+    if (ESTADO.explora[exploraClave] === undefined) { ESTADO.explora[exploraClave] = intentosExplora[exploraClave] === 1 ? 2 : 1; confetti(50); }
+    const est = ESTADO.explora[exploraClave] === 2 ? '⭐⭐' : '⭐';
+    feedback(fb, 'correcto', `🎉 ¡Correcto! ${est}<br>El ${s.nombre.toLowerCase()} tiene ${s.info.caras}.`);
+    document.querySelector(`#chipsExplora [data-clave="${exploraClave}"] .ok`).hidden = false;
+    actualizarTablas(); actualizarMarcador();
+  } else {
+    const pistas = {
+      caras: 'Para las <strong>caras</strong>, cuenta cada superficie plana: no olvides las que están atrás y abajo.',
+      vertices: 'Para los <strong>vértices</strong>, cuenta las esquinas de arriba y luego las de abajo.',
+      aristas: 'Para las <strong>aristas</strong>, cuenta los bordes de la base, luego los de arriba y por último los laterales.',
+      planas: 'Las <strong>caras planas</strong> de los cuerpos redondos son círculos.',
+      curvas: 'La <strong>superficie curva</strong> es la parte que permite que el cuerpo ruede.',
+      vert: 'Un <strong>vértice</strong> es una punta. ¿Este cuerpo tiene alguna punta?'
+    };
+    feedback(fb, 'incorrecto', `❌ Revisa los casilleros en rojo.<br>💡 ${errores.map(e => pistas[e]).join('<br>💡 ')}<br>Usa los botones de ayuda bajo el cuerpo para contar.`);
+  }
+};
+document.getElementById('exploraSiguiente').onclick = () => {
+  const i = CLAVES.indexOf(exploraClave), sig = CLAVES[(i + 1) % CLAVES.length];
+  document.querySelector(`#chipsExplora [data-clave="${sig}"]`).click();
+};
+function actualizarTablas() {
+  const celda = (ok, v) => ok ? `<td class="lleno">${v}</td>` : '<td class="vacio">?</td>';
+  document.getElementById('tablaPoliedros').innerHTML = '<tr><th>Cuerpo</th><th>Caras (C)</th><th>Vértices (V)</th><th>Aristas (A)</th><th>C + V − A</th></tr>' +
+    POLIEDROS.map(k => { const s = SOLIDOS[k], ok = ESTADO.explora[k] !== undefined; return `<tr><td>${s.emoji} ${s.nombre}</td>${celda(ok, s.C)}${celda(ok, s.V)}${celda(ok, s.A)}${celda(ok, `${s.C} + ${s.V} − ${s.A} = <strong>2</strong>`)}</tr>`; }).join('');
+  document.getElementById('tablaRedondos').innerHTML = '<tr><th>Cuerpo</th><th>Caras planas</th><th>Superficies curvas</th><th>Vértices</th><th>¿Puede rodar?</th></tr>' +
+    REDONDOS.map(k => { const s = SOLIDOS[k], ok = ESTADO.explora[k] !== undefined; return `<tr><td>${s.emoji} ${s.nombre}</td>${celda(ok, s.info.planas)}${celda(ok, s.info.curvas)}${celda(ok, s.info.vert)}${celda(ok, 'Sí')}</tr>`; }).join('');
+}
+
+/* =========================================================
+   8. SECCIÓN 3: REDES
+   ========================================================= */
+const vRedes = new Vista(document.getElementById('cvRedes'), { seguirPitch: true, ajusteFijo: true, pitchRed: 1.05 });
+const slider = document.getElementById('sliderPliegue');
+vRedes.alCambiarPliegue = f => slider.value = Math.round(f * 100);
+function elegirRed(k) {
+  const s = SOLIDOS[k]; vRedes.setSolido(k); vRedes.anim = null; vRedes.pliegue = 1; slider.value = 100;
+  document.getElementById('nombreRedes').textContent = s.nombre;
+  document.getElementById('redesInfo').innerHTML = `${s.emoji} ${s.info.red}`;
+  ['btnDesarmar', 'btnArmar'].forEach(id => document.getElementById(id).disabled = !!s.sinRed); slider.disabled = !!s.sinRed;
+  if (!s.sinRed) setTimeout(() => { if (vRedes.s === s) vRedes.animarPliegue(0, 2600); }, 500);
+}
+document.getElementById('btnDesarmar').onclick = () => vRedes.animarPliegue(0, 2600);
+document.getElementById('btnArmar').onclick = () => vRedes.animarPliegue(1, 2600);
+slider.oninput = () => { vRedes.anim = null; vRedes.pliegue = slider.value / 100; };
+document.getElementById('btnGiro').onclick = e => { vRedes.auto = !vRedes.auto; e.currentTarget.classList.toggle('on', vRedes.auto); };
+document.getElementById('btnNumeros').onclick = e => { vRedes.numeros = !vRedes.numeros; e.currentTarget.classList.toggle('on', vRedes.numeros); };
+
+// --- Quiz de redes ---
+const vQuiz = new Vista(document.getElementById('cvQuizRed'), { seguirPitch: true, ajusteFijo: true, pitchRed: 1.35, auto: false, yaw: -Math.PI / 2 });
+const QUIZ_REDES = ['cubo', 'prisma3', 'piramide4', 'cilindro', 'cono', 'prisma6', 'piramide3', 'paralelepipedo'];
+let qrOrden = [], qrIdx = 0, qrIntento = 0;
+function iniciarQuizRed() { qrOrden = mezclar(QUIZ_REDES); qrIdx = 0; ESTADO.redes = {}; mostrarQuizRed(); }
+function mostrarQuizRed() {
+  const k = qrOrden[qrIdx]; qrIntento = 0;
+  vQuiz.setSolido(k); vQuiz.anim = null; vQuiz.pliegue = 0; vQuiz.auto = false; vQuiz.yaw = -Math.PI / 2;
+  document.getElementById('qrTexto').textContent = `Red ${qrIdx + 1} de ${qrOrden.length}`;
+  document.getElementById('qrBarra').style.width = (qrIdx / qrOrden.length * 100) + '%';
+  document.getElementById('qrPuntos').textContent = `⭐ ${puntosSec('redes')}`;
+  const distractores = mezclar(CLAVES.filter(c => c !== k && c !== 'esfera')).slice(0, 3);
+  const box = document.getElementById('qrOpciones'); box.innerHTML = '';
+  mezclar([k, ...distractores]).forEach(c => {
+    const b = document.createElement('button'); b.className = 'btn-opcion'; b.innerHTML = `${SOLIDOS[c].emoji} ${SOLIDOS[c].nombre}`;
+    b.onclick = () => responderQuizRed(c, b); box.appendChild(b);
+  });
+  document.getElementById('qrFeedback').className = 'feedback';
+  document.getElementById('qrSig').style.display = 'none';
+}
+function responderQuizRed(c, boton) {
+  const k = qrOrden[qrIdx], s = SOLIDOS[k], fb = document.getElementById('qrFeedback');
+  qrIntento++;
+  if (c === k) {
+    boton.classList.add('correcta'); document.querySelectorAll('#qrOpciones button').forEach(b => b.disabled = true);
+    ESTADO.redes[k] = qrIntento === 1 ? 2 : 1;
+    feedback(fb, 'correcto', `🎉 ¡Correcto! ${qrIntento === 1 ? '⭐⭐' : '⭐'} ${s.info.red} ¡Mira cómo se arma!`);
+    vQuiz.animarPliegue(1, 2600, () => { vQuiz.auto = true; });
+    terminarPreguntaRed();
+  } else {
+    boton.classList.add('incorrecta'); boton.disabled = true;
+    if (qrIntento >= 2) {
+      document.querySelectorAll('#qrOpciones button').forEach(b => { b.disabled = true; if (b.textContent.includes(s.nombre)) b.classList.add('correcta'); });
+      ESTADO.redes[k] = 0;
+      feedback(fb, 'incorrecto', `💡 Era el <strong>${s.nombre.toLowerCase()}</strong>. ${s.info.red} Observa cómo se pliega.`);
+      vQuiz.animarPliegue(1, 2600, () => { vQuiz.auto = true; });
+      terminarPreguntaRed();
+    } else feedback(fb, 'incorrecto', `❌ No es el ${SOLIDOS[c].nombre.toLowerCase()}. 💡 Cuenta las caras de la red y fíjate en su forma (triángulos, rectángulos o círculos). ¡Inténtalo otra vez!`);
+  }
+  document.getElementById('qrPuntos').textContent = `⭐ ${puntosSec('redes')}`; actualizarMarcador();
+}
+function terminarPreguntaRed() {
+  const sig = document.getElementById('qrSig'); sig.style.display = 'inline-flex';
+  if (qrIdx === qrOrden.length - 1) { sig.textContent = '🔄 Jugar otra vez'; document.getElementById('qrBarra').style.width = '100%'; if (puntosSec('redes') >= 12) confetti(); }
+  else sig.textContent = 'Siguiente red →';
+}
+document.getElementById('qrSig').onclick = () => { if (qrIdx === qrOrden.length - 1) iniciarQuizRed(); else { qrIdx++; mostrarQuizRed(); } };
+
+/* =========================================================
+   9. FIGURAS PLANAS EN SVG (área y perímetro animados)
+   ========================================================= */
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs = {}, padre) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (padre) padre.appendChild(e); return e; }
+function texto(padre, x, y, txt, attrs = {}) { const t = el('text', Object.assign({ x, y, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-family': "'Segoe UI', Arial, sans-serif", 'font-weight': 800, 'font-size': 18, fill: '#1B3A6B' }, attrs), padre); t.textContent = txt; return t; }
+const espera = ms => new Promise(r => setTimeout(r, ms));
+
+function contornoCeldas(celdas) {
+  const set = new Set(celdas.map(([c, r]) => c + ',' + r)), sig = new Map();
+  for (const [c, r] of celdas) {
+    const lados = [[[c, r], [c + 1, r], [c, r - 1]], [[c + 1, r], [c + 1, r + 1], [c + 1, r]], [[c + 1, r + 1], [c, r + 1], [c, r + 1]], [[c, r + 1], [c, r], [c - 1, r]]];
+    for (const [a, b, vec] of lados) if (!set.has(vec[0] + ',' + vec[1])) sig.set(a.join(','), b);
+  }
+  let ini = [...sig.keys()].map(k => k.split(',').map(Number)).sort((p, q) => p[1] - q[1] || p[0] - q[0])[0];
+  const lazo = [ini]; let act = sig.get(ini.join(','));
+  while (act && act.join(',') !== ini.join(',') && lazo.length < 500) { lazo.push(act); act = sig.get(act.join(',')); }
+  return lazo;
+}
+
+/* Crea una figura en un <svg>. Devuelve controles para animar.
+   fig.t: 'celdas' | 'rect' | 'poli' | 'redCubo'                    */
+function crearFigura(svg, fig, tema = {}) {
+  svg.innerHTML = '';
+  const VW = 520, VH = 340, color = tema.color || '#3498DB', borde = tema.borde || '#1B3A6B', viajero = tema.viajero || '🐜';
+  const defs = el('defs', {}, svg);
+  const pat = el('pattern', { id: 'p' + Math.random().toString(36).slice(2), width: 14, height: 14, patternUnits: 'userSpaceOnUse' }, defs);
+  el('rect', { width: 14, height: 14, fill: color, opacity: .28 }, pat);
+  el('circle', { cx: 7, cy: 7, r: 1.4, fill: color, opacity: .5 }, pat);
+  const capaBase = el('g', {}, svg), capaCeldas = el('g', {}, svg), capaBorde = el('g', {}, svg), capaTxt = el('g', {}, svg), capaAnim = el('g', {}, svg);
+  let lazo = [], valores = [], celdasPx = [], u = 1, ox = 0, oy = 0, unidad = fig.unidad || 'cm';
+  const deco = (x0, y0, w, h) => { if (!tema.deco) return; const rnd = mezclarSemilla(tema.deco.length * 7); tema.deco.forEach((e, i) => texto(capaBase, x0 + w * (0.18 + 0.64 * rnd[i % rnd.length]), y0 + h * (0.22 + 0.56 * rnd[(i + 3) % rnd.length]), e, { 'font-size': Math.min(34, h / 3), opacity: .9 })); };
+
+  if (fig.t === 'celdas') {
+    const cols = Math.max(...fig.celdas.map(c => c[0])) + 1, filas = Math.max(...fig.celdas.map(c => c[1])) + 1;
+    u = Math.min(440 / (cols + 1), 280 / (filas + 1), 46);
+    ox = (VW - cols * u) / 2; oy = (VH - filas * u) / 2;
+    for (let c = -1; c <= cols + 1; c++) el('line', { x1: ox + c * u, y1: oy - u, x2: ox + c * u, y2: oy + (filas + 1) * u, stroke: '#DDE3EC', 'stroke-width': 1 }, capaBase);
+    for (let r = -1; r <= filas + 1; r++) el('line', { x1: ox - u, y1: oy + r * u, x2: ox + (cols + 1) * u, y2: oy + r * u, stroke: '#DDE3EC', 'stroke-width': 1 }, capaBase);
+    fig.celdas.forEach(([c, r]) => {
+      const g = el('g', { style: 'cursor:pointer' }, capaCeldas);
+      const rc = el('rect', { x: ox + c * u, y: oy + r * u, width: u, height: u, fill: color, 'fill-opacity': .35, stroke: color, 'stroke-width': 1.5 }, g);
+      celdasPx.push({ x: ox + c * u, y: oy + r * u, g, rc });
+    });
+    // contar tocando: el estudiante marca cada cuadrado
+    let marcados = [];
+    celdasPx.forEach(cp => cp.g.addEventListener('click', () => {
+      const i = marcados.indexOf(cp);
+      if (i >= 0) { marcados.splice(i, 1); cp.rc.setAttribute('fill-opacity', .35); }
+      else { marcados.push(cp); cp.rc.setAttribute('fill-opacity', .75); }
+      capaCeldas.querySelectorAll('.marca').forEach(m => m.remove());
+      marcados.forEach((m, j) => { const t = texto(m.g, m.x + u / 2, m.y + u / 2, j + 1, { 'font-size': u * .42, fill: '#fff' }); t.classList.add('marca'); });
+    }));
+    lazo = contornoCeldas(fig.celdas).map(([c, r]) => [ox + c * u, oy + r * u]);
+    valores = lazo.map(() => 1);
+    el('polygon', { points: lazo.map(p => p.join(',')).join(' '), fill: 'none', stroke: borde, 'stroke-width': 3.5, 'stroke-linejoin': 'round' }, capaBorde);
+    texto(capaTxt, ox + u / 2, oy - u * .55, `1 ${unidad}`, { 'font-size': 13, fill: '#5A6B82' });
+    el('line', { x1: ox, y1: oy - u * .25, x2: ox + u, y2: oy - u * .25, stroke: '#5A6B82', 'stroke-width': 2 }, capaTxt);
+  } else if (fig.t === 'rect') {
+    const s = Math.min(380 / fig.w, 220 / fig.h); const w = fig.w * s, h = fig.h * s;
+    ox = (VW - w) / 2; oy = (VH - h) / 2 - 6; u = s;
+    el('rect', { x: ox, y: oy, width: w, height: h, fill: tema.fondo || `url(#${pat.id})`, rx: 2 }, capaBase);
+    deco(ox, oy, w, h);
+    lazo = [[ox, oy], [ox + w, oy], [ox + w, oy + h], [ox, oy + h]];
+    valores = [fig.w, fig.h, fig.w, fig.h];
+    el('rect', { x: ox, y: oy, width: w, height: h, fill: 'none', stroke: borde, 'stroke-width': 4, 'stroke-linejoin': 'round' }, capaBorde);
+    if (fig.cuadrado) { // marcas de lados iguales
+      [[ox + w / 2, oy, 0], [ox + w, oy + h / 2, 1], [ox + w / 2, oy + h, 0], [ox, oy + h / 2, 1]].forEach(([x, y, v]) => el('line', Object.assign(v ? { x1: x - 8, y1: y, x2: x + 8, y2: y } : { x1: x, y1: y - 8, x2: x, y2: y + 8 }, { stroke: borde, 'stroke-width': 3 }), capaBorde));
+    }
+    [texto(capaTxt, ox + w / 2, oy + h + 22, `${fig.w} ${unidad}`), texto(capaTxt, ox + w + 12, oy + h / 2, `${fig.h} ${unidad}`, { 'text-anchor': 'start' })];
+  } else if (fig.t === 'poli') {
+    const xs = fig.pts.map(p => p[0]), ys = fig.pts.map(p => p[1]);
+    const mnx = Math.min(...xs), mny = Math.min(...ys), W0 = Math.max(...xs) - mnx, H0 = Math.max(...ys) - mny;
+    const s = Math.min(360 / W0, 230 / H0); ox = (VW - W0 * s) / 2; oy = (VH - H0 * s) / 2;
+    lazo = fig.pts.map(p => [ox + (p[0] - mnx) * s, oy + (p[1] - mny) * s]);
+    valores = fig.lados;
+    el('polygon', { points: lazo.map(p => p.join(',')).join(' '), fill: tema.fondo || `url(#${pat.id})` }, capaBase);
+    if (tema.deco) { const cx = lazo.reduce((a, p) => a + p[0], 0) / lazo.length, cy = lazo.reduce((a, p) => a + p[1], 0) / lazo.length; texto(capaBase, cx, cy, tema.deco[0], { 'font-size': 40 }); }
+    el('polygon', { points: lazo.map(p => p.join(',')).join(' '), fill: 'none', stroke: borde, 'stroke-width': 4, 'stroke-linejoin': 'round' }, capaBorde);
+    const cx = lazo.reduce((a, p) => a + p[0], 0) / lazo.length, cy = lazo.reduce((a, p) => a + p[1], 0) / lazo.length;
+    lazo.forEach((p, i) => {
+      const q = lazo[(i + 1) % lazo.length], mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2;
+      const dx = mx - cx, dy = my - cy, d = Math.hypot(dx, dy) || 1;
+      if (fig.mostrar && !fig.mostrar[i]) return;
+      texto(capaTxt, mx + dx / d * 36, my + dy / d * 26, `${fig.lados[i]} ${unidad}`);
+    });
+    if (fig.regular) texto(capaTxt, VW / 2, VH - 14, 'Todos sus lados miden lo mismo', { 'font-size': 14, fill: '#5A6B82', 'font-weight': 600 });
+  } else if (fig.t === 'redCubo') {
+    u = 66; const bloques = [[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]];
+    ox = (VW - 4 * u) / 2; oy = (VH - 3 * u) / 2;
+    bloques.forEach(([c, r], i) => {
+      const g = el('g', {}, capaCeldas);
+      el('rect', { x: ox + c * u, y: oy + r * u, width: u, height: u, fill: PALETA[i], 'fill-opacity': .55, stroke: borde, 'stroke-width': 3 }, g);
+      celdasPx.push({ x: ox + c * u, y: oy + r * u, g });
+    });
+    texto(capaTxt, ox + 1.5 * u, oy - 14, `${fig.a} ${unidad}`);
+    texto(capaTxt, ox + 2 * u + 8, oy + .5 * u, `${fig.a} ${unidad}`, { 'text-anchor': 'start' });
+    texto(capaBase, ox + 3.5 * u, oy + 2.5 * u, '🎁', { 'font-size': 48 });
+  }
+
+  // ---- animaciones ----
+  let gen = 0;
+  const limpiar = () => { gen++; capaAnim.innerHTML = ''; capaCeldas.querySelectorAll('.anim').forEach(x => x.remove()); };
+  async function animarPerimetro(alTexto) {
+    limpiar(); const mi = gen;
+    const tok = texto(capaAnim, lazo[0][0], lazo[0][1] - 4, viajero, { 'font-size': 30 });
+    let suma = 0; const partes = [];
+    for (let i = 0; i < lazo.length; i++) {
+      if (mi !== gen) return;
+      const p = lazo[i], q = lazo[(i + 1) % lazo.length], L = Math.hypot(q[0] - p[0], q[1] - p[1]);
+      const linea = el('line', { x1: p[0], y1: p[1], x2: p[0], y2: p[1], stroke: '#E8792E', 'stroke-width': 8, 'stroke-linecap': 'round', opacity: .9 }, capaAnim);
+      capaAnim.appendChild(tok);
+      const dur = fig.t === 'celdas' ? 260 : clamp(L * 5, 500, 1200), t0 = performance.now();
+      await new Promise(res => { const paso = ahora => { if (mi !== gen) return res(); const k = clamp((ahora - t0) / dur, 0, 1); const x = lerp(p[0], q[0], k), y = lerp(p[1], q[1], k); linea.setAttribute('x2', x); linea.setAttribute('y2', y); tok.setAttribute('x', x); tok.setAttribute('y', y - 4); k < 1 ? requestAnimationFrame(paso) : res(); }; requestAnimationFrame(paso); });
+      suma += valores[i]; partes.push(valores[i]);
+      if (fig.t === 'celdas') { texto(capaAnim, (p[0] + q[0]) / 2 + (q[1] - p[1]) / L * 14, (p[1] + q[1]) / 2 - (q[0] - p[0]) / L * 14, suma, { 'font-size': 12, fill: '#B3541E' }); alTexto && alTexto(`Perímetro: ${suma} ${unidad}`); }
+      else alTexto && alTexto(`${partes.join(' + ')} = ${suma} ${unidad}`);
+    }
+    if (mi !== gen) return;
+    if (fig.vueltas) { alTexto && alTexto(`1 vuelta = ${suma} ${unidad} → ${fig.vueltas} vueltas = ${suma} × ${fig.vueltas} = ${suma * fig.vueltas} ${unidad} ✅`); return; }
+    alTexto && alTexto(fig.t === 'celdas' ? `Perímetro = ${suma} ${unidad} ✅` : `Perímetro = ${partes.join(' + ')} = ${suma} ${unidad} ✅`);
+  }
+  async function animarArea(alTexto) {
+    limpiar(); const mi = gen;
+    const u2 = unidad + '²';
+    if (fig.t === 'celdas') {
+      const orden = celdasPx.slice().sort((a, b) => a.y - b.y || a.x - b.x);
+      for (let i = 0; i < orden.length; i++) {
+        if (mi !== gen) return; const cp = orden[i];
+        const r = el('rect', { x: cp.x + 3, y: cp.y + 3, width: u - 6, height: u - 6, rx: 4, fill: color, class: 'anim', style: 'transform-box:fill-box;transform-origin:center;animation:pop .35s ease' }, cp.g);
+        texto(cp.g, cp.x + u / 2, cp.y + u / 2, i + 1, { 'font-size': u * .42, fill: '#fff', class: 'anim' });
+        alTexto && alTexto(`Área: ${i + 1} ${u2}`);
+        await espera(orden.length > 30 ? 80 : 170);
+      }
+      if (mi === gen) alTexto && alTexto(`Área = ${orden.length} cuadrados = ${orden.length} ${u2} ✅`);
+    } else if (fig.t === 'rect') {
+      const W = fig.w, H = fig.h, enteros = Number.isInteger(W) && Number.isInteger(H) && W * H <= 120;
+      if (enteros) {
+        for (let r = 0; r < H; r++) {
+          for (let c = 0; c < W; c++) {
+            if (mi !== gen) return;
+            el('rect', { x: ox + c * u + 2, y: oy + r * u + 2, width: u - 4, height: u - 4, rx: 3, fill: color, 'fill-opacity': .85, stroke: '#fff', 'stroke-width': 1, style: 'transform-box:fill-box;transform-origin:center;animation:pop .3s ease' }, capaAnim);
+            if (u > 22) texto(capaAnim, ox + c * u + u / 2, oy + r * u + u / 2, r * W + c + 1, { 'font-size': Math.min(16, u * .4), fill: '#fff' });
+            await espera(W * H > 40 ? 45 : 90);
+          }
+          alTexto && alTexto(`${r + 1} fila${r ? 's' : ''} de ${W} cuadrados = ${(r + 1) * W} ${u2}`);
+          await espera(180);
+        }
+        if (mi === gen) alTexto && alTexto(`Área = ${W} × ${H} = ${W * H} ${u2} ✅`);
+      } else {
+        const rr = el('rect', { x: ox, y: oy, width: 0, height: fig.h * u, fill: color, 'fill-opacity': .6 }, capaAnim);
+        const t0 = performance.now();
+        await new Promise(res => { const paso = a => { if (mi !== gen) return res(); const k = clamp((a - t0) / 1500, 0, 1); rr.setAttribute('width', fig.w * u * suave(k)); k < 1 ? requestAnimationFrame(paso) : res(); }; requestAnimationFrame(paso); });
+        if (mi === gen) alTexto && alTexto(`Área = ${fig.w} × ${fig.h} = ${fig.w * fig.h} ${u2} ✅`);
+      }
+    } else if (fig.t === 'redCubo') {
+      const cara = fig.a * fig.a; let suma = 0;
+      for (let i = 0; i < celdasPx.length; i++) {
+        if (mi !== gen) return; const cp = celdasPx[i];
+        el('rect', { x: cp.x + 4, y: cp.y + 4, width: u - 8, height: u - 8, rx: 6, fill: PALETA[i], class: 'anim', style: 'transform-box:fill-box;transform-origin:center;animation:pop .4s ease' }, cp.g);
+        texto(cp.g, cp.x + u / 2, cp.y + u / 2, `${cara}`, { 'font-size': 17, fill: '#fff', class: 'anim' });
+        suma += cara; alTexto && alTexto(`Cara ${i + 1}: ${fig.a} × ${fig.a} = ${cara} ${u2} → total ${suma} ${u2}`);
+        await espera(650);
+      }
+      if (mi === gen) alTexto && alTexto(`Área total = ${cara} × 6 = ${suma} ${u2} ✅`);
+    }
+  }
+  return { animarPerimetro, animarArea, limpiar };
+}
+function mezclarSemilla(n) { const r = []; let x = 0.37; for (let i = 0; i < Math.max(n, 6); i++) { x = (x * 9301 + 0.49297) % 1; r.push(x); } return r; }
+const ptsRegular = (n, lado) => { const R = lado / (2 * Math.sin(Math.PI / n)); return poligono(n, R, -Math.PI / 2 - Math.PI / n).map(([x, y]) => [x, y]); };
+function perimetroCeldas(celdas) { return contornoCeldas(celdas).length; }
+const rango = (c0, c1, r0, r1) => { const o = []; for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) o.push([c, r]); return o; };
+
+/* =========================================================
+   10. LABORATORIO DEL RECTÁNGULO
+   ========================================================= */
+const svgLab = document.getElementById('svgLab'); let labFig = null;
+function actualizarLab() {
+  const L = +document.getElementById('labLargo').value, A = +document.getElementById('labAncho').value;
+  document.getElementById('labLargoOut').textContent = L + ' cm'; document.getElementById('labAnchoOut').textContent = A + ' cm';
+  if (labFig) labFig.limpiar();
+  labFig = crearFigura(svgLab, { t: 'celdas', celdas: rango(0, L - 1, 0, A - 1), unidad: 'cm' }, { color: '#2E86DE' });
+  document.getElementById('labTexto').textContent = 'Toca un botón para ver la animación';
+  document.getElementById('labFormP').textContent = `Perímetro = ${L} + ${A} + ${L} + ${A} = ${2 * (L + A)} cm`;
+  document.getElementById('labFormA').textContent = `Área = ${L} × ${A} = ${L * A} cm²`;
+}
+document.getElementById('labLargo').oninput = actualizarLab; document.getElementById('labAncho').oninput = actualizarLab;
+document.getElementById('labPeri').onclick = () => labFig.animarPerimetro(t => document.getElementById('labTexto').textContent = t);
+document.getElementById('labArea').onclick = () => labFig.animarArea(t => document.getElementById('labTexto').textContent = t);
+
+/* =========================================================
+   11. BANCO DE EJERCICIOS
+   ========================================================= */
+const celdasL = rango(0, 1, 0, 3).concat(rango(2, 4, 2, 3));
+const celdasU = [[0, 0], [3, 0], [0, 1], [3, 1], [0, 2], [1, 2], [2, 2], [3, 2], [0, 3], [1, 3], [2, 3], [3, 3]];
+const celdasRedCubo = []; [[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]].forEach(([c, r]) => celdasRedCubo.push(...rango(c * 2, c * 2 + 1, r * 2, r * 2 + 1)));
+const triRect = [[0, 0], [0, 3], [4, 3]];
+const hIso = Math.sqrt(81 - 9);
+
+const SERIES = {
+  area: [
+    { titulo: 'Contar cuadrados', icono: '🟦', enunciado: 'Cada cuadrado de la cuadrícula mide 1 cm². ¿Cuál es el <strong>área</strong> del rectángulo? Puedes tocar los cuadrados para contarlos.', fig: { t: 'celdas', celdas: rango(0, 3, 0, 2) }, resp: 12, unidad: 'cm²', pista: 'Cuenta los cuadrados de una fila y multiplica por la cantidad de filas: 4 cuadrados en cada una de las 3 filas.', sol: 'Hay 3 filas de 4 cuadrados: 4 × 3 = 12 cm².' },
+    { titulo: 'Área de un cuadrado', icono: '⬛', enunciado: 'Un cuadrado tiene lados de <strong>5 cm</strong>. ¿Cuál es su <strong>área</strong>?', fig: { t: 'rect', w: 5, h: 5, cuadrado: true }, resp: 25, unidad: 'cm²', pista: 'En un cuadrado, largo y ancho miden lo mismo. Multiplica lado × lado.', sol: 'Área = lado × lado = 5 × 5 = 25 cm².' },
+    { titulo: 'Área de un rectángulo', icono: '▭', enunciado: 'Un rectángulo mide <strong>7 cm</strong> de largo y <strong>2 cm</strong> de ancho. ¿Cuál es su <strong>área</strong>?', fig: { t: 'rect', w: 7, h: 2 }, resp: 14, unidad: 'cm²', pista: 'Multiplica el largo por el ancho: 7 × 2.', sol: 'Área = largo × ancho = 7 × 2 = 14 cm².' },
+    { titulo: 'Figura compuesta', icono: '🧩', enunciado: 'La figura tiene forma de <strong>L</strong>. Cada cuadrado mide 1 cm². ¿Cuál es su <strong>área</strong>?', fig: { t: 'celdas', celdas: celdasL }, resp: celdasL.length, unidad: 'cm²', pista: 'Divide la figura en dos rectángulos: uno vertical de 2 × 4 y otro horizontal de 3 × 2. Luego suma sus áreas.', sol: 'Rectángulo vertical: 2 × 4 = 8 cm². Rectángulo horizontal: 3 × 2 = 6 cm². Total: 8 + 6 = 14 cm².' },
+    { titulo: 'Área de la red de un cubo', icono: '🎲', enunciado: 'Esta es la <strong>red de un cubo</strong>. Cada cara es un cuadrado de <strong>2 cm</strong> de lado (4 cuadraditos de 1 cm²). ¿Cuál es el <strong>área total</strong> de la red?', fig: { t: 'celdas', celdas: celdasRedCubo }, resp: 24, unidad: 'cm²', pista: 'El cubo tiene 6 caras. Cada cara tiene un área de 2 × 2 = 4 cm². Multiplica 4 × 6.', sol: 'Cada cara: 2 × 2 = 4 cm². El cubo tiene 6 caras: 4 × 6 = 24 cm².' }
+  ],
+  perimetro: [
+    { titulo: 'Perímetro de un rectángulo', icono: '▭', enunciado: 'Un rectángulo mide <strong>6 cm</strong> de largo y <strong>4 cm</strong> de ancho. ¿Cuál es su <strong>perímetro</strong>?', fig: { t: 'rect', w: 6, h: 4 }, resp: 20, unidad: 'cm', pista: 'El rectángulo tiene 4 lados: dos de 6 cm y dos de 4 cm. Súmalos todos.', sol: 'Perímetro = 6 + 4 + 6 + 4 = 20 cm.' },
+    { titulo: 'Perímetro de un cuadrado', icono: '⬛', enunciado: 'Un cuadrado tiene lados de <strong>7 cm</strong>. ¿Cuál es su <strong>perímetro</strong>?', fig: { t: 'rect', w: 7, h: 7, cuadrado: true }, resp: 28, unidad: 'cm', pista: 'Un cuadrado tiene 4 lados iguales: suma 7 cuatro veces, o calcula 7 × 4.', sol: 'Perímetro = 7 + 7 + 7 + 7 = 7 × 4 = 28 cm.' },
+    { titulo: 'Perímetro de un triángulo', icono: '🔺', enunciado: 'Un triángulo tiene lados de <strong>3 cm</strong>, <strong>4 cm</strong> y <strong>5 cm</strong>. ¿Cuál es su <strong>perímetro</strong>?', fig: { t: 'poli', pts: triRect, lados: [3, 4, 5] }, resp: 12, unidad: 'cm', pista: 'Suma la medida de los 3 lados.', sol: 'Perímetro = 3 + 4 + 5 = 12 cm.' },
+    { titulo: 'Perímetro de un pentágono', icono: '⬟', enunciado: 'Un <strong>pentágono regular</strong> (5 lados iguales) tiene lados de <strong>6 cm</strong>. ¿Cuál es su <strong>perímetro</strong>?', fig: { t: 'poli', pts: ptsRegular(5, 6), lados: [6, 6, 6, 6, 6], regular: true }, resp: 30, unidad: 'cm', pista: 'Son 5 lados de 6 cm cada uno: 6 × 5.', sol: 'Perímetro = 6 + 6 + 6 + 6 + 6 = 6 × 5 = 30 cm.' },
+    { titulo: 'Perímetro en la cuadrícula', icono: '🧩', enunciado: 'Cada lado de un cuadradito mide <strong>1 cm</strong>. ¿Cuál es el <strong>perímetro</strong> de la figura con forma de <strong>U</strong>?', fig: { t: 'celdas', celdas: celdasU }, resp: perimetroCeldas(celdasU), unidad: 'cm', pista: 'Recorre el contorno con el dedo y cuenta cada lado de cuadradito que forma el borde. ¡No olvides el borde de adentro de la U!', sol: `Al recorrer todo el contorno se cuentan ${perimetroCeldas(celdasU)} lados de 1 cm: perímetro = ${perimetroCeldas(celdasU)} cm.` }
+  ],
+  realArea: [
+    { titulo: 'El piso del dormitorio', icono: '🛏️', enunciado: 'Ana quiere cubrir el piso de su dormitorio con baldosas cuadradas de <strong>1 m²</strong>. El dormitorio es rectangular: mide <strong>4 m</strong> de largo y <strong>3 m</strong> de ancho. ¿Cuántos m² de baldosas necesita?', fig: { t: 'rect', w: 4, h: 3, unidad: 'm' }, tema: { color: '#C8873F', fondo: '#F3E1C7', deco: ['🛏️', '🧸'] }, resp: 12, unidad: 'm²', pista: 'Cubrir el piso significa calcular su ÁREA: largo × ancho = 4 × 3.', sol: 'Área = 4 × 3 = 12 m². Ana necesita 12 baldosas de 1 m².' },
+    { titulo: 'El huerto escolar', icono: '🥕', enunciado: 'El huerto del colegio tiene forma de <strong>cuadrado</strong> de <strong>6 m</strong> de lado. ¿Cuál es la superficie que se puede cultivar?', fig: { t: 'rect', w: 6, h: 6, cuadrado: true, unidad: 'm' }, tema: { color: '#3E8E41', fondo: '#D7EFC9', deco: ['🥕', '🌱', '🥬', '🌻'] }, resp: 36, unidad: 'm²', pista: 'La superficie es el ÁREA. En un cuadrado: lado × lado = 6 × 6.', sol: 'Área = 6 × 6 = 36 m².' },
+    { titulo: 'Forrar la caja de regalo', icono: '🎁', enunciado: 'Pedro quiere forrar con papel de regalo <strong>todas las caras</strong> de una caja con forma de <strong>cubo</strong>. Cada arista mide <strong>10 cm</strong>. ¿Cuántos cm² de papel necesita como mínimo?', fig: { t: 'redCubo', a: 10 }, resp: 600, unidad: 'cm²', pista: 'Piensa en la red del cubo: tiene 6 caras cuadradas. Calcula el área de una cara (10 × 10) y multiplícala por 6.', sol: 'Área de una cara = 10 × 10 = 100 cm². Área total = 100 × 6 = 600 cm².' },
+    { titulo: 'El mural del patio', icono: '🎨', enunciado: 'El 4° básico pintará un mural rectangular de <strong>8 m</strong> de largo y <strong>2 m</strong> de alto. ¿Cuántos m² deben pintar?', fig: { t: 'rect', w: 8, h: 2, unidad: 'm' }, tema: { color: '#8E44AD', fondo: '#EEDDF6', deco: ['🎨', '🖌️', '🌈'] }, resp: 16, unidad: 'm²', pista: 'Pintar una superficie es calcular su ÁREA: 8 × 2.', sol: 'Área = 8 × 2 = 16 m².' },
+    { titulo: 'La sala de clases', icono: '🏫', enunciado: 'Se cambiará la alfombra de una sala de clases rectangular que mide <strong>9 m</strong> de largo y <strong>7 m</strong> de ancho. ¿Cuántos m² de alfombra se necesitan?', fig: { t: 'rect', w: 9, h: 7, unidad: 'm' }, tema: { color: '#2E86DE', fondo: '#D6E8FA', deco: ['🪑', '📚', '✏️'] }, resp: 63, unidad: 'm²', pista: 'La alfombra cubre la superficie del piso: área = largo × ancho = 9 × 7.', sol: 'Área = 9 × 7 = 63 m².' }
+  ],
+  realPerimetro: [
+    { titulo: 'Cercar el huerto', icono: '🐕', enunciado: 'Don Luis quiere poner una malla alrededor de su huerto rectangular, que mide <strong>8 m</strong> de largo y <strong>5 m</strong> de ancho, para que su perro no entre. ¿Cuántos metros de malla necesita?', fig: { t: 'rect', w: 8, h: 5, unidad: 'm' }, tema: { color: '#3E8E41', fondo: '#D7EFC9', deco: ['🥕', '🌽', '🍅'], viajero: '🐕', borde: '#7B4A12' }, resp: 26, unidad: 'm', pista: 'La malla va ALREDEDOR del huerto: es el PERÍMETRO. Suma 8 + 5 + 8 + 5.', sol: 'Perímetro = 8 + 5 + 8 + 5 = 26 m de malla.' },
+    { titulo: 'El marco de la foto', icono: '🖼️', enunciado: 'Sofía hará un marco para una fotografía <strong>cuadrada</strong> de <strong>15 cm</strong> de lado. ¿Cuántos centímetros de varilla necesita para rodear la foto?', fig: { t: 'rect', w: 15, h: 15, cuadrado: true, unidad: 'cm' }, tema: { color: '#C9A84C', fondo: '#FBF0D2', deco: ['👨‍👩‍👧', '❤️'], viajero: '✨', borde: '#8B5A2B' }, resp: 60, unidad: 'cm', pista: 'Rodear la foto es calcular el PERÍMETRO del cuadrado: 15 × 4.', sol: 'Perímetro = 15 + 15 + 15 + 15 = 15 × 4 = 60 cm.' },
+    { titulo: 'Vueltas a la cancha', icono: '⚽', enunciado: 'Martín da <strong>2 vueltas completas</strong> alrededor de una cancha rectangular de <strong>40 m</strong> de largo y <strong>20 m</strong> de ancho. ¿Cuántos metros recorre en total?', fig: { t: 'rect', w: 40, h: 20, unidad: 'm', vueltas: 2 }, tema: { color: '#27AE60', fondo: '#BFE8C9', deco: ['⚽', '🥅'], viajero: '🏃' }, resp: 240, unidad: 'm', pista: 'Primero calcula UNA vuelta (el perímetro): 40 + 20 + 40 + 20. Luego multiplica por 2 porque da 2 vueltas.', sol: 'Una vuelta (perímetro) = 40 + 20 + 40 + 20 = 120 m. Dos vueltas = 120 × 2 = 240 m.' },
+    { titulo: 'La cinta de la tarjeta', icono: '💌', enunciado: 'Camila pegará una cinta en todo el borde de una tarjeta con forma de <strong>triángulo</strong>. Sus lados miden <strong>9 cm</strong>, <strong>9 cm</strong> y <strong>6 cm</strong>. ¿Cuántos centímetros de cinta necesita?', fig: { t: 'poli', pts: [[3, 0], [6, hIso], [0, hIso]], lados: [9, 6, 9] }, tema: { color: '#EC407A', fondo: '#FCE0EA', deco: ['💌'], viajero: '🎀' }, resp: 24, unidad: 'cm', pista: 'El borde completo de la tarjeta es su PERÍMETRO: suma los 3 lados.', sol: 'Perímetro = 9 + 9 + 6 = 24 cm de cinta.' },
+    { titulo: 'El corral de las ovejas', icono: '🐑', enunciado: 'Un granjero construye un corral con forma de <strong>hexágono regular</strong> (6 lados iguales). Cada lado mide <strong>4 m</strong>. ¿Cuántos metros de cerca necesita?', fig: { t: 'poli', pts: ptsRegular(6, 4), lados: [4, 4, 4, 4, 4, 4], regular: true, unidad: 'm' }, tema: { color: '#8BC34A', fondo: '#E3F2D0', deco: ['🐑'], viajero: '🐕', borde: '#7B4A12' }, resp: 24, unidad: 'm', pista: 'La cerca rodea el corral: es el PERÍMETRO. Son 6 lados de 4 m: 4 × 6.', sol: 'Perímetro = 4 + 4 + 4 + 4 + 4 + 4 = 4 × 6 = 24 m.' }
+  ]
+};
+Object.values(SERIES).forEach(lista => lista.forEach(ej => { ej.fig.unidad = ej.fig.unidad || ej.unidad.replace('²', ''); }));
+
+/* =========================================================
+   12. COMPONENTE DE SERIE DE EJERCICIOS
+   ========================================================= */
+function crearSerie(clave) {
+  const cont = document.getElementById('serie-' + clave), lista = SERIES[clave];
+  const esArea = clave === 'area' || clave === 'realArea';
+  let idx = 0; const intentos = {};
+  cont.innerHTML = `
+    <div class="puntos-nav"></div>
+    <div class="ej-card">
+      <div class="ej-head"><span class="icono"></span><div><span class="tag" style="background:${esArea ? '#2E86DE' : '#E8792E'}">${esArea ? '🟦 ÁREA' : '📏 PERÍMETRO'}</span><h3></h3></div></div>
+      <p class="enunciado"></p>
+      <div class="grid-2">
+        <div><div class="fig-box"><svg viewBox="0 0 520 340"></svg></div><div class="sol-text"></div></div>
+        <div>
+          <div class="respuesta"><span>Respuesta:</span><input class="num" type="number" inputmode="numeric" min="0" aria-label="Respuesta"><span class="u"></span></div>
+          <div class="fila-btn">
+            <button class="btn btn-verde b-ok">✔ Comprobar</button>
+            <button class="btn btn-sm btn-borde b-pista">💡 Pista</button>
+            <button class="btn btn-sm btn-acento b-anim">🎬 Ver animación</button>
+          </div>
+          <div class="feedback"></div>
+          <div class="fila-btn"><button class="btn btn-primario b-sig">Siguiente →</button></div>
+        </div>
+      </div>
+    </div>`;
+  const $ = s => cont.querySelector(s);
+  const svg = $('svg'), inp = $('input'), fb = $('.feedback'), solTxt = $('.sol-text');
+  let figura = null;
+  function nav() {
+    $('.puntos-nav').innerHTML = lista.map((_, i) => {
+      const e = ESTADO[clave][i]; const cls = i === idx ? 'actual' : e === undefined ? '' : e > 0 ? 'hecho' : 'fallado';
+      return `<button class="pnav ${cls}" data-i="${i}" aria-label="Ejercicio ${i + 1}">${e > 0 && i !== idx ? '✔' : i + 1}</button>`;
+    }).join('');
+    $('.puntos-nav').querySelectorAll('.pnav').forEach(b => b.onclick = () => { idx = +b.dataset.i; mostrar(); });
+  }
+  function mostrar() {
+    const ej = lista[idx];
+    $('.icono').textContent = ej.icono; $('h3').textContent = `Ejercicio ${idx + 1} de ${lista.length}: ${ej.titulo}`;
+    $('.enunciado').innerHTML = ej.enunciado; $('.u').textContent = ej.unidad;
+    if (figura) figura.limpiar();
+    figura = crearFigura(svg, ej.fig, Object.assign({ color: esArea ? '#2E86DE' : '#E8792E' }, ej.tema || {}));
+    solTxt.textContent = ej.fig.t === 'celdas' && esArea ? '👆 Toca los cuadrados para contarlos' : '';
+    const hecho = ESTADO[clave][idx];
+    inp.value = hecho !== undefined ? ej.resp : ''; inp.className = 'num' + (hecho > 0 ? ' bien' : '');
+    inp.disabled = hecho !== undefined; $('.b-ok').disabled = hecho !== undefined;
+    fb.className = 'feedback';
+    if (hecho !== undefined) feedback(fb, hecho > 0 ? 'correcto' : 'info', `${hecho > 0 ? '✅ Resuelto ' + '⭐'.repeat(hecho) : '📘 Revisado'} · ${ej.sol}`);
+    $('.b-anim').disabled = hecho === undefined && !(intentos[idx] >= 1);
+    $('.b-sig').textContent = idx === lista.length - 1 ? '🏆 Ver mis resultados' : 'Siguiente →';
+    nav();
+  }
+  const animar = () => { const f = t => solTxt.textContent = t; esArea ? figura.animarArea(f) : figura.animarPerimetro(f); };
+  $('.b-anim').onclick = animar;
+  $('.b-pista').onclick = () => feedback(fb, 'info', `💡 <strong>Pista:</strong> ${lista[idx].pista}`);
+  const comprobar = () => {
+    const ej = lista[idx]; if (inp.value === '') { feedback(fb, 'info', '✏️ Escribe tu respuesta antes de comprobar.'); return; }
+    intentos[idx] = (intentos[idx] || 0) + 1;
+    const val = parseFloat(String(inp.value).replace(',', '.'));
+    inp.classList.remove('bien', 'mal'); void inp.offsetWidth;
+    if (val === ej.resp) {
+      const est = intentos[idx] === 1 ? 2 : 1; ESTADO[clave][idx] = est;
+      inp.classList.add('bien'); inp.disabled = true; $('.b-ok').disabled = true; $('.b-anim').disabled = false;
+      feedback(fb, 'correcto', `🎉 ¡Correcto! ${'⭐'.repeat(est)}<br>${ej.sol}`);
+      confetti(45); animar(); actualizarMarcador(); nav();
+    } else if (intentos[idx] >= 2) {
+      ESTADO[clave][idx] = 0; inp.classList.add('mal'); inp.disabled = true; $('.b-ok').disabled = true; $('.b-anim').disabled = false;
+      let extra = '';
+      if (!esArea && ej.fig.t === 'rect' && val === ej.fig.w * ej.fig.h) extra = ' ⚠️ Calculaste el área (multiplicaste); el perímetro se obtiene <strong>sumando</strong> los lados.';
+      feedback(fb, 'incorrecto', `❌ La respuesta correcta es <strong>${ej.resp} ${ej.unidad}</strong>.${extra}<br>📘 ${ej.sol}<br>🎬 Observa la animación.`);
+      animar(); actualizarMarcador(); nav();
+    } else {
+      inp.classList.add('mal'); $('.b-anim').disabled = false;
+      let extra = '';
+      if (ej.fig.t === 'rect') {
+        if (esArea && val === 2 * (ej.fig.w + ej.fig.h)) extra = '<br>⚠️ Sumaste los lados: eso es el <strong>perímetro</strong>. El área se calcula <strong>multiplicando</strong> largo × ancho.';
+        if (!esArea && val === ej.fig.w * ej.fig.h) extra = '<br>⚠️ Multiplicaste: eso es el <strong>área</strong>. El perímetro se calcula <strong>sumando</strong> todos los lados.';
+        if (ej.fig.vueltas && val === 2 * (ej.fig.w + ej.fig.h)) extra = `<br>⚠️ ${val} m es solo <strong>una</strong> vuelta. ¡Martín da ${ej.fig.vueltas} vueltas!`;
+      }
+      feedback(fb, 'incorrecto', `❌ Aún no es correcto. ¡Tienes otra oportunidad!${extra}<br>💡 ${ej.pista}`);
+    }
+  };
+  $('.b-ok').onclick = comprobar;
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') comprobar(); });
+  $('.b-sig').onclick = () => {
+    if (idx < lista.length - 1) { idx++; mostrar(); cont.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    else document.querySelector('.tab[data-seccion="s6"]').click();
+  };
+  mostrar();
+  return { reiniciar: () => { idx = 0; Object.keys(intentos).forEach(k => delete intentos[k]); mostrar(); } };
+}
+const SERIES_UI = {};
+document.querySelectorAll('.subtabs').forEach(grupo => grupo.querySelectorAll('.subtab').forEach(b => b.addEventListener('click', () => {
+  grupo.querySelectorAll('.subtab').forEach(x => { x.classList.remove('activa'); document.getElementById('serie-' + x.dataset.serie).style.display = 'none'; });
+  b.classList.add('activa'); document.getElementById('serie-' + b.dataset.serie).style.display = 'block';
+})));
+
+/* =========================================================
+   13. RESULTADOS
+   ========================================================= */
+function mostrarResultados() {
+  const tot = Object.keys(ESTADO).reduce((a, k) => a + puntosSec(k), 0), max = Object.values(MAXIMOS).reduce((a, b) => a + b, 0);
+  const porc = Math.round(tot / max * 100);
+  let emoji, txt;
+  if (porc >= 90) { emoji = '🏆'; txt = '¡Excelente! Dominas el tema.'; }
+  else if (porc >= 70) { emoji = '⭐'; txt = '¡Muy bien! Sigue practicando.'; }
+  else if (porc >= 50) { emoji = '📚'; txt = 'Buen esfuerzo. Repasa los errores.'; }
+  else { emoji = '💪'; txt = '¡No te rindas! Inténtalo de nuevo.'; }
+  document.getElementById('resPorc').textContent = porc + '%';
+  document.getElementById('resClasif').textContent = `${emoji} ${txt}`;
+  document.getElementById('resEstrellas').textContent = `Obtuviste ${tot} de ${max} estrellas posibles.`;
+  const colores = ['#2E86DE', '#C9A84C', '#27AE60', '#1B3A6B', '#E8792E', '#8E44AD', '#E74C3C'];
+  document.getElementById('resFilas').innerHTML = Object.keys(ESTADO).map((k, i) => {
+    const p = puntosSec(k), m = MAXIMOS[k], pc = Math.round(p / m * 100);
+    return `<div class="res-fila"><span>${NOMBRES_SEC[k]}</span><div class="res-barra"><div style="width:0;background:${colores[i]}" data-w="${pc}"></div></div><span>${p}/${m} ⭐</span></div>`;
+  }).join('');
+  requestAnimationFrame(() => document.querySelectorAll('.res-barra div').forEach(d => d.style.width = d.dataset.w + '%'));
+  const repaso = [];
+  ['area', 'perimetro', 'realArea', 'realPerimetro'].forEach(k => SERIES[k].forEach((ej, i) => { if (ESTADO[k][i] === 0) repaso.push(`${NOMBRES_SEC[k]} · ${ej.titulo}: ${ej.sol}`); }));
+  Object.entries(ESTADO.redes).forEach(([k, v]) => { if (v === 0) repaso.push(`🧩 Red del ${SOLIDOS[k].nombre.toLowerCase()}: ${SOLIDOS[k].info.red.replace(/<[^>]+>/g, '')}`); });
+  Object.entries(ESTADO.clasif).forEach(([k, v]) => { if (v === 0) repaso.push(`🎯 ${SOLIDOS[k].nombre}: es un ${SOLIDOS[k].tipo === 'poliedro' ? 'poliedro' : 'cuerpo redondo'}.`); });
+  document.getElementById('resRepaso').innerHTML = repaso.length ? `<div class="def-box dorada"><strong>📘 Para repasar:</strong><ul style="margin:8px 0 0 20px;line-height:1.7">${repaso.map(r => `<li>${r}</li>`).join('')}</ul></div>` : (tot > 0 ? '<div class="def-box verde">🎉 ¡No tienes errores pendientes de repaso!</div>' : '<div class="def-box">Completa las actividades para ver tu avance aquí.</div>');
+  if (porc >= 70) confetti(120);
+}
+document.getElementById('btnReiniciar').onclick = () => {
+  Object.keys(ESTADO).forEach(k => ESTADO[k] = {});
+  Object.keys(intentosExplora).forEach(k => delete intentosExplora[k]);
+  document.querySelectorAll('#chipsExplora .ok').forEach(o => o.hidden = true);
+  iniciarClasif(); iniciarQuizRed(); elegirExplora(exploraClave); actualizarTablas();
+  Object.values(SERIES_UI).forEach(s => s.reiniciar());
+  actualizarMarcador(); mostrarResultados(); toast('🔄 ¡Todo listo para jugar de nuevo!');
+  document.querySelector('.tab[data-seccion="s1"]').click();
+};
+
+/* =========================================================
+   14. INICIO
+   ========================================================= */
+chipsDe('chipsExplora', CLAVES, elegirExplora, true);
+chipsDe('chipsRedes', CLAVES, elegirRed);
+elegirExplora('cubo'); vRedes.setSolido('cubo'); elegirRed('cubo');
+actualizarTablas(); iniciarClasif(); iniciarQuizRed(); actualizarLab();
+['area', 'perimetro', 'realArea', 'realPerimetro'].forEach(k => SERIES_UI[k] = crearSerie(k));
+requestAnimationFrame(bucle);
+</script>
+</body>
+</html>
