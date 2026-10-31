@@ -1,4 +1,4 @@
-const CACHE_NAME = 'xilofono-v1';
+const CACHE_NAME = 'xilofono-v2';
 const APP_SHELL = [
   './',
   './index.html',

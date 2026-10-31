@@ -13,9 +13,6 @@
 <meta name="apple-mobile-web-app-title" content="Xilófono">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{
@@ -23,7 +20,7 @@
     --ink:#F5F6FA; --ink-2:#C3C8D8; --ink-3:#848BA3;
     --pink:#FF4F8B; --purple:#B45CFF; --blue:#3B8BFF; --cyan:#4FD1FF; --green:#30D158; --yellow:#FFD60A; --orange:#FF9F0A; --red:#FF453A;
     --grad:linear-gradient(135deg,var(--pink),var(--purple));
-    --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
     --ease:cubic-bezier(.16,1,.3,1);
     --r-xl:28px; --r-lg:20px; --r-md:14px;
     color-scheme:dark;
@@ -162,7 +159,10 @@
   <div class="wrap">
     <div class="top-row">
       <a class="back" href="../../../index.html">← Mesa de Trabajo</a>
-      <span class="badge">🎵 Música · Instrumento virtual</span>
+      <div class="row" style="gap:10px">
+        <button class="btn primary" type="button" id="btnInstall" hidden>⬇️ Instalar aplicación</button>
+        <span class="badge">🎵 Música · Instrumento virtual</span>
+      </div>
     </div>
     <h1>Xilófono Virtual<small>Glockenspiel cromático · 25 placas · Sol<sub>5</sub> – Sol<sub>7</sub></small></h1>
   </div>
@@ -516,9 +516,9 @@ function drawInstrument(){
     el('rect',{class:'ring',x,y:g.y,width:g.w,height:g.L,rx:6,fill:'#FFFFFF'},grp);
     // Etiquetas
     const ty=g.y+g.L-(b.natural?16:12);
-    const label=el('text',{class:'lbl',x:g.cx,y:ty,'text-anchor':'middle','font-size':b.natural?15:10,'font-weight':'800',fill:'#FFFFFF',style:'paint-order:stroke;stroke:rgba(0,0,0,.6);stroke-width:3px;font-family:Inter,sans-serif'},grp);
+    const label=el('text',{class:'lbl',x:g.cx,y:ty,'text-anchor':'middle','font-size':b.natural?15:10,'font-weight':'800',fill:'#FFFFFF',style:'paint-order:stroke;stroke:rgba(0,0,0,.6);stroke-width:3px;font-family:inherit'},grp);
     b.label=label;
-    const kl=el('text',{class:'klbl',x:g.cx,y:g.y+g.L*0.5+(b.natural?6:5),'text-anchor':'middle','font-size':b.natural?13:10,'font-weight':'700',fill:'rgba(255,255,255,.95)',style:'paint-order:stroke;stroke:rgba(0,0,0,.7);stroke-width:3px;font-family:Inter,sans-serif;display:none'},grp);
+    const kl=el('text',{class:'klbl',x:g.cx,y:g.y+g.L*0.5+(b.natural?6:5),'text-anchor':'middle','font-size':b.natural?13:10,'font-weight':'700',fill:'rgba(255,255,255,.95)',style:'paint-order:stroke;stroke:rgba(0,0,0,.7);stroke-width:3px;font-family:inherit;display:none'},grp);
     kl.textContent=keyLabel(b.key); b.klabel=kl;
   });
   el('g',{id:'fx'},svg);
@@ -700,6 +700,13 @@ function loop(){
   parts=parts.filter(p=>p.life>0 && p.y<cv.height+50);
   raf = parts.length ? requestAnimationFrame(loop) : (cx2.clearRect(0,0,cv.width,cv.height), 0);
 }
+
+/* ---- Instalación como aplicación (funciona sin conexión) ---- */
+const btnInstall=document.getElementById('btnInstall'); let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; btnInstall.hidden=false; });
+btnInstall.addEventListener('click',async()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; btnInstall.hidden=true; });
+window.addEventListener('appinstalled',()=>{ btnInstall.hidden=true; toast('✅ Aplicación instalada: ya funciona sin conexión'); });
+if(location.protocol==='file:'){ const bk=document.querySelector('.back'); if(bk) bk.style.display='none'; }
 
 /* ---- Service worker ---- */
 if('serviceWorker' in navigator && location.protocol!=='file:'){
