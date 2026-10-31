@@ -153,7 +153,6 @@
 </head>
 <body>
 <div class="ambient" aria-hidden="true"><span></span><span></span><span></span></div>
-<canvas id="confetti" aria-hidden="true"></canvas>
 
 <header class="top">
   <div class="wrap">
@@ -191,75 +190,8 @@
     </div>
   </section>
 
-  <!-- ============ CONTROLES ============ -->
-  <div class="grid">
-    <section class="card c-4">
-      <h3><span class="ic">🏷️</span> Nombres de las notas</h3>
-      <div class="seg" id="segNames" role="group" aria-label="Nombres de notas">
-        <button type="button" data-v="latin" aria-pressed="true">Do · Re · Mi</button>
-        <button type="button" data-v="us" aria-pressed="false">C · D · E</button>
-        <button type="button" data-v="none" aria-pressed="false">Ocultar</button>
-      </div>
-      <div style="margin-top:14px">
-        <label class="row" style="gap:10px; font-size:.86rem; font-weight:600; color:var(--ink-2); cursor:pointer">
-          <input type="checkbox" id="chkKeys" style="width:18px;height:18px;accent-color:var(--pink)"> Mostrar teclas del computador en las placas
-        </label>
-      </div>
-    </section>
-
-    <section class="card c-4">
-      <h3><span class="ic">🎚️</span> Sonido</h3>
-      <div class="row">
-        <div class="field">
-          <label for="rVol">Volumen <output id="oVol">90 %</output></label>
-          <input type="range" id="rVol" min="0" max="100" value="90">
-        </div>
-        <div class="field">
-          <label for="rRev">Reverberación de sala <output id="oRev">35 %</output></label>
-          <input type="range" id="rRev" min="0" max="100" value="35">
-        </div>
-      </div>
-      <div class="row" style="margin-top:12px; justify-content:space-between">
-        <div class="seg" id="segOct" role="group" aria-label="Registro">
-          <button type="button" data-v="0" aria-pressed="true">Registro real</button>
-          <button type="button" data-v="-12" aria-pressed="false">Una octava grave</button>
-        </div>
-        <button class="btn" type="button" id="btnDamp" title="Apaga todas las placas (Espacio)">🤚 Apagar</button>
-      </div>
-    </section>
-
-    <section class="card c-4">
-      <h3><span class="ic">⏺️</span> Grabadora</h3>
-      <div class="row">
-        <button class="btn rec" type="button" id="btnRec" aria-pressed="false">● Grabar</button>
-        <button class="btn" type="button" id="btnPlay" disabled>▶ Reproducir</button>
-        <button class="btn danger" type="button" id="btnClear" disabled>🗑 Borrar</button>
-      </div>
-      <p class="status" id="recStatus" style="margin-top:12px">Grabe y vuelva a escuchar su interpretación.</p>
-    </section>
-
-    <section class="card c-12">
-      <h3><span class="ic">🎼</span> Aprende a tocar · melodías guiadas</h3>
-      <div class="chips" id="melodyChips"></div>
-      <div class="row" style="margin-top:14px; align-items:flex-end">
-        <button class="btn primary" type="button" id="btnListen">🔊 Escuchar</button>
-        <button class="btn" type="button" id="btnPractice">🎯 Practicar</button>
-        <button class="btn" type="button" id="btnStop" disabled>■ Detener</button>
-        <div class="field" style="max-width:260px">
-          <label for="rTempo">Tempo <output id="oTempo">100 bpm</output></label>
-          <input type="range" id="rTempo" min="50" max="170" value="100">
-        </div>
-      </div>
-      <div class="progress" aria-hidden="true"><i id="progBar"></i></div>
-      <div class="melody-status">
-        <span class="big" id="melStatus">Elija una melodía: <b>Escuchar</b> la interpreta; <b>Practicar</b> ilumina la placa que debe tocar.</span>
-        <span class="status" id="melCount"></span>
-      </div>
-    </section>
-  </div>
-
 </main>
-<div style="height:28px"></div>
+<div style="height:24px"></div>
 
 
 <div class="toast" id="toast"></div>
@@ -563,7 +495,6 @@ function hit(b, vel=0.85, fromUser=true){
   initAudio();
   strike(b, vel);
   flash(b);
-  if(fromUser){ recorder.note(b, vel); practice.check(b); }
 }
 function barFromPoint(x,y){ const e=document.elementFromPoint(x,y); const g=e&&e.closest?e.closest('.bar'):null; return g?bars[+g.dataset.i]:null; }
 function velocityFor(b, clientY){
@@ -593,122 +524,22 @@ window.addEventListener('keydown',e=>{
   keysDown.add(e.code); e.preventDefault(); veil.classList.add('hide'); hit(b, 0.9);
 });
 window.addEventListener('keyup',e=>keysDown.delete(e.code));
-document.getElementById('btnDamp').addEventListener('click',dampAll);
-
-/* ---- Controles ---- */
-function seg(id, cb){ const s=document.getElementById(id); s.addEventListener('click',e=>{ const btn=e.target.closest('button'); if(!btn) return; s.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', x===btn)); cb(btn.dataset.v); }); }
-seg('segNames', v=>{ nameMode=v; updateLabels(); });
-seg('segOct', v=>{ octShift=+v; toast(octShift? '🎵 Registro grave: Sol4 – Sol6' : '🎵 Registro real: Sol5 – Sol7'); });
-document.getElementById('chkKeys').addEventListener('change',e=>{ showKeys=e.target.checked; updateLabels(); });
-const rVol=document.getElementById('rVol'), rRev=document.getElementById('rRev');
-rVol.addEventListener('input',()=>{ volume=rVol.value/100; document.getElementById('oVol').textContent=rVol.value+' %'; if(master) master.gain.setTargetAtTime(volume, ctx.currentTime, 0.02); });
-rRev.addEventListener('input',()=>{ reverb=rRev.value/100; document.getElementById('oRev').textContent=rRev.value+' %'; if(ctx){ wetG.gain.setTargetAtTime(reverb*1.1, ctx.currentTime,.05);} });
 
 const toastEl=document.getElementById('toast'); let toastT;
 function toast(msg){ toastEl.textContent=msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>toastEl.classList.remove('show'),2200); }
-
-/* ================================================================
-   GRABADORA
-   ================================================================ */
-const recorder=(()=>{
-  const btnRec=document.getElementById('btnRec'), btnPlay=document.getElementById('btnPlay'), btnClear=document.getElementById('btnClear'), st=document.getElementById('recStatus');
-  let events=[], recording=false, t0=0, timers=[], playing=false;
-  function ui(){
-    btnRec.setAttribute('aria-pressed',recording); btnRec.textContent=recording?'■ Detener':'● Grabar';
-    btnPlay.disabled=!events.length||recording||playing; btnClear.disabled=!events.length||recording||playing;
-    btnPlay.textContent=playing?'■ Detener':'▶ Reproducir';
-    if(playing) btnPlay.disabled=false;
-  }
-  btnRec.addEventListener('click',()=>{
-    if(recording){ recording=false; st.textContent=`Grabación lista: ${events.length} nota${events.length===1?'':'s'}, ${((performance.now()-t0)/1000).toFixed(1)} s.`; }
-    else { stopPlay(); events=[]; recording=true; t0=performance.now(); st.textContent='Grabando… toque las placas y pulse Detener al finalizar.'; }
-    ui();
-  });
-  function stopPlay(){ timers.forEach(clearTimeout); timers=[]; playing=false; ui(); }
-  btnPlay.addEventListener('click',()=>{
-    if(playing){ stopPlay(); st.textContent='Reproducción detenida.'; return; }
-    initAudio(); playing=true; ui(); st.textContent='Reproduciendo la grabación…';
-    const total=events.length?events[events.length-1].t:0;
-    events.forEach(ev=>timers.push(setTimeout(()=>{ strike(bars[ev.i],ev.v); flash(bars[ev.i]); },ev.t)));
-    timers.push(setTimeout(()=>{ playing=false; ui(); st.textContent='Reproducción finalizada.'; },total+600));
-  });
-  btnClear.addEventListener('click',()=>{ events=[]; st.textContent='Grabación borrada.'; ui(); });
-  return { note(b,v){ if(recording) events.push({t:performance.now()-t0,i:b.i,v}); } };
-})();
-
-/* ================================================================
-   MELODÍAS GUIADAS
-   ================================================================ */
-const C6=84, D6=86, E6=88, F6=89, G6=91, A6=93, B6=95, C7=96, D7=98, E7=100, F7=101, G5=79, A5=81, B5=83;
-const q=1;
-const MELODIES=[
-  {name:'Estrellita (Campanita del lugar)', notes:[[C6,q],[C6,q],[G6,q],[G6,q],[A6,q],[A6,q],[G6,2], [F6,q],[F6,q],[E6,q],[E6,q],[D6,q],[D6,q],[C6,2], [G6,q],[G6,q],[F6,q],[F6,q],[E6,q],[E6,q],[D6,2], [G6,q],[G6,q],[F6,q],[F6,q],[E6,q],[E6,q],[D6,2], [C6,q],[C6,q],[G6,q],[G6,q],[A6,q],[A6,q],[G6,2], [F6,q],[F6,q],[E6,q],[E6,q],[D6,q],[D6,q],[C6,2]]},
-  {name:'Himno a la Alegría', notes:[[E6,q],[E6,q],[F6,q],[G6,q],[G6,q],[F6,q],[E6,q],[D6,q],[C6,q],[C6,q],[D6,q],[E6,q],[E6,1.5],[D6,.5],[D6,2], [E6,q],[E6,q],[F6,q],[G6,q],[G6,q],[F6,q],[E6,q],[D6,q],[C6,q],[C6,q],[D6,q],[E6,q],[D6,1.5],[C6,.5],[C6,2]]},
-  {name:'Cumpleaños feliz', notes:[[G5,.75],[G5,.25],[A5,q],[G5,q],[C6,q],[B5,2], [G5,.75],[G5,.25],[A5,q],[G5,q],[D6,q],[C6,2], [G5,.75],[G5,.25],[G6,q],[E6,q],[C6,q],[B5,q],[A5,2], [F6,.75],[F6,.25],[E6,q],[C6,q],[D6,q],[C6,2]]},
-  {name:'Martinillo (Frère Jacques)', notes:[[C6,q],[D6,q],[E6,q],[C6,q],[C6,q],[D6,q],[E6,q],[C6,q],[E6,q],[F6,q],[G6,2],[E6,q],[F6,q],[G6,2],[G6,.5],[A6,.5],[G6,.5],[F6,.5],[E6,q],[C6,q],[G6,.5],[A6,.5],[G6,.5],[F6,.5],[E6,q],[C6,q],[C6,q],[G5,q],[C6,2],[C6,q],[G5,q],[C6,2]]},
-  {name:'Noche de paz', notes:[[G6,1.5],[A6,.5],[G6,1],[E6,3],[G6,1.5],[A6,.5],[G6,1],[E6,3],[D7,2],[D7,1],[B6,3],[C7,2],[C7,1],[G6,3],[A6,2],[A6,1],[C7,1.5],[B6,.5],[A6,1],[G6,1.5],[A6,.5],[G6,1],[E6,3],[A6,2],[A6,1],[C7,1.5],[B6,.5],[A6,1],[G6,1.5],[A6,.5],[G6,1],[E6,3],[D7,2],[D7,1],[F7,1.5],[D7,.5],[B6,1],[C7,3],[E7,3],[C7,1],[G6,1],[E6,1],[G6,1.5],[F6,.5],[D6,1],[C6,6]]},
-  {name:'María tenía un corderito', notes:[[E6,q],[D6,q],[C6,q],[D6,q],[E6,q],[E6,q],[E6,2],[D6,q],[D6,q],[D6,2],[E6,q],[G6,q],[G6,2],[E6,q],[D6,q],[C6,q],[D6,q],[E6,q],[E6,q],[E6,q],[E6,q],[D6,q],[D6,q],[E6,q],[D6,q],[C6,4]]}
-];
-const practice=(()=>{
-  const chips=document.getElementById('melodyChips'), btnListen=document.getElementById('btnListen'), btnPractice=document.getElementById('btnPractice'), btnStop=document.getElementById('btnStop');
-  const prog=document.getElementById('progBar'), stat=document.getElementById('melStatus'), count=document.getElementById('melCount'), rTempo=document.getElementById('rTempo');
-  let sel=0, mode=null, idx=0, timers=[], errors=0;
-  MELODIES.forEach((m,i)=>{ const c=document.createElement('button'); c.type='button'; c.className='chip'; c.textContent=m.name; c.setAttribute('aria-pressed',i===0); c.addEventListener('click',()=>{ stop(); sel=i; chips.querySelectorAll('.chip').forEach((x,k)=>x.setAttribute('aria-pressed',k===i)); stat.innerHTML=`<b>${m.name}</b> · ${m.notes.length} notas. Pulse Escuchar o Practicar.`; }); chips.appendChild(c); });
-  rTempo.addEventListener('input',()=>document.getElementById('oTempo').textContent=rTempo.value+' bpm');
-  const beat=()=>60/(+rTempo.value);
-  function setNext(b){ bars.forEach(x=>x.el.classList.remove('next')); if(b) b.el.classList.add('next'); }
-  function ui(){ btnListen.disabled=!!mode; btnPractice.disabled=!!mode; btnStop.disabled=!mode; }
-  function stop(){ timers.forEach(clearTimeout); timers=[]; mode=null; setNext(null); prog.style.width='0'; count.textContent=''; ui(); }
-  btnStop.addEventListener('click',()=>{ stop(); stat.textContent='Melodía detenida.'; });
-  btnListen.addEventListener('click',()=>{
-    initAudio(); veil.classList.add('hide'); stop(); mode='listen'; ui();
-    const m=MELODIES[sel]; let t=0.4; const total=m.notes.reduce((s,n)=>s+n[1],0)*beat()+0.4;
-    stat.innerHTML=`🔊 Escuchando <b>${m.name}</b>…`;
-    m.notes.forEach((n,k)=>{
-      const b=byMidi[n[0]]; const when=t;
-      timers.push(setTimeout(()=>{ strike(b,0.85); flash(b); setNext(b); prog.style.width=(100*(k+1)/m.notes.length)+'%'; count.textContent=`Nota ${k+1} de ${m.notes.length}`; }, when*1000));
-      t+=n[1]*beat();
-    });
-    timers.push(setTimeout(()=>{ stop(); stat.innerHTML=`Fin de <b>${m.name}</b>. ¿Se anima a practicarla?`; }, total*1000+400));
-  });
-  btnPractice.addEventListener('click',()=>{
-    initAudio(); veil.classList.add('hide'); stop(); mode='practice'; idx=0; errors=0; ui();
-    const m=MELODIES[sel]; stat.innerHTML=`🎯 Practicando <b>${m.name}</b>: toque la placa iluminada.`; cue();
-  });
-  function cue(){ const m=MELODIES[sel]; const b=byMidi[m.notes[idx][0]]; setNext(b); count.textContent=`Nota ${idx+1} de ${m.notes.length} · siguiente: ${noteName(b.midi)}`; prog.style.width=(100*idx/m.notes.length)+'%'; }
-  return {
-    check(b){
-      if(mode!=='practice') return;
-      const m=MELODIES[sel];
-      if(b.midi===m.notes[idx][0]){
-        idx++;
-        if(idx>=m.notes.length){ prog.style.width='100%'; const e=errors; stop(); stat.innerHTML=`🏆 ¡Excelente! Interpretó <b>${m.name}</b> completa${e?` con ${e} desliz${e===1?'':'es'}`:' sin errores'}.`; celebrate(); toast('🏆 ¡Melodía completada!'); }
-        else cue();
-      } else { errors++; stat.innerHTML=`🎯 Esa fue <b>${noteName(b.midi)}</b>; la nota correcta es <b>${noteName(m.notes[idx][0])}</b>. Siga la placa iluminada.`; }
-    }
-  };
-})();
-
-/* ---- Confeti ---- */
-const cv=document.getElementById('confetti'), cx2=cv.getContext('2d'); let parts=[], raf=0;
-function celebrate(){
-  cv.width=innerWidth*devicePixelRatio; cv.height=innerHeight*devicePixelRatio; cv.style.width=innerWidth+'px'; cv.style.height=innerHeight+'px';
-  const cols=Object.values(COLORS);
-  for(let i=0;i<180;i++) parts.push({x:cv.width/2, y:cv.height*0.35, vx:(Math.random()-0.5)*18*devicePixelRatio, vy:(-Math.random()*16-4)*devicePixelRatio, r:(4+Math.random()*6)*devicePixelRatio, c:cols[i%cols.length], rot:Math.random()*6.28, vr:(Math.random()-0.5)*0.3, life:1});
-  if(!raf) loop();
-}
-function loop(){
-  cx2.clearRect(0,0,cv.width,cv.height);
-  parts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=0.45*devicePixelRatio; p.vx*=0.99; p.rot+=p.vr; p.life-=0.008; cx2.save(); cx2.translate(p.x,p.y); cx2.rotate(p.rot); cx2.globalAlpha=Math.max(0,p.life); cx2.fillStyle=p.c; cx2.fillRect(-p.r/2,-p.r/4,p.r,p.r/2); cx2.restore(); });
-  parts=parts.filter(p=>p.life>0 && p.y<cv.height+50);
-  raf = parts.length ? requestAnimationFrame(loop) : (cx2.clearRect(0,0,cv.width,cv.height), 0);
-}
 
 /* ---- Instalación como aplicación (funciona sin conexión) ---- */
 const btnInstall=document.getElementById('btnInstall'); let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; btnInstall.hidden=false; });
 btnInstall.addEventListener('click',async()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; btnInstall.hidden=true; });
 window.addEventListener('appinstalled',()=>{ btnInstall.hidden=true; toast('✅ Aplicación instalada: ya funciona sin conexión'); });
+// iPhone / iPad: Safari no ofrece el diálogo de instalación; se muestran los pasos
+const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+const standalone=window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
+if(isIOS && !standalone && location.protocol.startsWith('http')){
+  btnInstall.hidden=false;
+  btnInstall.addEventListener('click',()=>{ if(!deferredPrompt) toast('📲 Pulse Compartir (□↑) y luego «Agregar a pantalla de inicio»'); });
+}
 if(location.protocol==='file:'){ const bk=document.querySelector('.back'); if(bk) bk.style.display='none'; }
 
 /* ---- Service worker ---- */
