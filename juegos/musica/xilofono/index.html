@@ -437,7 +437,8 @@ const svg=document.getElementById('instrument');
 const NS='http://www.w3.org/2000/svg';
 const el=(tag,attrs,parent)=>{ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; };
 
-const GEO={ x0:118, x1:1082, yNat:262, lenNat:[310,176], wNat:[52,37], ySh:38, lenSh:[196,112], wSh:[44,31] };
+const GEO={ x0:118, x1:1082, yNat:262, lenNat:[310,176], wNat:[56,41], ySh:38, lenSh:[196,112], wSh:[46,33] };
+const STEP=(GEO.x1-GEO.x0)/14;
 const lerp=(a,b,t)=>a+(b-a)*t;
 function barGeom(b){
   const t=b.pos/14, cx=lerp(GEO.x0,GEO.x1,t);
@@ -502,6 +503,8 @@ function drawInstrument(){
     const g=barGeom(b), x=g.cx-g.w/2;
     const grp=el('g',{class:'bar','data-i':b.i,role:'button',tabindex:'-1','aria-label':'Placa '+noteName(b.midi)},layer);
     b.el=grp; b.geom=g;
+    // Zona táctil invisible: ocupa toda la columna de la placa para que el toque sea cómodo en pantallas pequeñas
+    el('rect',{class:'hitzone',x:g.cx-STEP/2,y:g.y-14,width:STEP,height:g.L+28,fill:'rgba(0,0,0,0)'},grp);
     el('rect',{x:x+3,y:g.y+6,width:g.w,height:g.L,rx:6,fill:'rgba(0,0,0,.5)'},grp);               // sombra propia
     el('rect',{x,y:g.y,width:g.w,height:g.L,rx:6,fill:b.natural?`url(#bar${b.midi%12})`:'url(#black)',stroke:'rgba(0,0,0,.45)','stroke-width':1},grp);
     el('rect',{x:x+4,y:g.y+5,width:Math.max(3,g.w*0.12),height:g.L-10,rx:2,fill:'rgba(255,255,255,.28)'},grp);   // brillo
