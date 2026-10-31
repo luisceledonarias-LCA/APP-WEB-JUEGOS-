@@ -301,6 +301,7 @@
       <a href="#geometria" data-c="var(--orange)"><span class="dot" style="background:var(--orange)"></span>Geometría</a>
       <a href="#medicion" data-c="var(--green)"><span class="dot" style="background:var(--green)"></span>Medición</a>
       <a href="#datos" data-c="var(--indigo)"><span class="dot" style="background:var(--indigo)"></span>Datos</a>
+      <a href="#musica" data-c="var(--pink)"><span class="dot" style="background:var(--pink)"></span>Música</a>
       <a href="#herramientas" data-c="var(--yellow)"><span class="dot" style="background:var(--yellow)"></span>Herramientas</a>
     </div>
   </div>
@@ -311,11 +312,12 @@
   <div class="wrap">
     <section class="hero">
       <h1>Mesa de Trabajo de Matemática</h1>
-      <p class="lead">Un espacio interactivo para explorar <b>juegos educativos</b>, <b>guías de aprendizaje</b> y <b>evaluaciones</b>, organizados por eje temático según las Bases Curriculares de Matemática de Mineduc, junto con <b>herramientas de apoyo docente</b>.</p>
+      <p class="lead">Un espacio interactivo para explorar <b>juegos educativos</b>, <b>guías de aprendizaje</b> y <b>evaluaciones</b>, organizados por eje temático según las Bases Curriculares de Matemática de Mineduc, junto con <b>herramientas de apoyo docente</b> y un espacio de <b>Música</b> con instrumentos virtuales.</p>
       <div class="hero-stats">
         <div class="hero-stat"><b>5</b><span>Ejes temáticos</span></div>
         <div class="hero-stat"><b>4</b><span>Habilidades matemáticas</span></div>
-        <div class="hero-stat"><b>2</b><span>Herramientas docentes</span></div>
+        <div class="hero-stat"><b>3</b><span>Herramientas docentes</span></div>
+        <div class="hero-stat"><b>1</b><span>Instrumento musical virtual</span></div>
       </div>
     </section>
   </div>
@@ -367,6 +369,14 @@
           <h3>Datos y Probabilidad</h3>
           <p>Recolección, organización e interpretación de datos; introducción al pensamiento probabilístico.</p>
           <span class="go">Explorar eje <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>
+        </a>
+
+        <a class="eje-card" href="#musica" style="--grad:linear-gradient(135deg, var(--pink), var(--purple));" data-cat>
+          <span class="glow"></span>
+          <div class="eje-icon">🎵</div>
+          <h3>Música</h3>
+          <p>Espacio interdisciplinario de Artes Musicales: instrumentos virtuales, lenguaje musical e interpretación guiada de melodías.</p>
+          <span class="go">Explorar área <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>
         </a>
 
       </div>
@@ -582,6 +592,47 @@
         <div class="cat-card">
           <div class="cat-head"><span class="ic">📝</span><h4>Evaluaciones</h4><span class="count">Próximamente</span></div>
           <div class="placeholder-card"><b>Sin evaluaciones publicadas</b>Aquí aparecerán las evaluaciones de Datos y Probabilidad.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MÚSICA ============ -->
+  <section id="musica" class="eje-section">
+    <div class="wrap">
+      <div class="eje-banner" style="--grad:linear-gradient(135deg, var(--pink), var(--purple));">
+        <div class="eje-banner-top">
+          <div class="eje-icon">🎵</div>
+          <div>
+            <span class="eje-banner-tag">Artes Musicales</span>
+            <h2>Música</h2>
+          </div>
+        </div>
+        <p class="desc">Recursos para la asignatura de Música, organizados según los ejes de las Bases Curriculares de Artes Musicales: escuchar y apreciar, interpretar y crear, y reflexionar y contextualizar. Incluye instrumentos virtuales con sonido realista para la práctica instrumental en el aula.</p>
+      </div>
+
+      <div class="hab-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="hab-card" style="--grad:linear-gradient(135deg, var(--pink), var(--purple));"><span class="tag">Escuchar y apreciar</span><h4>Percepción sonora</h4><p>Reconocer alturas, timbres y cualidades del sonido en instrumentos de percusión de altura determinada.</p></div>
+        <div class="hab-card" style="--grad:linear-gradient(135deg, var(--pink), var(--purple));"><span class="tag">Interpretar y crear</span><h4>Práctica instrumental</h4><p>Interpretar melodías sencillas con precisión rítmica y melódica, e improvisar y crear ideas musicales propias.</p></div>
+        <div class="hab-card" style="--grad:linear-gradient(135deg, var(--pink), var(--purple));"><span class="tag">Reflexionar y contextualizar</span><h4>Lenguaje musical</h4><p>Relacionar nombres de notas, frecuencia y registro, y comentar la experiencia musical con vocabulario técnico.</p></div>
+      </div>
+
+      <div class="cat-row">
+        <div class="cat-card">
+          <div class="cat-head"><span class="ic">🎹</span><h4>Instrumentos virtuales</h4><span class="count">1 disponible</span></div>
+          <a class="recurso-card" href="juegos/musica/xilofono/index.html" style="--grad:linear-gradient(135deg, var(--pink), var(--purple));">
+            <span class="r-ic">🎶</span>
+            <span class="r-info"><b>Xilófono Virtual</b><span>Glockenspiel cromático de 25 placas (Sol5–Sol7) con sonido realista, nombres de notas, teclado, grabadora y melodías guiadas</span></span>
+            <span class="r-go">Tocar →</span>
+          </a>
+        </div>
+        <div class="cat-card">
+          <div class="cat-head"><span class="ic">📘</span><h4>Guías de aprendizaje</h4><span class="count">Próximamente</span></div>
+          <div class="placeholder-card"><b>Sin guías publicadas</b>Aquí aparecerán las guías de aprendizaje de Música.</div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-head"><span class="ic">📝</span><h4>Evaluaciones</h4><span class="count">Próximamente</span></div>
+          <div class="placeholder-card"><b>Sin evaluaciones publicadas</b>Aquí aparecerán las evaluaciones de Música.</div>
         </div>
       </div>
     </div>
