@@ -41,7 +41,7 @@
   .wrap{position:relative; z-index:1; width:min(1240px, 100% - 32px); margin-inline:auto}
 
   /* ---------- header ---------- */
-  header.top{padding:18px 0 8px}
+  header.top{padding:14px 0 4px}
   .top-row{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
   .back{
     display:inline-flex; align-items:center; gap:8px; color:var(--ink-2); text-decoration:none; font-weight:600; font-size:.9rem;
@@ -52,7 +52,7 @@
     display:inline-flex; align-items:center; gap:8px; font-size:.74rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
     padding:7px 13px; border-radius:999px; color:#0B0C10; background:var(--grad)
   }
-  h1{font-size:clamp(1.6rem, 1.2rem + 2vw, 2.5rem); font-weight:900; letter-spacing:-.02em; margin-top:14px; line-height:1.15}
+  h1{font-size:clamp(1.4rem, 1.1rem + 1.6vw, 2.1rem); font-weight:900; letter-spacing:-.02em; margin-top:12px; line-height:1.15}
   h1 small{display:block; font-size:clamp(.95rem,.8rem + .6vw,1.15rem); font-weight:600; color:var(--ink-2); letter-spacing:0; margin-top:6px}
 
   /* ---------- stage ---------- */
@@ -150,18 +150,6 @@
   }
   .toast.show{transform:translate(-50%,0); opacity:1}
 
-  /* ---------- info ---------- */
-  .info{margin-top:16px}
-  .info-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:12px}
-  @media (max-width:900px){.info-grid{grid-template-columns:1fr}}
-  .info-item{background:var(--bg-2); border:1px solid var(--line-soft); border-radius:var(--r-md); padding:16px}
-  .info-item h4{font-size:.95rem; font-weight:800; margin-bottom:6px}
-  .info-item p{font-size:.86rem; color:var(--ink-2); line-height:1.6}
-  .keys-table{display:grid; grid-template-columns:repeat(auto-fill, minmax(108px,1fr)); gap:8px; margin-top:12px}
-  .key-item{display:flex; align-items:center; gap:8px; font-size:.82rem; color:var(--ink-2); background:var(--bg-2); border:1px solid var(--line-soft); border-radius:10px; padding:7px 10px}
-  .key-item kbd{font-family:inherit; font-weight:800; min-width:26px; text-align:center; background:var(--surface-2); border:1px solid var(--line); border-radius:6px; padding:2px 6px; color:var(--ink)}
-  footer{position:relative; z-index:1; text-align:center; padding:36px 16px 56px; color:var(--ink-3); font-size:.8rem; line-height:1.7}
-  footer b{display:block; color:var(--ink-2); font-size:.86rem}
   #confetti{position:fixed; inset:0; z-index:40; pointer-events:none}
   @media (prefers-reduced-motion:reduce){ .bar.hit{animation:none} .fx-note{animation-duration:.3s} }
 </style>
@@ -176,7 +164,7 @@
       <a class="back" href="../../../index.html">← Mesa de Trabajo</a>
       <span class="badge">🎵 Música · Instrumento virtual</span>
     </div>
-    <h1>Xilófono Virtual<small>Glockenspiel cromático de 25 placas · Sol<sub>5</sub> – Sol<sub>7</sub> · afinación A4 = 440 Hz</small></h1>
+    <h1>Xilófono Virtual<small>Glockenspiel cromático · 25 placas · Sol<sub>5</sub> – Sol<sub>7</sub></small></h1>
   </div>
 </header>
 
@@ -223,8 +211,8 @@
       <h3><span class="ic">🎚️</span> Sonido</h3>
       <div class="row">
         <div class="field">
-          <label for="rVol">Volumen <output id="oVol">80 %</output></label>
-          <input type="range" id="rVol" min="0" max="100" value="80">
+          <label for="rVol">Volumen <output id="oVol">90 %</output></label>
+          <input type="range" id="rVol" min="0" max="100" value="90">
         </div>
         <div class="field">
           <label for="rRev">Reverberación de sala <output id="oRev">35 %</output></label>
@@ -247,7 +235,7 @@
         <button class="btn" type="button" id="btnPlay" disabled>▶ Reproducir</button>
         <button class="btn danger" type="button" id="btnClear" disabled>🗑 Borrar</button>
       </div>
-      <p class="status" id="recStatus" style="margin-top:12px">Grabe una interpretación y escúchela de nuevo.</p>
+      <p class="status" id="recStatus" style="margin-top:12px">Grabe y vuelva a escuchar su interpretación.</p>
     </section>
 
     <section class="card c-12">
@@ -264,39 +252,16 @@
       </div>
       <div class="progress" aria-hidden="true"><i id="progBar"></i></div>
       <div class="melody-status">
-        <span class="big" id="melStatus">Seleccione una melodía. En <b>Escuchar</b> el xilófono la interpreta; en <b>Practicar</b> la placa que debe tocar se ilumina y avanza con cada acierto.</span>
+        <span class="big" id="melStatus">Elija una melodía: <b>Escuchar</b> la interpreta; <b>Practicar</b> ilumina la placa que debe tocar.</span>
         <span class="status" id="melCount"></span>
       </div>
     </section>
   </div>
 
-  <!-- ============ FICHA TÉCNICA ============ -->
-  <section class="card info">
-    <h3><span class="ic">📖</span> Ficha técnica del instrumento</h3>
-    <div class="info-grid">
-      <div class="info-item">
-        <h4>Clasificación organológica</h4>
-        <p>El glockenspiel (en el aula suele llamarse <b>xilófono</b> o <b>metalófono</b>) es un <b>idiófono de percusión</b> de altura determinada: el sonido lo produce la vibración del propio cuerpo de la placa metálica, sin cuerdas ni membranas. Las placas descansan sobre fieltro en sus <b>nodos de vibración</b>, situados al 22,4 % de cada extremo, donde se fijan los tornillos.</p>
-      </div>
-      <div class="info-item">
-        <h4>Afinación y registro</h4>
-        <p>Modelo cromático de <b>25 placas</b>: 15 naturales en la fila inferior (colores) y 10 sostenidos en la superior (negros), dispuestos como un teclado. Abarca dos octavas, de <b>Sol<sub>5</sub> (783,99 Hz)</b> a <b>Sol<sub>7</sub> (3135,96 Hz)</b>. Las placas más largas producen sonidos <b>graves</b>; las más cortas, <b>agudos</b>.</p>
-      </div>
-      <div class="info-item">
-        <h4>Timbre y sonido</h4>
-        <p>El timbre brillante y cristalino se debe a que los parciales de una placa metálica son <b>inarmónicos</b> (≈ 2,76 y 5,40 veces la frecuencia fundamental). Este instrumento virtual reproduce esa estructura espectral, el ataque percusivo del golpe y una larga resonancia que decae de forma natural, con reverberación de sala ajustable.</p>
-      </div>
-    </div>
-    <h3 style="margin-top:18px"><span class="ic">⌨️</span> Teclado del computador</h3>
-    <p style="font-size:.88rem;color:var(--ink-2)">Las teclas se distribuyen como un piano en dos octavas: la fila inferior <kbd>Z</kbd>–<kbd>M</kbd> y la superior <kbd>Q</kbd>–<kbd>I</kbd> para las notas naturales; las filas <kbd>S</kbd>–<kbd>J</kbd> y <kbd>2</kbd>–<kbd>7</kbd> para los sostenidos.</p>
-    <div class="keys-table" id="keysTable"></div>
-  </section>
 </main>
+<div style="height:28px"></div>
 
-<footer>
-  <b>Xilófono Virtual · Mesa de Trabajo</b>
-  Material pedagógico para la asignatura de Música. Sonido generado en tiempo real mediante síntesis modal con Web Audio API; no requiere conexión una vez instalado.
-</footer>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -336,41 +301,58 @@ const freqOf = midi => 440*Math.pow(2,(midi+octShift-69)/12);
    ================================================================ */
 let ctx=null, bus=null, dryG=null, wetG=null, conv=null, master=null, noiseBuf=null;
 const voices = new Set();
-let volume=0.8, reverb=0.35;
+let volume=0.9, reverb=0.35;
 
-function makeImpulse(seconds, decay){
-  const rate=ctx.sampleRate, len=Math.floor(rate*seconds);
-  const buf=ctx.createBuffer(2,len,rate);
+function makeImpulse(seconds, rt60){
+  // Respuesta impulsiva de sala: reflexiones tempranas + cola difusa cuyo brillo decae con el tiempo
+  const rate=ctx.sampleRate, len=Math.floor(rate*seconds), pre=Math.floor(rate*0.014);
+  const buf=ctx.createBuffer(2,len,rate), decay=6.9/rt60;
   for(let ch=0;ch<2;ch++){
-    const d=buf.getChannelData(ch); let lp=0;
-    for(let i=0;i<len;i++){
-      const t=i/rate;
-      let n=Math.random()*2-1;
-      lp = lp + 0.35*(n-lp);           // oscurece la cola (sala con superficies absorbentes)
-      const env=Math.exp(-decay*t);
-      d[i]= (t<0.012 ? 0 : lp*env*(0.5+0.5*Math.random())) ;
+    const d=buf.getChannelData(ch); let lp=0, lp2=0;
+    for(let i=pre;i<len;i++){
+      const t=(i-pre)/rate, n=Math.random()*2-1;
+      const coef=0.62-0.50*Math.min(1,t/seconds);   // los agudos se extinguen antes que los graves
+      lp += coef*(n-lp); lp2 += coef*(lp-lp2);
+      const dens=Math.min(1,t/0.045);                 // la densidad de ecos crece en los primeros 45 ms
+      d[i]= lp2*Math.exp(-decay*t)*dens;
     }
-    // reflexiones tempranas
-    [0.013,0.021,0.027,0.034,0.046,0.058].forEach((tt,k)=>{ const idx=Math.floor(tt*rate); if(idx<len) d[idx]+= (0.55-0.07*k)*(ch?1:-1)*(k%2?1:-1); });
+    [[0.011,.42],[0.017,.36],[0.023,.30],[0.031,.26],[0.041,.20],[0.053,.16],[0.067,.12]].forEach((e,k)=>{
+      const idx=pre+Math.floor(e[0]*rate*(ch?1.03:1)); if(idx<len) d[idx]+= e[1]*((k+ch)%2?1:-1);
+    });
   }
+  // Normalización energética para que el nivel de reverberación sea predecible
+  let e=0; for(let ch=0;ch<2;ch++){ const d=buf.getChannelData(ch); for(let i=0;i<len;i++) e+=d[i]*d[i]; }
+  const k=Math.sqrt(2.2/e); for(let ch=0;ch<2;ch++){ const d=buf.getChannelData(ch); for(let i=0;i<len;i++) d[i]*=k; }
   return buf;
+}
+function softCurve(drive){
+  const n=2048, c=new Float32Array(n), norm=Math.tanh(drive);
+  for(let i=0;i<n;i++){ const x=i/(n-1)*2-1; c[i]=Math.tanh(drive*x)/norm; }
+  return c;
 }
 
 function initAudio(){
   if(ctx) { if(ctx.state==='suspended') ctx.resume(); return; }
   const AC=window.AudioContext||window.webkitAudioContext;
   ctx=new AC({latencyHint:'interactive'});
-  master=ctx.createGain(); master.gain.value=volume;
-  const comp=ctx.createDynamicsCompressor();
-  comp.threshold.value=-16; comp.knee.value=18; comp.ratio.value=3; comp.attack.value=0.002; comp.release.value=0.18;
-  const air=ctx.createBiquadFilter(); air.type='highshelf'; air.frequency.value=6000; air.gain.value=1.5;
   bus=ctx.createGain(); bus.gain.value=1;
-  dryG=ctx.createGain(); dryG.gain.value=1-reverb*0.5;
-  wetG=ctx.createGain(); wetG.gain.value=reverb*0.9;
-  conv=ctx.createConvolver(); conv.buffer=makeImpulse(2.6, 2.9);
-  bus.connect(dryG).connect(comp);
-  bus.connect(conv).connect(wetG).connect(comp);
-  comp.connect(air).connect(master).connect(ctx.destination);
+  const hpf=ctx.createBiquadFilter(); hpf.type='highpass'; hpf.frequency.value=90; hpf.Q.value=0.7;
+  dryG=ctx.createGain(); dryG.gain.value=1;
+  wetG=ctx.createGain(); wetG.gain.value=reverb*1.1;
+  conv=ctx.createConvolver(); conv.buffer=makeImpulse(2.8, 1.9);
+  const sat=ctx.createWaveShaper(); sat.curve=softCurve(1.6); sat.oversample='2x';   // saturación suave: cuerpo y cohesión
+  const comp=ctx.createDynamicsCompressor();
+  comp.threshold.value=-14; comp.knee.value=12; comp.ratio.value=3; comp.attack.value=0.003; comp.release.value=0.22;
+  const presence=ctx.createBiquadFilter(); presence.type='peaking'; presence.frequency.value=3800; presence.Q.value=0.8; presence.gain.value=2.5;
+  const air=ctx.createBiquadFilter(); air.type='highshelf'; air.frequency.value=7000; air.gain.value=2;
+  const makeup=ctx.createGain(); makeup.gain.value=1.7;
+  const limiter=ctx.createDynamicsCompressor();                                        // limitador final: nivel alto sin distorsión
+  limiter.threshold.value=-2; limiter.knee.value=0; limiter.ratio.value=20; limiter.attack.value=0.001; limiter.release.value=0.06;
+  master=ctx.createGain(); master.gain.value=volume;
+  bus.connect(hpf);
+  hpf.connect(dryG).connect(sat);
+  hpf.connect(conv).connect(wetG).connect(sat);
+  sat.connect(comp).connect(presence).connect(air).connect(makeup).connect(limiter).connect(master).connect(ctx.destination);
   noiseBuf=ctx.createBuffer(1, Math.floor(ctx.sampleRate*0.12), ctx.sampleRate);
   const nd=noiseBuf.getChannelData(0); for(let i=0;i<nd.length;i++) nd[i]=Math.random()*2-1;
 }
@@ -381,7 +363,8 @@ const PARTIALS = [
   {r:2.756, a:0.42, d:0.36},
   {r:5.404, a:0.17, d:0.17},
   {r:8.933, a:0.075,d:0.09},
-  {r:13.34, a:0.03, d:0.055}
+  {r:13.34, a:0.03, d:0.055},
+  {r:18.64, a:0.012,d:0.04}
 ];
 
 function strike(bar, vel=0.85, when=0){
@@ -396,12 +379,12 @@ function strike(bar, vel=0.85, when=0){
   if(pan){ pan.pan.value=(bar.pos/14-0.5)*0.7; out.connect(pan).connect(bus);} else out.connect(bus);
 
   // Tiempo de extinción de la fundamental: placas largas (graves) resuenan más que las cortas (agudas)
-  const T60 = Math.min(4.2, Math.max(1.3, 3.4*Math.pow(784/f,0.45))) * (0.85+0.15*v);
+  const T60 = Math.min(4.6, Math.max(1.4, 3.8*Math.pow(784/f,0.45))) * (0.85+0.15*v);
   const nodes=[]; let endT=t;
   PARTIALS.forEach((p,k)=>{
     const pf=f*p.r*(1+(Math.random()-0.5)*0.0012);
     if(pf>nyq*0.9) return;
-    const amp = 0.26*v*p.a*Math.pow(v,0.6*k);          // golpes fuertes = más brillo
+    const amp = 0.5*v*p.a*Math.pow(v,0.6*k);          // golpes fuertes = más brillo
     const dur = T60*p.d;
     const g=ctx.createGain(); g.gain.setValueAtTime(0,t);
     g.gain.linearRampToValueAtTime(amp, t+0.0015);
@@ -422,13 +405,17 @@ function strike(bar, vel=0.85, when=0){
   const n=ctx.createBufferSource(); n.buffer=noiseBuf;
   const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=Math.min(11000, f*2.4); bp.Q.value=0.9;
   const ng=ctx.createGain(); ng.gain.setValueAtTime(0,t);
-  ng.gain.linearRampToValueAtTime(0.45*v*v, t+0.0006);
+  ng.gain.linearRampToValueAtTime(0.7*v*v, t+0.0006);
   ng.gain.setTargetAtTime(0, t+0.0006, 0.0035);
   n.connect(bp).connect(ng).connect(out); n.start(t); n.stop(t+0.06); nodes.push(n);
+  const n2=ctx.createBufferSource(); n2.buffer=noiseBuf;
+  const bp2=ctx.createBiquadFilter(); bp2.type='bandpass'; bp2.frequency.value=7200; bp2.Q.value=1.1;
+  const ng2=ctx.createGain(); ng2.gain.setValueAtTime(0,t); ng2.gain.linearRampToValueAtTime(0.3*v*v, t+0.0004); ng2.gain.setTargetAtTime(0, t+0.0004, 0.0015);
+  n2.connect(bp2).connect(ng2).connect(out); n2.start(t); n2.stop(t+0.03); nodes.push(n2);   // "clic" de la baqueta
 
   // Golpe sordo del marco de madera (muy leve)
   const w=ctx.createOscillator(); w.type='sine'; w.frequency.setValueAtTime(240,t); w.frequency.exponentialRampToValueAtTime(90,t+0.03);
-  const wg=ctx.createGain(); wg.gain.setValueAtTime(0,t); wg.gain.linearRampToValueAtTime(0.06*v,t+0.002); wg.gain.setTargetAtTime(0,t+0.002,0.012);
+  const wg=ctx.createGain(); wg.gain.setValueAtTime(0,t); wg.gain.linearRampToValueAtTime(0.09*v,t+0.002); wg.gain.setTargetAtTime(0,t+0.002,0.012);
   w.connect(wg).connect(out); w.start(t); w.stop(t+0.08); nodes.push(w);
 
   const voice={out, end:endT};
@@ -597,7 +584,7 @@ veil.addEventListener('click',()=>{ initAudio(); veil.classList.add('hide'); toa
 
 const keysDown=new Set();
 window.addEventListener('keydown',e=>{
-  if(e.target.matches('input,select,textarea,button')) { if(e.code!=='Space') return; }
+  const tg=e.target; if(tg && typeof tg.matches==='function' && tg.matches('input,select,textarea')) return;
   if(e.code==='Space'){ e.preventDefault(); dampAll(); return; }
   const b=byKey[e.code]; if(!b||e.repeat||keysDown.has(e.code)) return;
   keysDown.add(e.code); e.preventDefault(); veil.classList.add('hide'); hit(b, 0.9);
@@ -612,7 +599,7 @@ seg('segOct', v=>{ octShift=+v; toast(octShift? '🎵 Registro grave: Sol4 – S
 document.getElementById('chkKeys').addEventListener('change',e=>{ showKeys=e.target.checked; updateLabels(); });
 const rVol=document.getElementById('rVol'), rRev=document.getElementById('rRev');
 rVol.addEventListener('input',()=>{ volume=rVol.value/100; document.getElementById('oVol').textContent=rVol.value+' %'; if(master) master.gain.setTargetAtTime(volume, ctx.currentTime, 0.02); });
-rRev.addEventListener('input',()=>{ reverb=rRev.value/100; document.getElementById('oRev').textContent=rRev.value+' %'; if(ctx){ dryG.gain.setTargetAtTime(1-reverb*0.5, ctx.currentTime,.05); wetG.gain.setTargetAtTime(reverb*0.9, ctx.currentTime,.05);} });
+rRev.addEventListener('input',()=>{ reverb=rRev.value/100; document.getElementById('oRev').textContent=rRev.value+' %'; if(ctx){ wetG.gain.setTargetAtTime(reverb*1.1, ctx.currentTime,.05);} });
 
 const toastEl=document.getElementById('toast'); let toastT;
 function toast(msg){ toastEl.textContent=msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>toastEl.classList.remove('show'),2200); }
@@ -699,11 +686,7 @@ const practice=(()=>{
   };
 })();
 
-/* ================================================================
-   TABLA DE TECLAS + CONFETI
-   ================================================================ */
-(function(){ const t=document.getElementById('keysTable'); bars.slice().sort((a,b)=>a.midi-b.midi).forEach(b=>{ const d=document.createElement('div'); d.className='key-item'; d.innerHTML=`<kbd>${keyLabel(b.key)}</kbd><span>${noteName(b.midi)} / ${noteName(b.midi,'us')}</span>`; t.appendChild(d); }); })();
-
+/* ---- Confeti ---- */
 const cv=document.getElementById('confetti'), cx2=cv.getContext('2d'); let parts=[], raf=0;
 function celebrate(){
   cv.width=innerWidth*devicePixelRatio; cv.height=innerHeight*devicePixelRatio; cv.style.width=innerWidth+'px'; cv.style.height=innerHeight+'px';
