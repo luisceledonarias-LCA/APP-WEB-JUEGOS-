@@ -533,6 +533,13 @@ const btnInstall=document.getElementById('btnInstall'); let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; btnInstall.hidden=false; });
 btnInstall.addEventListener('click',async()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; btnInstall.hidden=true; });
 window.addEventListener('appinstalled',()=>{ btnInstall.hidden=true; toast('✅ Aplicación instalada: ya funciona sin conexión'); });
+// iPhone / iPad: Safari no ofrece el diálogo de instalación; se muestran los pasos
+const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+const standalone=window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
+if(isIOS && !standalone && location.protocol.startsWith('http')){
+  btnInstall.hidden=false;
+  btnInstall.addEventListener('click',()=>{ if(!deferredPrompt) toast('📲 Pulse Compartir (□↑) y luego «Agregar a pantalla de inicio»'); });
+}
 if(location.protocol==='file:'){ const bk=document.querySelector('.back'); if(bk) bk.style.display='none'; }
 
 /* ---- Service worker ---- */
